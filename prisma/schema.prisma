@@ -1,0 +1,177 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+
+model City {
+  id String @id @default(cuid())
+  name String
+  description String
+  website String
+  mapUrl String
+  contact CityContact
+  pictures CityPictures[]
+  address String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  TouristAttraction TouristAttraction[]
+}
+
+model CityPictures {
+  id String @id @default(cuid())
+  url String
+  city City @relation(fields: [id], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model CityContact {
+  id String @id
+  email String
+  phone String
+  telephone String
+  whatsapp String
+  instagram String
+
+  city City @relation(fields: [id], references: [id])
+}
+
+model TouristAttraction {
+  id String @id @default(cuid())
+  name String
+  description String
+  url String
+  cityId String
+  categoryId String
+  category TouristAttractionCategory[]
+  openingHours TouristAttractionOpeningHours[]
+  clientProfile TouristAttractionClientProfile[]
+  mapUrl String
+  address String
+  pictures TouristAttractionPictures[]
+  contact TouristAttractionContact[]
+  city City @relation(fields: [cityId], references: [id])
+}
+
+model TouristAttractionCategory {
+  id Int @id @default(autoincrement())
+  name String
+  touristAttraction TouristAttraction[]
+}
+
+model TouristAttractionOpeningHours {
+  id String @id @default(cuid())
+  day String
+  open String
+  close String
+
+  touristAttraction TouristAttraction @relation(fields: [id], references: [id])
+}
+
+model TouristAttractionClientProfile {
+  id Int @id @default(autoincrement())
+  name String
+
+  TouristAttraction TouristAttraction[]
+}
+
+
+model TouristAttractionPictures {
+  id String @id @default(cuid())
+  url String
+  touristAttraction TouristAttraction @relation(fields: [id], references: [id])
+}
+
+model TouristAttractionContact {
+  id String @id @default(cuid())
+  email String
+  phone String
+  telephone String
+  whatsapp String
+  instagram String
+  touristAttraction TouristAttraction @relation(fields: [id], references: [id])
+}
+
+
+model Event {
+  id String @id @default(cuid())
+  name String
+  description String
+  date DateTime
+  picture EventPicture
+  cityId String
+
+  city City @relation(fields: [cityId], references: [id])
+}
+
+model EventPicture {
+  id String @id @default(cuid())
+  url String
+  event Event @relation(fields: [id], references: [id])
+}
+
+model News {
+  id String @id @default(cuid())
+  title String
+  text String
+  picture NewsPicture[]
+
+  principalPicture String
+  cityId String
+}
+
+model NewsPicture {
+  id String @id @default(cuid())
+  url String
+  news News @relation(fields: [id], references: [id])
+}
+
+// model Routes {
+// }
+
+model TouristSupport {
+  id String @id @default(cuid())
+  name String
+  description String
+  mapUrl String
+  address String
+  cityId String
+  openingHours TouristSupportOpeningHours[]
+
+
+  city City @relation(fields: [cityId], references: [id])
+}
+
+
+model TouristSupportOpeningHours {
+  id Int @id @default(autoincrement())
+  day String
+  open String
+  close String
+}
+
+model TouristSupportType {
+  id Int @id @default(autoincrement())
+  name String
+}
+
+model Tag {
+  id String @id @default(cuid())
+  name String
+  touristAttraction TouristAttraction[]
+}
+
