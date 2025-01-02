@@ -1,0 +1,173 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+
+model Contact {
+  id String @id
+  email String
+  phone String
+  telephone String
+  whatsapp String
+  instagram String
+}
+
+model OpeningHours {
+  id Int @id @default(autoincrement())
+  weekDays String
+  openHours String
+}
+
+model Address {
+  id String @id @default(cuid())
+  street String
+  number String
+  neighborhood String
+  city String
+  state String
+  country String
+  zipCode String
+
+  TouristAttraction TouristAttraction[]
+}
+
+model City {
+  id String @id @default(cuid())
+  name String
+  description String
+  website String
+  mapUrl String
+  pictures CityPictures[]
+  touristAttraction TouristAttraction[]
+  touristSupport TouristSupport[]
+  Event Event[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+}
+
+model CityPictures {
+  id String @id @default(cuid())
+  url String
+  city City @relation(fields: [id], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model TouristAttraction {
+  id String @id @default(cuid())
+  name String
+  description String
+  url String
+  mapUrl String
+  cityId String
+  addressId String
+  categoryId String
+  category TouristAttractionCategory[]
+  clientProfile TouristAttractionClientProfile[]
+  pictures TouristAttractionPictures[]
+
+  address Address @relation(fields: [addressId], references: [id])
+  city City @relation(fields: [cityId], references: [id])
+}
+
+model TouristAttractionCategory {
+  id Int @id @default(autoincrement())
+  name String
+
+  touristAttraction TouristAttraction[]
+}
+
+
+model TouristAttractionClientProfile {
+  id Int @id @default(autoincrement())
+  name String
+
+  TouristAttraction TouristAttraction[]
+}
+
+model TouristAttractionPictures {
+  id String @id @default(cuid())
+  url String
+
+  touristAttraction TouristAttraction @relation(fields: [id], references: [id])
+}
+
+
+model Event {
+  id String @id @default(cuid())
+  name String
+  description String
+  date DateTime
+  cityId String
+  pictures EventPicture[]
+
+  city City @relation(fields: [cityId], references: [id])
+}
+
+model EventPicture {
+  id String @id @default(cuid())
+  url String
+
+  event Event @relation(fields: [id], references: [id])
+}
+
+model News {
+  id String @id @default(cuid())
+  title String
+  text String
+  picture NewsPicture[]
+
+  cityId String
+}
+
+model NewsPicture {
+  id String @id @default(cuid())
+  url String
+  isCoverPicture Boolean
+
+  news News @relation(fields: [id], references: [id])
+}
+
+model TouristSupport {
+  id String @id @default(cuid())
+  name String
+  description String
+  mapUrl String
+  address String
+  cityId String
+  tagId String
+  typeId Int
+
+  touristSupportType TouristSupportType @relation(fields: [typeId], references: [id])
+  city City @relation(fields: [cityId], references: [id])
+  tag Tag @relation(fields: [tagId], references: [id])
+}
+
+model TouristSupportType {
+  id Int @id @default(autoincrement())
+  name String
+
+  TouristSupport TouristSupport[]
+}
+
+model Tag {
+  id String @id @default(cuid())
+  name String
+
+  TouristSupport TouristSupport[]
+}
+
