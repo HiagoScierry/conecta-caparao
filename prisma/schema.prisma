@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -13,161 +7,198 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-
-model Contact {
-  id String @id
-  email String
-  phone String
-  telephone String
-  whatsapp String
+model Contatos {
+  id        Int    @id @default(autoincrement())
+  telefone  String
+  celular   String
+  email     String
+  whatsapp  String
   instagram String
-}
 
-model OpeningHours {
-  id Int @id @default(autoincrement())
-  weekDays String
-  openHours String
-}
-
-model Address {
-  id String @id @default(cuid())
-  street String
-  number String
-  neighborhood String
-  city String
-  state String
-  country String
-  zipCode String
-
-  TouristAttraction TouristAttraction[]
-}
-
-model City {
-  id String @id @default(cuid())
-  name String
-  description String
-  website String
-  mapUrl String
-  pictures CityPictures[]
-  touristAttraction TouristAttraction[]
-  touristSupport TouristSupport[]
-  Event Event[]
+  municipios Municipios[]
+  atracoesTuristicas AtracoesTuristicas[]
 
   createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  updatedAt DateTime @default(now())
 
+  SevicoTuristico SevicoTuristico[]
 }
 
-model CityPictures {
-  id String @id @default(cuid())
+model Fotos {
+  id  Int    @id @default(autoincrement())
   url String
-  city City @relation(fields: [id], references: [id])
+
+  municipio Municipios[]
+  atracoesTuristicas AtracoesTuristicas[]
+  eventoFoto EventoFoto[]
+  noticiaFoto NoticiaFotos[]
 
   createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  updatedAt DateTime @default(now())
+
+  SevicoTuristico SevicoTuristico[]
 }
 
-model TouristAttraction {
-  id String @id @default(cuid())
-  name String
-  description String
-  url String
-  mapUrl String
-  cityId String
-  addressId String
-  categoryId String
-  category TouristAttractionCategory[]
-  clientProfile TouristAttractionClientProfile[]
-  pictures TouristAttractionPictures[]
+model Municipios {
+  id        Int     @id @default(autoincrement())
+  nome      String
+  descricao String?
+  site      String?
+  mapaUrl   String?
+  idContato Int
 
-  address Address @relation(fields: [addressId], references: [id])
-  city City @relation(fields: [cityId], references: [id])
+  fotos              Fotos[]
+  atracoesTuristicas AtracoesTuristicas[]
+  evento Evento[]
+
+  contato            Contatos             @relation(fields: [idContato], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now())
+
 }
 
-model TouristAttractionCategory {
-  id Int @id @default(autoincrement())
-  name String
+model HorariosDeFuncionamento {
+  id      Int    @id @default(autoincrement())
+  dia     String
+  horario String
 
-  touristAttraction TouristAttraction[]
+  atracoesTuristicas AtracoesTuristicas[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now())
+
+  SevicoTuristico SevicoTuristico[]
+}
+
+model Categorias {
+  id   Int    @id @default(autoincrement())
+  nome String
+
+  atracoesTuristicas AtracoesTuristicas[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now())
+}
+
+model PerfilCliente {
+  id   Int    @id @default(autoincrement())
+  nome String
+
+  atracoesTuristicas AtracoesTuristicas[]
+}
+
+model Endereco {
+  id     Int    @id @default(autoincrement())
+  rua    String
+  numero String
+  bairro String
+  cidade String
+  estado String
+  cep    String
+
+  atracoesTuristicas AtracoesTuristicas[]
+  evento Evento[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now())
+
+
+  SevicoTuristico SevicoTuristico[]
+}
+
+model AtracoesTuristicas {
+  id          Int     @id @default(autoincrement())
+  nome        String
+  descricao   String?
+  mapaUrl     String?
+  site        String?
+  idContato   Int
+  idEndereco  Int
+  idMunicipio Int
+  idCategoria Int
+
+  fotos    Fotos[]
+  horarios HorariosDeFuncionamento[]
+  perfis   PerfilCliente[]
+
+  contato   Contatos   @relation(fields: [idContato], references: [id])
+  endereco  Endereco   @relation(fields: [idEndereco], references: [id])
+  categoria Categorias @relation(fields: [idCategoria], references: [id])
+  municipio Municipios @relation(fields: [idMunicipio], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now())
+}
+
+model EventoFoto {
+  id       Int     @id @default(autoincrement())
+  idEvento Int
+  idFoto   Int
+  capa     Boolean
+
+  evento Evento @relation(fields: [idEvento], references: [id])
+  foto   Fotos  @relation(fields: [idFoto], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now())
+}
+
+model Evento {
+  id          Int      @id @default(autoincrement())
+  nome        String
+  descricao   String?
+  data        DateTime
+  idMunicipio Int
+  idEndereco  Int
+
+  eventoFoto EventoFoto[]
+
+  endereco  Endereco   @relation(fields: [idEndereco], references: [id])
+  municipio Municipios @relation(fields: [idMunicipio], references: [id])
 }
 
 
-model TouristAttractionClientProfile {
-  id Int @id @default(autoincrement())
-  name String
+model NoticiaFotos {
+  id       Int    @id @default(autoincrement())
+  idNoticia Int
+  idFoto   Int
+  capa     Boolean
 
-  TouristAttraction TouristAttraction[]
+  noticia Noticia @relation(fields: [idNoticia], references: [id])
+  foto    Fotos   @relation(fields: [idFoto], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now())
 }
 
-model TouristAttractionPictures {
-  id String @id @default(cuid())
-  url String
+model Noticia {
+  id        Int    @id @default(autoincrement())
+  titulo    String
+  texto String
+  data      DateTime
 
-  touristAttraction TouristAttraction @relation(fields: [id], references: [id])
+  noticiaFoto NoticiaFotos[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now())
 }
 
+model SevicoTuristico {
+  id         Int     @id @default(autoincrement())
+  nome       String
+  descricao  String?
+  site      String?
+  idEndereco Int
+  idFoto     Int
+  idContato  Int
 
-model Event {
-  id String @id @default(cuid())
-  name String
-  description String
-  date DateTime
-  cityId String
-  pictures EventPicture[]
+  horarios HorariosDeFuncionamento[]
 
-  city City @relation(fields: [cityId], references: [id])
+  endereco Endereco @relation(fields: [idEndereco], references: [id])
+  foto    Fotos   @relation(fields: [idFoto], references: [id])
+  contato Contatos @relation(fields: [idContato], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now())
 }
-
-model EventPicture {
-  id String @id @default(cuid())
-  url String
-
-  event Event @relation(fields: [id], references: [id])
-}
-
-model News {
-  id String @id @default(cuid())
-  title String
-  text String
-  picture NewsPicture[]
-
-  cityId String
-}
-
-model NewsPicture {
-  id String @id @default(cuid())
-  url String
-  isCoverPicture Boolean
-
-  news News @relation(fields: [id], references: [id])
-}
-
-model TouristSupport {
-  id String @id @default(cuid())
-  name String
-  description String
-  mapUrl String
-  address String
-  cityId String
-  tagId String
-  typeId Int
-
-  touristSupportType TouristSupportType @relation(fields: [typeId], references: [id])
-  city City @relation(fields: [cityId], references: [id])
-  tag Tag @relation(fields: [tagId], references: [id])
-}
-
-model TouristSupportType {
-  id Int @id @default(autoincrement())
-  name String
-
-  TouristSupport TouristSupport[]
-}
-
-model Tag {
-  id String @id @default(cuid())
-  name String
-
-  TouristSupport TouristSupport[]
-}
-
