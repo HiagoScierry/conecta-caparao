@@ -32,6 +32,4 @@ export class FotoService {
     await this.fotoRepository.deleteFoto(id);
   }
 
-
-
 }

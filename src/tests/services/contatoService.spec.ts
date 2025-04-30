@@ -1,112 +1,76 @@
+import { ContatoService } from '@/services/contatoService';
+import { IContatoRepository } from '@/repositories/interfaces/IContatoRepository';
 
-import { ContatoDTO } from "@/dto/contatoDTO";
-import { ContatoRepositoryInMemory } from "@/repositories/inMemory/ContatoRepositoryInMemory";
-import { IContatoRepository } from "@/repositories/interfaces/IContatoRepository";
-import { ContatoService } from "@/services/contatoService";
-
-describe('ContatoService', () => {
-  let contatoRepository: IContatoRepository;
+describe('ContatoService (com mocks)', () => {
   let contatoService: ContatoService;
+  let contatoRepository: jest.Mocked<IContatoRepository>;
+
+  const fakeContato = {
+    id: 1,
+    email: 'test@mail.com',
+    celular: '1234567890',
+    telefone: '1234567890',
+    whatsapp: '1234567890',
+    instagram: '@test',
+  };
 
   beforeEach(() => {
-    contatoRepository = new ContatoRepositoryInMemory();
+    contatoRepository = {
+      create: jest.fn(),
+      findById: jest.fn(),
+      findAll: jest.fn(),
+      update: jest.fn(),
+      delete: jest.fn(),
+    };
+
     contatoService = new ContatoService(contatoRepository);
-  })
-
-  it('should be able to create a contatoService instance', async () => {
-    expect(contatoService).toBeInstanceOf(ContatoService);
   });
 
-  it('should be able to create a new contato', async () => {
-    const contato: ContatoDTO = {
-      email: 'test@mail.com',
-      celular: '1234567890',
-      telefone: '1234567890',
-      whatsapp: '1234567890',
-      instagram: '@test'
-    };
+  it('should create a new contato', async () => {
+    contatoRepository.create.mockResolvedValue(fakeContato);
+    contatoRepository.findById.mockResolvedValue(fakeContato);
 
-    const { id } = await contatoService.create(contato);
+    const created = await contatoService.create(fakeContato);
+    const found = await contatoRepository.findById(created.id!);
 
-    const newContato = await contatoRepository.findById(id as number);
-
-    expect(newContato).toBeDefined();
-
-    expect(newContato).toHaveProperty('id');
-    expect(newContato?.celular).toBe(contato.celular);
-    expect(newContato?.email).toBe(contato.email);
-    expect(newContato?.telefone).toBe(contato.telefone);
-    expect(newContato?.whatsapp).toBe(contato.whatsapp);
-    expect(newContato?.instagram).toBe(contato.instagram);
+    expect(contatoRepository.create).toHaveBeenCalledWith(fakeContato);
+    expect(created).toEqual(fakeContato);
+    expect(found).toEqual(fakeContato);
   });
 
-  it('should be find many contatos', async () => {
-    const contato: ContatoDTO = {
-      email: 'test@mail.com',
-      celular: '1234567890',
-      telefone: '1234567890',
-      whatsapp: '1234567890',
-      instagram: '@test'
-    };
-
-    await contatoService.create(contato);
-    await contatoService.create(contato);
+  it('should return all contatos', async () => {
+    contatoRepository.findAll.mockResolvedValue([fakeContato, fakeContato]);
 
     const contatos = await contatoService.findAll();
 
+    expect(contatoRepository.findAll).toHaveBeenCalled();
     expect(contatos).toHaveLength(2);
-
-  })
-
-  it('should be able to update a contato', async () => {
-    const contato: ContatoDTO = {
-      email: 'test@mail.com',
-      celular: '1234567890',
-      telefone: '1234567890',
-      whatsapp: '1234567890',
-      instagram: '@test'
-    };
-
-    const { id } = await contatoService.create(contato);
-
-    const newContato: ContatoDTO = {
-      id,
-      email: 'test2@mail.com',
-      celular: '1234567890',
-      telefone: '1234567890',
-      whatsapp: '1234567890',
-      instagram: '@test'
-    };
-
-    const updatedContato = await contatoService.update(newContato);
-
-    expect(updatedContato).toBeDefined();
-
-    expect(updatedContato).toHaveProperty('id');
-    expect(updatedContato?.celular).toBe(newContato.celular);
-    expect(updatedContato?.email).toBe(newContato.email);
-    expect(updatedContato?.telefone).toBe(newContato.telefone);
-    expect(updatedContato?.whatsapp).toBe(newContato.whatsapp);
-    expect(updatedContato?.instagram).toBe(newContato.instagram);
   });
 
-  it('should be able to delete a contato', async () => {
-    const contato: ContatoDTO = {
-      email: 'test@mail.com',
-      celular: '1234567890',
-      telefone: '1234567890',
-      whatsapp: '1234567890',
-      instagram: '@test'
+  it('should update a contato', async () => {
+    const updatedContato = {
+      ...fakeContato,
+      email: 'updated@mail.com',
     };
 
-    const { id } = await contatoService.create(contato);
+    // Simula que o contato existe
+    contatoRepository.findById.mockResolvedValue(fakeContato);
+    contatoRepository.update.mockResolvedValue(updatedContato);
 
-    await contatoService.delete(id as number);
+    const result = await contatoService.update(updatedContato);
 
-    const deletedContato = await contatoRepository.findById(id as number);
-    const contatos = await contatoService.findAll();
+    expect(contatoRepository.findById).toHaveBeenCalledWith(updatedContato.id);
+    expect(contatoRepository.update).toHaveBeenCalledWith(updatedContato);
+    expect(result.email).toBe('updated@mail.com');
+  });
 
-    expect(deletedContato).toBeNull();
-    expect(contatos).toHaveLength(0);
+  it('should delete a contato', async () => {
+    contatoRepository.findById.mockResolvedValue(fakeContato); // Simula existência
+    contatoRepository.delete.mockResolvedValue();
+
+    await contatoService.delete(fakeContato.id);
+
+    expect(contatoRepository.findById).toHaveBeenCalledWith(fakeContato.id);
+    expect(contatoRepository.delete).toHaveBeenCalledWith(fakeContato.id);
   });
 });

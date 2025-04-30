@@ -1,20 +1,20 @@
-import { Fotos } from "@prisma/client";
+import { Foto } from "@prisma/client";
 import { IFotoRepository } from "../interfaces/IFotoRepository";
 
 export class FotoRepositoryInMemory implements IFotoRepository {
-  private fotos: Fotos[] = [];
+  private fotos: Foto[] = [];
   private idCounter = 1;
 
-  async getFotoById(id: string): Promise<Fotos | null> {
+  async getFotoById(id: string): Promise<Foto | null> {
     return this.fotos.find(foto => foto.id === +id) || null;
   }
 
-  async getAllFotos(): Promise<Fotos[]> {
+  async getAllFotos(): Promise<Foto[]> {
     return this.fotos;
   }
 
-  async createFoto(url: string): Promise<Fotos> {
-    const newFoto: Fotos = {
+  async createFoto(url: string): Promise<Foto> {
+    const newFoto: Foto = {
       id: this.idCounter++,
       url,
       createdAt: new Date(),
