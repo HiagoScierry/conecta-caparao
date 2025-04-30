@@ -4,7 +4,7 @@ import { connection } from "@/config/database/connection";
 
 export class ContatoPrismaRepository implements IContatoRepository {
   async create(data: ContatoDTO): Promise<ContatoDTO> {
-    const newRegister = await connection.contatos.create({
+    const newRegister = await connection.contato.create({
       data: {
         email: data.email,
         celular: data.celular,
@@ -18,7 +18,7 @@ export class ContatoPrismaRepository implements IContatoRepository {
   }
 
   async update(data: ContatoDTO): Promise<ContatoDTO> {
-    const updatedRegister = await connection.contatos.update({
+    const updatedRegister = await connection.contato.update({
       where: {
         id: data.id
       },
@@ -36,7 +36,7 @@ export class ContatoPrismaRepository implements IContatoRepository {
   }
 
   async delete(id: number): Promise<void> {
-    await connection.contatos.delete({
+    await connection.contato.delete({
       where: {
         id
       }
@@ -44,11 +44,11 @@ export class ContatoPrismaRepository implements IContatoRepository {
   }
 
   async findAll(): Promise<ContatoDTO[]> {
-    return connection.contatos.findMany();
+    return connection.contato.findMany();
   }
 
   async findById(id: number): Promise<ContatoDTO | null> {
-    return connection.contatos.findUnique({
+    return connection.contato.findUnique({
       where: {
         id
       }
