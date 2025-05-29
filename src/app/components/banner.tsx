@@ -9,4 +9,4 @@ export function Banner({ texto }: { texto?: string }) {
         </div>
         </div>
     );
-    }
+}

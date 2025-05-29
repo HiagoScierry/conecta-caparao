@@ -24,8 +24,10 @@ export default function Header() {
         </div>
         <nav
           className={`
-            ${isMenuOpen ? "block" : "hidden"} lg:flex lg:items-center lg:w-auto
-            w-full lg:static absolute top-24 left-0 bg-white lg:bg-transparent shadow-lg lg:shadow-none rounded-b-lg lg:rounded-none p-4 lg:p-0 z-40
+            w-full lg:static absolute top-full left-0 bg-white lg:bg-transparent shadow-lg lg:shadow-none rounded-b-lg lg:rounded-none p-4 lg:p-0 z-40
+            transition-all duration-300 ease-in-out
+            ${isMenuOpen ? 'opacity-100 pointer-events-auto translate-y-0' : 'opacity-0 pointer-events-none-translate-y-4'}
+            lg:opacity-100 lg:pointer-events-auto lg:translate-y-0 lg:flex lg:items-center lg:w-auto
           `}
         >
           <ul className="flex flex-col lg:flex-row lg:space-x-4 space-y-2 lg:space-y-0">
