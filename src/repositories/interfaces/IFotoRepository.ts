@@ -1,8 +1,8 @@
-import { Fotos } from "@prisma/client";
+import { Foto } from "@prisma/client";
 
 export interface IFotoRepository {
-  getFotoById(id: string): Promise<Fotos | null>;
-  getAllFotos(): Promise<Fotos[]>;
-  createFoto(url: string): Promise<Fotos>;
+  getFotoById(id: string): Promise<Foto | null>;
+  getAllFotos(): Promise<Foto[]>;
+  createFoto(url: string): Promise<Foto>;
   deleteFoto(id: string): Promise<void>;
 }

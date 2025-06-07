@@ -1,22 +1,22 @@
 import { connection } from "@/config/database/connection";
 import { IFotoRepository } from "../interfaces/IFotoRepository";
-import { Fotos } from "@prisma/client";
+import { Foto } from "@prisma/client";
 
 export class FotoPrismaRepository implements IFotoRepository {
-  async getFotoById(id: string): Promise<Fotos | null> {
-    return connection.fotos.findUnique({
+  async getFotoById(id: string): Promise<Foto | null> {
+    return connection.foto.findUnique({
       where: {
         id: +id
       }
     });
   }
 
-  async getAllFotos(): Promise<Fotos[]> {
-    return connection.fotos.findMany();
+  async getAllFotos(): Promise<Foto[]> {
+    return connection.foto.findMany();
   }
 
-  async createFoto(url: string): Promise<Fotos> {
-    const newRegister = await connection.fotos.create({
+  async createFoto(url: string): Promise<Foto> {
+    const newRegister = await connection.foto.create({
       data: {
         url
       }
@@ -26,7 +26,7 @@ export class FotoPrismaRepository implements IFotoRepository {
   }
 
   async deleteFoto(id: string): Promise<void> {
-    await connection.fotos.delete({
+    await connection.foto.delete({
       where: {
         id: +id
       }

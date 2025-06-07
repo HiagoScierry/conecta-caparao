@@ -6,8 +6,10 @@ describe('FotoService', () => {
   let fotoRepository: jest.Mocked<IFotoRepository>;
 
   const fakeFoto = {
-    id: '123',
+    id: 123,
     url: 'https://example.com/foto.jpg',
+    createdAt: new Date('2023-01-01T00:00:00Z'),
+    updatedAt: new Date('2023-01-01T00:00:00Z'),
   };
 
   beforeEach(() => {
