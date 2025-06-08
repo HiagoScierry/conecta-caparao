@@ -1,5 +1,5 @@
 import { AtracaoTuristicaService } from "@/services/atracaoTuristicaService";
-import { IAtracaoTuristicaRepository, AtracaoTuristicaWithRelations } from "@/repositories/interfaces/IAtracaoTuristicaRepository";
+import { IAtracaoTuristicaRepository } from "@/repositories/interfaces/IAtracaoTuristicaRepository";
 
 describe("AtracaoTuristicaService", () => {
   let atracaoTuristicaRepositoryMock: jest.Mocked<IAtracaoTuristicaRepository>;
