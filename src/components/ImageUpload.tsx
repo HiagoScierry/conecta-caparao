@@ -1,7 +1,8 @@
 
 import { ChangeEvent, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Image } from "lucide-react";
+import { Image as LucideImage } from "lucide-react";
+import Image from "next/image";
 
 interface ImageUploadProps {
   onImageSelect?: (file: File) => void;
@@ -33,7 +34,7 @@ export function ImageUpload({ onImageSelect, disabled }: ImageUploadProps) {
           onClick={() => document.getElementById('imageInput')?.click()}
           className="w-full"
         >
-          <Image className="mr-2 h-4 w-4" />
+          <LucideImage className="mr-2 h-4 w-4" />
           Selecionar Imagem
         </Button>
         <input
@@ -47,10 +48,12 @@ export function ImageUpload({ onImageSelect, disabled }: ImageUploadProps) {
       </div>
       {preview && (
         <div className="relative aspect-video w-full overflow-hidden rounded-lg border">
-          <img
+          <Image
             src={preview}
             alt="Preview"
-            className="h-full w-full object-cover"
+            fill
+            className="object-cover"
+            sizes="(max-width: 640px) 100vw, (min-width: 641px) 50vw"
           />
         </div>
       )}

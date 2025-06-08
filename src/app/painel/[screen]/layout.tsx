@@ -1,5 +1,4 @@
 "use client";
-import { Outlet } from "react-router-dom";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Sidebar } from "@/components/dashboard/Sidebar";
 

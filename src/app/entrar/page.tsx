@@ -2,7 +2,6 @@
 
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
-import { toast } from "sonner";
 
 export default function Page() {
   const { toast } =  useToast();

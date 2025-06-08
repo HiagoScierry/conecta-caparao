@@ -39,7 +39,7 @@ export function DeleteConfirmModal({
           <AlertDialogTitle>{title}</AlertDialogTitle>
           <AlertDialogDescription>
             {description}
-            {itemName && <span className="font-semibold"> "{itemName}"</span>}
+            {itemName && <span className="font-semibold">{itemName}</span>}
             ? Esta ação não pode ser desfeita.
           </AlertDialogDescription>
         </AlertDialogHeader>

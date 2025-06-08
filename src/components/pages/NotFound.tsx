@@ -1,18 +1,19 @@
 "use client";
-import { useLocation, Link } from "react-router-dom";
-import { useEffect } from "react";
+import { use, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Compass } from "lucide-react";
+import { usePathname } from "next/navigation";
+import Link from "next/link";
 
 const NotFound = () => {
-  const location = useLocation();
+  const pathname = usePathname();
 
   useEffect(() => {
     console.error(
       "404 Error: User attempted to access non-existent route:",
-      location.pathname
+      pathname
     );
-  }, [location.pathname]);
+  }, [pathname]);
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50">
@@ -26,7 +27,7 @@ const NotFound = () => {
           Parece que você se perdeu no caminho. A página que você está procurando não existe ou foi movida.
         </p>
         <Button asChild className="bg-tourism-primary">
-          <Link to="/">
+          <Link href={"/painel/dashboard"} className="text-white">
             Voltar ao Dashboard
           </Link>
         </Button>

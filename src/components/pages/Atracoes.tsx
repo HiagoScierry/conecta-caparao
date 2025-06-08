@@ -7,8 +7,11 @@ import { Badge } from "@/components/ui/badge";
 import { PlusCircle, Eye, Edit, Trash2 } from "lucide-react";
 import { AttractionModal } from "@/components/modals/AttractionModal";
 import { DeleteConfirmModal } from "@/components/modals/DeleteConfirmModal";
+import { useToast } from "@/hooks/use-toast";
 
 export default function Atracoes() {
+  const {toast} = useToast();
+
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalMode, setModalMode] = useState<'create' | 'edit' | 'view'>('create');
   const [selectedAttraction, setSelectedAttraction] = useState<any>(null);
@@ -38,6 +41,10 @@ export default function Atracoes() {
     if (attractionToDelete) {
       setAtracoes(atracoes.filter(atracao => atracao.id !== attractionToDelete.id));
       console.log('Atração excluída:', attractionToDelete);
+      toast({
+        title: "Atração excluída",
+        description: `A atração ${attractionToDelete.nome} foi excluída com sucesso.`,
+      })
     }
   };
 
