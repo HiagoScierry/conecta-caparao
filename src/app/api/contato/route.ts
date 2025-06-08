@@ -1,6 +1,12 @@
-import { contatoServiceFactory } from "@/factories/contatoServiceFactory";
-import { ApiResponse } from "@/utils/api/ApiResponse";
-
-export async function GET(): Promise<Response> {
-  const contatoService = contatoServiceFactory();
+export async function GET() {
+  return new Response(
+    JSON.stringify({
+      message: 'Hello from the API route!',
+    }),
+    {
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    }
+  );
 }
