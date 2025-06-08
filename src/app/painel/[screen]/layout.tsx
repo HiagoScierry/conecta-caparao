@@ -2,7 +2,9 @@
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Sidebar } from "@/components/dashboard/Sidebar";
 
-export default function Layout({ children }: Readonly<{ children: React.ReactNode }>) {
+export default function Layout({
+  children,
+}: Readonly<{ children: React.ReactNode }>) {
   return (
     <div className="flex h-screen w-full overflow-hidden bg-gray-50">
       <Sidebar />

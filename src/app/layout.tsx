@@ -7,6 +7,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { Sonner } from "@/components/ui/sonner";
 import { useState } from "react";
 import Head from "next/head";
+import { AuthProvider } from "@/hooks/auth-context";
 
 
 export default function RootLayout({
@@ -25,9 +26,11 @@ export default function RootLayout({
       <body>
         <QueryClientProvider client={queryClient}>
           <TooltipProvider>
+            <AuthProvider>
             <Toaster />
             <Sonner />
-            {children}
+              {children}
+            </AuthProvider>
           </TooltipProvider>
         </QueryClientProvider>
       </body>

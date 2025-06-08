@@ -1,25 +1,25 @@
 "use client";
-
-import { Button } from "@/components/ui/button";
-import { useToast } from "@/hooks/use-toast";
+import { useEffect } from "react";
+import { useAuth } from "@/hooks/auth-context";
+import { Login } from "@/components/painel-pages/Login";
+import { useRouter } from "next/navigation";
 
 export default function Page() {
-  const { toast } =  useToast();
+  const { login, isAuthenticated } = useAuth();
+  const route = useRouter();
 
-  const handleLogin = () => {
-     toast({
-        title: "Login realizado com sucesso!",
-        description: "Você será redirecionado para o painel.",
-        duration: 3000,
-    });
-  }
+  useEffect(() => {
+    if (isAuthenticated) {
+      route.push('/painel/dashboard');
+    }
+  }, [isAuthenticated, route]);
 
-  return (
-    <div className="flex justify-center items-center h-screen">
-      <h1>Tela de login</h1>
-      <Button onClick={() => {
-        handleLogin();
-      }}>Bottao</Button>
-    </div>
-  );
+  const handleLogin = (credentials: { email: string; password: string }) => {
+    const success = login(credentials.email, credentials.password);
+    if (success) {
+      route.push('/');
+    }
+  };
+
+  return <Login onLogin={handleLogin} />;
 }

@@ -7,13 +7,15 @@ import {
   Newspaper, 
   Store, 
   Settings, 
-  Menu 
+  Menu ,
+  LogOut
 } from "lucide-react";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useAuth } from "@/hooks/auth-context";
 
 interface SidebarItemProps {
   icon: React.ElementType;
@@ -41,8 +43,9 @@ const SidebarItem = ({ icon: Icon, label, href, active, collapsed }: SidebarItem
 };
 
 export function Sidebar() {
-  const [collapsed, setCollapsed] = useState(false);
+  const { user, logout } = useAuth();
   const pathname = usePathname();
+  const [collapsed, setCollapsed] = useState(false);
 
   const sidebarItems = [
     { icon: LayoutDashboard, label: "Dashboard", href: "/painel/dashboard" },
@@ -53,6 +56,10 @@ export function Sidebar() {
     { icon: Store, label: "Serviços", href: "/painel/servicos" },
     { icon: Settings, label: "Configurações", href: "/painel/configuracoes" },
   ];
+
+ const handleLogout = () => {
+    logout();
+  };
 
   return (
     <div 
@@ -69,6 +76,14 @@ export function Sidebar() {
           <Menu className="h-5 w-5" />
         </Button>
       </div>
+
+      {!collapsed && user && (
+        <div className="mb-6 p-3 bg-muted rounded-md">
+          <p className="text-sm font-medium">{user.name}</p>
+          <p className="text-xs text-muted-foreground">{user.email}</p>
+        </div>
+      )}
+
       <div className="space-y-1 flex-1">
         {sidebarItems.map((item) => (
           <SidebarItem
@@ -81,7 +96,17 @@ export function Sidebar() {
           />
         ))}
       </div>
-      <div className="border-t pt-4">
+
+      <div className="border-t pt-4 space-y-2">
+        <Button
+          variant="ghost"
+          className="w-full justify-start gap-2 px-3 py-2 h-auto text-red-600 hover:text-red-700 hover:bg-red-50"
+          onClick={handleLogout}
+        >
+          <LogOut className="h-5 w-5" />
+          {!collapsed && <span className="font-medium">Sair</span>}
+        </Button>
+
         {!collapsed && (
           <div className="text-xs text-muted-foreground">
             Dashboard Turismo Digital v1.0
