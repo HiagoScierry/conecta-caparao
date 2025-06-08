@@ -10,11 +10,10 @@ import Municipios from "@/components/pages/Municipios";
 import NotFound from "@/components/pages/NotFound";
 import Noticias from "@/components/pages/Noticias";
 import Servicos from "@/components/pages/Servicos";
+import { useParams } from "next/navigation";
 
-export default function Page({
-  params,
-}: Readonly<{ params: { screen: string } }>) {
-  const { screen } = params;
+export default function Page() {
+  const params = useParams();
 
   const screens = useMemo(() => [
     { name: "dashboard", Component: Dashboard },
@@ -27,8 +26,8 @@ export default function Page({
   ], []);
 
   const currentScreen = useMemo(() => {
-    return screens.find((s) => s.name === screen);
-  }, [screen, screens]);
+    return screens.find((s) => s.name === params.screen);
+  }, [params.screen, screens]);
 
   const formattedTitle = currentScreen
     ? `Painel - ${capitalize(currentScreen.name)}`
@@ -39,7 +38,7 @@ export default function Page({
   }, [formattedTitle]);
   return (
     <>
-      <Head key={screen}>
+      <Head>
         <title>{formattedTitle}</title>
         <meta
           name="description"
@@ -47,7 +46,7 @@ export default function Page({
         />
       </Head>
       {currentScreen ? (
-        <currentScreen.Component key={currentScreen.name} />
+        <currentScreen.Component />
       ) : (
         <NotFound />
       )}

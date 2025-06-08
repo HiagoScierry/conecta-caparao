@@ -1,5 +1,4 @@
 "use client";
-
 import { StatCard } from "@/components/dashboard/StatCard";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { MapPin, Compass, Calendar, Newspaper, Store, Users } from "lucide-react";

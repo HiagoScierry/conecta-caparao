@@ -1,5 +1,4 @@
 "use client";
-
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -7,8 +6,10 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { PlusCircle, Eye, Edit, Trash2 } from "lucide-react";
 import { ServiceModal } from "@/components/modals/ServiceModal";
 import { DeleteConfirmModal } from "@/components/modals/DeleteConfirmModal";
+import { useToast } from "@/hooks/use-toast";
 
 export default function Servicos() {
+  const { toast } = useToast();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalMode, setModalMode] = useState<'create' | 'edit' | 'view'>('create');
   const [selectedService, setSelectedService] = useState<any>(null);
@@ -37,8 +38,32 @@ export default function Servicos() {
   const handleDeleteService = () => {
     if (serviceToDelete) {
       setServicos(servicos.filter(servico => servico.id !== serviceToDelete.id));
+      toast({
+        title: "Serviço excluído",
+        description: `O serviço "${serviceToDelete.nome}" foi excluído com sucesso.`,
+      });
       console.log('Serviço excluído:', serviceToDelete);
     }
+  };
+
+  const handleSaveService = (serviceData: any) => {
+    if (modalMode === 'create') {
+      const newService = { ...serviceData, id: Date.now() };
+      setServicos([...servicos, newService]);
+      toast({
+        title: "Serviço criado",
+        description: `O serviço "${serviceData.nome}" foi criado com sucesso.`,
+      });
+    } else if (modalMode === 'edit') {
+      setServicos(servicos.map(servico => 
+        servico.id === selectedService.id ? { ...servico, ...serviceData } : servico
+      ));
+      toast({
+        title: "Serviço atualizado",
+        description: `O serviço "${serviceData.nome}" foi atualizado com sucesso.`,
+      });
+    }
+    setIsModalOpen(false);
   };
 
   return (
@@ -119,6 +144,7 @@ export default function Servicos() {
         onClose={() => setIsModalOpen(false)}
         mode={modalMode}
         initialData={selectedService}
+        onSave={handleSaveService}
       />
 
       <DeleteConfirmModal

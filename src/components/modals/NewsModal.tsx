@@ -1,3 +1,4 @@
+
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -25,9 +26,10 @@ interface NewsModalProps {
     data: string;
     autor: string;
   };
+  onSave: (newsData: any) => void;
 }
 
-export function NewsModal({ isOpen, onClose, mode, initialData }: NewsModalProps) {
+export function NewsModal({ isOpen, onClose, mode, initialData, onSave }: NewsModalProps) {
   const form = useForm({
     defaultValues: {
       titulo: initialData?.titulo || '',
@@ -42,6 +44,11 @@ export function NewsModal({ isOpen, onClose, mode, initialData }: NewsModalProps
   const handleImageSelect = (file: File) => {
     console.log('Selected image:', file);
     // Here you would typically handle the image upload to your backend
+  };
+
+  const handleSubmit = () => {
+    const formData = form.getValues();
+    onSave(formData);
   };
 
   return (
@@ -126,7 +133,7 @@ export function NewsModal({ isOpen, onClose, mode, initialData }: NewsModalProps
 
         <DialogFooter>
           {!isViewMode && (
-            <Button type="submit" className="bg-tourism-primary">
+            <Button type="submit" className="bg-tourism-primary" onClick={handleSubmit}>
               {mode === 'create' ? 'Criar' : 'Salvar'}
             </Button>
           )}

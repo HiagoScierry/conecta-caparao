@@ -1,5 +1,4 @@
 "use client";
-
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -7,8 +6,10 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { PlusCircle, Eye, Edit, Trash2 } from "lucide-react";
 import { NewsModal } from "@/components/modals/NewsModal";
 import { DeleteConfirmModal } from "@/components/modals/DeleteConfirmModal";
+import { useToast } from "@/hooks/use-toast";
 
 export default function Noticias() {
+  const { toast } = useToast();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalMode, setModalMode] = useState<'create' | 'edit' | 'view'>('create');
   const [selectedNews, setSelectedNews] = useState<any>(null);
@@ -37,8 +38,32 @@ export default function Noticias() {
   const handleDeleteNews = () => {
     if (newsToDelete) {
       setNoticias(noticias.filter(noticia => noticia.id !== newsToDelete.id));
+      toast({
+        title: "Notícia excluída",
+        description: `A notícia "${newsToDelete.titulo}" foi excluída com sucesso.`,
+      });
       console.log('Notícia excluída:', newsToDelete);
     }
+  };
+
+  const handleSaveNews = (newsData: any) => {
+    if (modalMode === 'create') {
+      const newNews = { ...newsData, id: Date.now() };
+      setNoticias([...noticias, newNews]);
+      toast({
+        title: "Notícia criada",
+        description: `A notícia "${newsData.titulo}" foi criada com sucesso.`,
+      });
+    } else if (modalMode === 'edit') {
+      setNoticias(noticias.map(noticia => 
+        noticia.id === selectedNews.id ? { ...noticia, ...newsData } : noticia
+      ));
+      toast({
+        title: "Notícia atualizada",
+        description: `A notícia "${newsData.titulo}" foi atualizada com sucesso.`,
+      });
+    }
+    setIsModalOpen(false);
   };
 
   return (
@@ -117,6 +142,7 @@ export default function Noticias() {
         onClose={() => setIsModalOpen(false)}
         mode={modalMode}
         initialData={selectedNews}
+        onSave={handleSaveNews}
       />
 
       <DeleteConfirmModal

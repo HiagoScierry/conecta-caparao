@@ -1,3 +1,4 @@
+
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -26,9 +27,10 @@ interface MunicipalityModalProps {
     contato: string;
     imagem?: string;
   };
+  onSave: (municipalityData: any) => void;
 }
 
-export function MunicipalityModal({ isOpen, onClose, mode, initialData }: MunicipalityModalProps) {
+export function MunicipalityModal({ isOpen, onClose, mode, initialData, onSave }: MunicipalityModalProps) {
   const form = useForm({
     defaultValues: {
       nome: initialData?.nome || '',
@@ -43,6 +45,11 @@ export function MunicipalityModal({ isOpen, onClose, mode, initialData }: Munici
   const handleImageSelect = (file: File) => {
     console.log('Selected image:', file);
     // Here you would typically handle the image upload to your backend
+  };
+
+  const handleSubmit = () => {
+    const formData = form.getValues();
+    onSave(formData);
   };
 
   return (
@@ -127,7 +134,7 @@ export function MunicipalityModal({ isOpen, onClose, mode, initialData }: Munici
 
         <DialogFooter>
           {!isViewMode && (
-            <Button type="submit" className="bg-tourism-primary">
+            <Button type="submit" className="bg-tourism-primary" onClick={handleSubmit}>
               {mode === 'create' ? 'Criar' : 'Salvar'}
             </Button>
           )}

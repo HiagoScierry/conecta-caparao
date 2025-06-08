@@ -1,5 +1,4 @@
 "use client";
-
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -7,8 +6,10 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { PlusCircle, Eye, Edit, Trash2 } from "lucide-react";
 import { MunicipalityModal } from "@/components/modals/MunicipalityModal";
 import { DeleteConfirmModal } from "@/components/modals/DeleteConfirmModal";
+import { useToast } from "@/hooks/use-toast";
 
 export default function Municipios() {
+  const { toast } = useToast();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalMode, setModalMode] = useState<'create' | 'edit' | 'view'>('create');
   const [selectedMunicipality, setSelectedMunicipality] = useState<any>(null);
@@ -37,8 +38,32 @@ export default function Municipios() {
   const handleDeleteMunicipality = () => {
     if (municipalityToDelete) {
       setMunicipios(municipios.filter(municipio => municipio.id !== municipalityToDelete.id));
+      toast({
+        title: "Município excluído",
+        description: `O município "${municipalityToDelete.nome}" foi excluído com sucesso.`,
+      });
       console.log('Município excluído:', municipalityToDelete);
     }
+  };
+
+  const handleSaveMunicipality = (municipalityData: any) => {
+    if (modalMode === 'create') {
+      const newMunicipality = { ...municipalityData, id: Date.now() };
+      setMunicipios([...municipios, newMunicipality]);
+      toast({
+        title: "Município criado",
+        description: `O município "${municipalityData.nome}" foi criado com sucesso.`,
+      });
+    } else if (modalMode === 'edit') {
+      setMunicipios(municipios.map(municipio => 
+        municipio.id === selectedMunicipality.id ? { ...municipio, ...municipalityData } : municipio
+      ));
+      toast({
+        title: "Município atualizado",
+        description: `O município "${municipalityData.nome}" foi atualizado com sucesso.`,
+      });
+    }
+    setIsModalOpen(false);
   };
 
   return (
@@ -119,6 +144,7 @@ export default function Municipios() {
         onClose={() => setIsModalOpen(false)}
         mode={modalMode}
         initialData={selectedMunicipality}
+        onSave={handleSaveMunicipality}
       />
 
       <DeleteConfirmModal

@@ -26,9 +26,10 @@ interface EventModalProps {
     municipio: string;
     endereco: string;
   };
+  onSave: (eventData: any) => void;
 }
 
-export function EventModal({ isOpen, onClose, mode, initialData }: EventModalProps) {
+export function EventModal({ isOpen, onClose, mode, initialData, onSave }: EventModalProps) {
   const form = useForm({
     defaultValues: {
       nome: initialData?.nome || '',
@@ -40,6 +41,11 @@ export function EventModal({ isOpen, onClose, mode, initialData }: EventModalPro
   });
 
   const isViewMode = mode === 'view';
+
+  const handleSubmit = () => {
+    const formData = form.getValues();
+    onSave(formData);
+  };
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
@@ -126,7 +132,7 @@ export function EventModal({ isOpen, onClose, mode, initialData }: EventModalPro
 
         <DialogFooter>
           {!isViewMode && (
-            <Button type="submit" className="bg-tourism-primary">
+            <Button type="submit" className="bg-tourism-primary" onClick={handleSubmit}>
               {mode === 'create' ? 'Criar' : 'Salvar'}
             </Button>
           )}

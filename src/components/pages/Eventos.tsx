@@ -1,5 +1,4 @@
 "use client";
-
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -7,8 +6,10 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { PlusCircle, Calendar, Eye, Edit, Trash2 } from "lucide-react";
 import { EventModal } from "@/components/modals/EventModal";
 import { DeleteConfirmModal } from "@/components/modals/DeleteConfirmModal";
+import { useToast } from "@/hooks/use-toast";
 
 export default function Eventos() {
+  const { toast } = useToast();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalMode, setModalMode] = useState<'create' | 'edit' | 'view'>('create');
   const [selectedEvent, setSelectedEvent] = useState<any>(null);
@@ -37,8 +38,32 @@ export default function Eventos() {
   const handleDeleteEvent = () => {
     if (eventToDelete) {
       setEventos(eventos.filter(evento => evento.id !== eventToDelete.id));
+      toast({
+        title: "Evento excluído",
+        description: `O evento "${eventToDelete.nome}" foi excluído com sucesso.`,
+      });
       console.log('Evento excluído:', eventToDelete);
     }
+  };
+
+  const handleSaveEvent = (eventData: any) => {
+    if (modalMode === 'create') {
+      const newEvent = { ...eventData, id: Date.now() };
+      setEventos([...eventos, newEvent]);
+      toast({
+        title: "Evento criado",
+        description: `O evento "${eventData.nome}" foi criado com sucesso.`,
+      });
+    } else if (modalMode === 'edit') {
+      setEventos(eventos.map(evento => 
+        evento.id === selectedEvent.id ? { ...evento, ...eventData } : evento
+      ));
+      toast({
+        title: "Evento atualizado",
+        description: `O evento "${eventData.nome}" foi atualizado com sucesso.`,
+      });
+    }
+    setIsModalOpen(false);
   };
 
   return (
@@ -122,6 +147,7 @@ export default function Eventos() {
         onClose={() => setIsModalOpen(false)}
         mode={modalMode}
         initialData={selectedEvent}
+        onSave={handleSaveEvent}
       />
 
       <DeleteConfirmModal

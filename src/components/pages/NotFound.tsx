@@ -1,13 +1,11 @@
 "use client";
-
+import { useLocation, Link } from "react-router-dom";
 import { useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Compass } from "lucide-react";
-import { usePathname } from "next/navigation";
-import Link from "next/link";
 
 const NotFound = () => {
-  const pathname = usePathname();
+  const location = useLocation();
 
   useEffect(() => {
     console.error(
@@ -28,7 +26,7 @@ const NotFound = () => {
           Parece que você se perdeu no caminho. A página que você está procurando não existe ou foi movida.
         </p>
         <Button asChild className="bg-tourism-primary">
-          <Link href={"/painel/dashboard"} className="text-white">
+          <Link to="/">
             Voltar ao Dashboard
           </Link>
         </Button>

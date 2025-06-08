@@ -26,9 +26,10 @@ interface ServiceModalProps {
     contato: string;
     site?: string;
   };
+  onSave: (serviceData: any) => void;
 }
 
-export function ServiceModal({ isOpen, onClose, mode, initialData }: ServiceModalProps) {
+export function ServiceModal({ isOpen, onClose, mode, initialData, onSave }: ServiceModalProps) {
   const form = useForm({
     defaultValues: {
       nome: initialData?.nome || '',
@@ -40,6 +41,11 @@ export function ServiceModal({ isOpen, onClose, mode, initialData }: ServiceModa
   });
 
   const isViewMode = mode === 'view';
+
+  const handleSubmit = () => {
+    const formData = form.getValues();
+    onSave(formData);
+  };
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
@@ -126,7 +132,7 @@ export function ServiceModal({ isOpen, onClose, mode, initialData }: ServiceModa
 
         <DialogFooter>
           {!isViewMode && (
-            <Button type="submit" className="bg-tourism-primary">
+            <Button type="submit" className="bg-tourism-primary" onClick={handleSubmit}>
               {mode === 'create' ? 'Criar' : 'Salvar'}
             </Button>
           )}
