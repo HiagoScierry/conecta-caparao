@@ -1,6 +1,5 @@
 import { NoticiaService } from "@/services/noticiaService";
 import { INoticiaRepository } from "@/repositories/interfaces/INoticiaRepository";
-import { NoticiaDTO } from "@/dto/noticiaDTO";
 
 const mockNoticiaRepository: jest.Mocked<INoticiaRepository> = {
   findAll: jest.fn(),
