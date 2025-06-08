@@ -1,3 +1,7 @@
+"use client";
+
+import Head from "next/head";
+import { useEffect, useMemo } from "react";
 import Atracoes from "@/components/pages/Atracoes";
 import Configuracoes from "@/components/pages/Configuracoes";
 import Dashboard from "@/components/pages/Dashboard";
@@ -6,28 +10,51 @@ import Municipios from "@/components/pages/Municipios";
 import NotFound from "@/components/pages/NotFound";
 import Noticias from "@/components/pages/Noticias";
 import Servicos from "@/components/pages/Servicos";
-import { useMemo } from "react";
 
 export default function Page({
   params,
 }: Readonly<{ params: { screen: string } }>) {
   const { screen } = params;
 
-  const screens = [
-    { name: "dashboard", Component: () => <Dashboard /> },
-    { name: "municipios", Component: () => <Municipios /> },
-    { name: "atracoes", Component: () => <Atracoes /> },
-    { name: "eventos", Component: () => <Eventos /> },
-    { name: "noticias", Component: () => <Noticias /> },
-    { name: "servicos", Component: () => <Servicos /> },
-    { name: "configuracoes", Component: () => <Configuracoes /> },
-  ];
+  const screens = useMemo(() => [
+    { name: "dashboard", Component: Dashboard },
+    { name: "municipios", Component: Municipios },
+    { name: "atracoes", Component: Atracoes },
+    { name: "eventos", Component: Eventos },
+    { name: "noticias", Component: Noticias },
+    { name: "servicos", Component: Servicos },
+    { name: "configuracoes", Component: Configuracoes },
+  ], []);
 
   const currentScreen = useMemo(() => {
     return screens.find((s) => s.name === screen);
   }, [screen, screens]);
 
+  const formattedTitle = currentScreen
+    ? `Painel - ${capitalize(currentScreen.name)}`
+    : "Painel - 404";
+
+  useEffect(() => {
+    document.title = formattedTitle;
+  }, [formattedTitle]);
   return (
-      currentScreen ? <currentScreen.Component /> : <NotFound />
+    <>
+      <Head key={screen}>
+        <title>{formattedTitle}</title>
+        <meta
+          name="description"
+          content="Painel de controle para gerenciar o sistema"
+        />
+      </Head>
+      {currentScreen ? (
+        <currentScreen.Component key={currentScreen.name} />
+      ) : (
+        <NotFound />
+      )}
+    </>
   );
+}
+
+function capitalize(str: string) {
+  return str.charAt(0).toUpperCase() + str.slice(1);
 }
