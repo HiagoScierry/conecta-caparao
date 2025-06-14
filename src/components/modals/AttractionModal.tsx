@@ -32,8 +32,9 @@ interface Endereco {
 }
 interface AttractionForm {
   nome: string;
+  horarioFuncionamento: string;
   descricao: string;
-  categoria: string;
+  categoria: string[];
   perfil: string[];
   municipio: string;
   endereco: Endereco;
@@ -47,8 +48,9 @@ interface AttractionModalProps {
   initialData?: {
     id: number;
     nome: string;
+    horarioFuncionamento: string;
     descricao: string;
-    categoria: string;
+    categoria: string[];
     perfil: string[];
     municipio: string;
     endereco?: Endereco;
@@ -96,17 +98,12 @@ function renderFormFields({
                 switch (component) {
                   case 'checkbox-group':
                     return (
-                    // Um container para o nosso grupo de checkboxes
                     <div className="space-y-2 rounded-md border p-4">
-                      {/* Aqui, em vez de um único FormField para o grupo, 
-                        vamos renderizar um para cada OPÇÃO de checkbox.
-                        Isso é um padrão recomendado pelo react-hook-form para ter controle fino.
-                      */}
                       {options?.map((option) => (
                         <FormField
                           key={option.id}
                           control={control}
-                          name={fieldName} // O nome é o mesmo para todos, pois eles controlam o mesmo array no formulário
+                          name={fieldName} 
                           render={({ field }) => {
                             return (
                               <FormItem
@@ -115,18 +112,11 @@ function renderFormFields({
                               >
                                 <FormControl>
                                   <Checkbox
-                                    // 1. O checkbox está MARCADO se o seu 'id' está INCLUÍDO no array de valores
                                     checked={field.value?.includes(option.id)}
-                                    // 2. A MÁGICA ACONTECE AQUI:
                                     onCheckedChange={(checked) => {
-                                      // Quando um checkbox muda...
                                       if (checked) {
-                                        // Se foi MARCADO, nós chamamos o onChange do formulário com um NOVO ARRAY
-                                        // que contém todos os valores antigos MAIS o id do item clicado.
                                         field.onChange([...(field.value || []), option.id]);
                                       } else {
-                                        // Se foi DESMARCADO, nós chamamos o onChange do formulário com um NOVO ARRAY
-                                        // que FILTRA para remover o id do item clicado.
                                         field.onChange(
                                           (field.value || []).filter(
                                             (value: string) => value !== option.id
@@ -187,7 +177,7 @@ export function AttractionModal({ isOpen, onClose, mode, initialData }: Attracti
     defaultValues: {
       nome: initialData?.nome || '',
       descricao: initialData?.descricao || '',
-      categoria: initialData?.categoria || '',
+      categoria: initialData?.categoria || [],
       perfil: initialData?.perfil || [],
       municipio: initialData?.municipio || '',
       endereco: initialData?.endereco && typeof initialData.endereco === 'object' ? initialData.endereco : { cep: '', logradouro: '', numero: '', bairro: '', cidade: '', estado: '' },
@@ -220,6 +210,7 @@ export function AttractionModal({ isOpen, onClose, mode, initialData }: Attracti
                 fields: [
                   { name: 'nome', label: 'Nome' },
                   { name: 'descricao', label: 'Descrição', component: 'textarea' },
+                  { name: 'horarioFuncionamento', label: 'Horário de Funcionamento' },
                 ],
               })}
 
@@ -249,6 +240,32 @@ export function AttractionModal({ isOpen, onClose, mode, initialData }: Attracti
                 ],
               })}
 
+              {/* Categoria */}
+
+              {renderFormFields({
+                group: null,
+                control: form.control,
+                isViewMode,
+                fields: [
+                  {
+                    name: 'categoria',
+                    label: 'Categoria',
+                    component: 'checkbox-group',
+                    options: [
+                      { id: 'restaurante', label: 'Restaurante' },
+                      { id: 'hotel', label: 'Hotel' },
+                      { id: 'pub', label: 'Pub' },
+                      { id: 'lanchonete', label: 'Lanchonete' },
+                      { id: 'cervejaria', label: 'Cervejaria' },
+                      { id: 'pousada', label: 'Pousada' },
+                      { id: 'cafe', label: 'Café' },
+                      { id: 'bar', label: 'Bar' },
+                      { id: 'loja', label: 'Loja' },
+                    ],
+                  },
+                ],
+              })}
+
               {/* Perfil Cliente */}
 
               {renderFormFields({
@@ -261,8 +278,11 @@ export function AttractionModal({ isOpen, onClose, mode, initialData }: Attracti
                     label: 'Perfil do Cliente',
                     component: 'checkbox-group',
                     options: [
+                      { id: 'casal', label: 'Casal' },
+                      { id: 'grupo', label: 'Grupo' },
                       { id: 'individual', label: 'Individual' },
-                      { id: 'empresa', label: 'Empresa' },
+                      { id: 'pet_friendly', label: 'Pet Friendly' },
+                      { id: 'familia', label: 'Família' },
                     ],
                   },
                 ],
