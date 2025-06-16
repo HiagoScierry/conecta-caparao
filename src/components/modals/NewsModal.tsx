@@ -14,6 +14,7 @@ import { useForm } from "react-hook-form";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Textarea } from "@/components/ui/textarea";
 import { ImageUpload } from "@/components/ImageUpload";
+import { renderFormFields } from "../forms/form-helper";
 
 interface NewsModalProps {
   isOpen: boolean;
@@ -76,57 +77,18 @@ export function NewsModal({ isOpen, onClose, mode, initialData, onSave }: NewsMo
                 </FormControl>
               </FormItem>
 
-              <FormField
-                control={form.control}
-                name="titulo"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Título</FormLabel>
-                    <FormControl>
-                      <Input {...field} disabled={isViewMode} />
-                    </FormControl>
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="texto"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Texto</FormLabel>
-                    <FormControl>
-                      <Textarea {...field} disabled={isViewMode} />
-                    </FormControl>
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="data"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Data</FormLabel>
-                    <FormControl>
-                      <Input type="date" {...field} disabled={isViewMode} />
-                    </FormControl>
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="autor"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Autor</FormLabel>
-                    <FormControl>
-                      <Input {...field} disabled={isViewMode} />
-                    </FormControl>
-                  </FormItem>
-                )}
-              />
+              {renderFormFields({
+                group: null,
+                control: form.control,
+                isViewMode,
+                fields: [
+                  { name: 'titulo', label: 'Título' },
+                  { name: 'texto', label: 'Texto', component: 'textarea' },
+                  { name: 'data', label: 'Data', type: 'date' },
+                  { name: 'autor', label: 'Autor' },
+                ],
+              })}
+              
             </div>
           </Form>
         </ScrollArea>

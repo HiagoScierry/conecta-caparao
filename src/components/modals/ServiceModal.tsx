@@ -8,11 +8,26 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
 import { Form, FormControl, FormField, FormItem, FormLabel } from "@/components/ui/form";
 import { useForm } from "react-hook-form";
-import { Textarea } from "@/components/ui/textarea";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { renderFormFields } from "@/components/forms/form-helper";
+
+interface Contato {
+  email: string;
+  celular: string;
+  telefone: string;
+  whatsapp: string;
+  instagram: string;
+}
+interface Endereco {
+  cep: string;
+  logradouro: string;
+  numero: string;
+  bairro: string;
+  cidade: string;
+  estado: string;
+}
 
 interface ServiceModalProps {
   isOpen: boolean;
@@ -22,8 +37,8 @@ interface ServiceModalProps {
     id: number;
     nome: string;
     descricao?: string;
-    endereco: string;
-    contato: string;
+    endereco: Endereco;
+    contato: Contato;
     site?: string;
   };
   onSave: (serviceData: any) => void;
@@ -62,74 +77,56 @@ export function ServiceModal({ isOpen, onClose, mode, initialData, onSave }: Ser
         <ScrollArea className="max-h-[60vh]">
           <Form {...form}>
             <div className="grid gap-4 py-4">
-              <FormField
-                control={form.control}
-                name="nome"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Nome</FormLabel>
-                    <FormControl>
-                      <Input {...field} disabled={isViewMode} />
-                    </FormControl>
-                  </FormItem>
-                )}
-              />
 
-              <FormField
-                control={form.control}
-                name="descricao"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Descrição</FormLabel>
-                    <FormControl>
-                      <Textarea {...field} disabled={isViewMode} />
-                    </FormControl>
-                  </FormItem>
-                )}
-              />
+              {renderFormFields({
+                group: null,
+                control: form.control,
+                isViewMode,
+                fields: [
+                  { name: 'nome', label: 'Nome', component: 'input' },
+                  { name: 'descricao', label: 'Descrição', component: 'textarea' },
+                  { name: 'site', label: 'Site', component: 'input' },
+                ],
+              })}
 
-              <FormField
-                control={form.control}
-                name="endereco"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Endereço</FormLabel>
-                    <FormControl>
-                      <Input {...field} disabled={isViewMode} />
-                    </FormControl>
-                  </FormItem>
-                )}
-              />
+              {/*Endereço*/}  
+              <h3 className="text-md font-semibold mt-2 mb-1 col-span-full">Endereço</h3>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
+                {renderFormFields({
+                  group: 'endereco',
+                  control: form.control,
+                  isViewMode,
+                  fields: [
+                    { name: 'cep', label: 'CEP' },
+                    { name: 'logradouro', label: 'Logradouro' },
+                    { name: 'numero', label: 'Número' },
+                    { name: 'bairro', label: 'Bairro' },
+                    { name: 'cidade', label: 'Cidade' },
+                    { name: 'estado', label: 'Estado' },
+                  ],
+                })}
+              </div>
 
-              <FormField
-                control={form.control}
-                name="contato"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Contato</FormLabel>
-                    <FormControl>
-                      <Input {...field} disabled={isViewMode} />
-                    </FormControl>
-                  </FormItem>
-                )}
-              />
+              {/*Contato*/}
+              <h3 className="text-md font-semibold mt-4 mb-1 col-span-full">Contato</h3>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
+                {renderFormFields({
+                  group: 'contato',
+                  control: form.control,
+                  isViewMode,
+                  fields: [
+                    { name: 'email', label: 'Email', type: 'email' },
+                    { name: 'celular', label: 'Celular' },
+                    { name: 'telefone', label: 'Telefone' },
+                    { name: 'whatsapp', label: 'WhatsApp' },
+                    { name: 'instagram', label: 'Instagram' },
+                  ],
+                })}
+              </div>
 
-              <FormField
-                control={form.control}
-                name="site"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Site</FormLabel>
-                    <FormControl>
-                      <Input {...field} disabled={isViewMode} />
-                    </FormControl>
-                  </FormItem>
-                )}
-              />
             </div>
           </Form>
         </ScrollArea>
-
         <DialogFooter>
           {!isViewMode && (
             <Button type="submit" className="bg-tourism-primary" onClick={handleSubmit}>

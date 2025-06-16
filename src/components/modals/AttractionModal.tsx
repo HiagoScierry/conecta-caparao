@@ -7,13 +7,10 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
 import { Form, FormControl, FormField, FormItem, FormLabel } from "@/components/ui/form";
 import { useForm } from "react-hook-form";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Textarea } from "@/components/ui/textarea";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue,} from "@/components/ui/select";
-import { Checkbox } from "@/components/ui/checkbox";
+import { renderFormFields } from "@/components/forms/form-helper";
 
 interface Contato {
   email: string;
@@ -58,120 +55,6 @@ interface AttractionModalProps {
   };
 }
 
-type Option = {
-  id: string;
-  label: string;
-}
-type RenderFieldWithOptions = {
-  name: string;
-  label: string;
-  type?: string;
-  component?: 'input' | 'textarea' | 'select' | 'checkbox-group';
-  options?: Option[];
-};
-
-function renderFormFields({ 
-  group, 
-  fields, 
-  control, 
-  isViewMode 
-}: { 
-  group: string | null; 
-  fields: RenderFieldWithOptions[]; 
-  control: any; 
-  isViewMode: boolean 
-}) {
-  return fields.map(({ name, label, type, component, options }) => {
-    const fieldName = group ? `${group}.${name}` : name;
-
-    return (
-      <FormField
-        key={fieldName} 
-        control={control}
-        name={fieldName}
-        render={({ field }) => (
-          <FormItem>
-            <FormLabel>{label}</FormLabel>
-            <FormControl>
-              {(() => {
-                
-                switch (component) {
-                  case 'checkbox-group':
-                    return (
-                    <div className="space-y-2 rounded-md border p-4">
-                      {options?.map((option) => (
-                        <FormField
-                          key={option.id}
-                          control={control}
-                          name={fieldName} 
-                          render={({ field }) => {
-                            return (
-                              <FormItem
-                                key={option.id}
-                                className="flex flex-row items-start space-x-3 space-y-0"
-                              >
-                                <FormControl>
-                                  <Checkbox
-                                    checked={field.value?.includes(option.id)}
-                                    onCheckedChange={(checked) => {
-                                      if (checked) {
-                                        field.onChange([...(field.value || []), option.id]);
-                                      } else {
-                                        field.onChange(
-                                          (field.value || []).filter(
-                                            (value: string) => value !== option.id
-                                          )
-                                        );
-                                      }
-                                    }}
-                                  />
-                                </FormControl>
-                                <FormLabel className="font-normal">
-                                  {option.label}
-                                </FormLabel>
-                              </FormItem>
-                            );
-                          }}
-                        />
-                      ))}
-                    </div>
-                  );
-
-                  case 'select':
-                    return (
-                      <Select
-                        onValueChange={field.onChange} 
-                        defaultValue={field.value}     
-                        disabled={isViewMode}
-                      >
-                        <SelectTrigger>
-                          <SelectValue placeholder={`Selecione um(a) ${label.toLowerCase()}`} />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {options?.map(option => (
-                            <SelectItem key={option.id} value={option.id}>
-                              {option.label}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    );
-
-                  case 'textarea':
-                    return <Textarea {...field} disabled={isViewMode} />;
-
-                  default:
-                    return <Input type={type || 'text'} {...field} disabled={isViewMode} />;
-                }
-              })()}
-            </FormControl>
-          </FormItem>
-        )}
-      />
-    );
-  });
-}
-
 export function AttractionModal({ isOpen, onClose, mode, initialData }: AttractionModalProps) {
   const form = useForm<AttractionForm>({
     defaultValues: {
@@ -211,15 +94,6 @@ export function AttractionModal({ isOpen, onClose, mode, initialData }: Attracti
                   { name: 'nome', label: 'Nome' },
                   { name: 'descricao', label: 'Descrição', component: 'textarea' },
                   { name: 'horarioFuncionamento', label: 'Horário de Funcionamento' },
-                ],
-              })}
-
-              {/* Municipio */}
-              {renderFormFields({
-                group: null,
-                control: form.control,
-                isViewMode,
-                fields: [
                   { name: 'municipio',
                     label: 'Município',
                     component: 'select',
@@ -237,16 +111,6 @@ export function AttractionModal({ isOpen, onClose, mode, initialData }: Attracti
                       { id: 'bom_jesus_do_norte', label: 'Bom Jesus do Norte' },
                     ],
                   },
-                ],
-              })}
-
-              {/* Categoria */}
-
-              {renderFormFields({
-                group: null,
-                control: form.control,
-                isViewMode,
-                fields: [
                   {
                     name: 'categoria',
                     label: 'Categoria',
@@ -263,16 +127,6 @@ export function AttractionModal({ isOpen, onClose, mode, initialData }: Attracti
                       { id: 'loja', label: 'Loja' },
                     ],
                   },
-                ],
-              })}
-
-              {/* Perfil Cliente */}
-
-              {renderFormFields({
-                group: null,
-                control: form.control,
-                isViewMode,
-                fields: [
                   {
                     name: 'perfil',
                     label: 'Perfil do Cliente',

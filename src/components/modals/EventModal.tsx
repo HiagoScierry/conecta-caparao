@@ -13,6 +13,16 @@ import { Form, FormControl, FormField, FormItem, FormLabel } from "@/components/
 import { useForm } from "react-hook-form";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Textarea } from "@/components/ui/textarea";
+import { renderFormFields } from "@/components/forms/form-helper";
+
+interface Endereco {
+  cep: string;
+  logradouro: string;
+  numero: string;
+  bairro: string;
+  cidade: string;
+  estado: string;
+}
 
 interface EventModalProps {
   isOpen: boolean;
@@ -24,7 +34,7 @@ interface EventModalProps {
     descricao: string;
     data: string;
     municipio: string;
-    endereco: string;
+    endereco: Endereco;
   };
   onSave: (eventData: any) => void;
 }
@@ -62,70 +72,53 @@ export function EventModal({ isOpen, onClose, mode, initialData, onSave }: Event
         <ScrollArea className="max-h-[60vh]">
           <Form {...form}>
             <div className="grid gap-4 py-4">
-              <FormField
-                control={form.control}
-                name="nome"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Nome</FormLabel>
-                    <FormControl>
-                      <Input {...field} disabled={isViewMode} />
-                    </FormControl>
-                  </FormItem>
-                )}
-              />
+              
+              {renderFormFields({
+                group: null,
+                control: form.control,
+                isViewMode,
+                fields: [
+                  { name: 'nome', label: 'Nome' },
+                  { name: 'descricao', label: 'Descrição', component: 'textarea' },
+                  { name: 'data', label: 'Data', type: 'date' },
+                  { name: 'municipio',
+                    label: 'Município',
+                    component: 'select',
+                    options: [
+                      { id: 'ibatiba', label: 'Ibatiba' },
+                      { id: 'irupi', label: 'Irupi' },
+                      { id: 'iuna', label: 'Iúna' },
+                      { id: 'ibitirama', label: 'Ibitirama' },
+                      { id: 'muniz_freire', label: 'Muniz Freire' },
+                      { id: 'divino_de_sao_lourenco', label: 'Divino de São Lourenço' },
+                      { id: 'dores_do_rio_preto', label: 'Dores do Rio Preto' },
+                      { id: 'guacui', label: 'Guaçuí' },
+                      { id: 'alegre', label: 'Alegre' },
+                      { id: 'sao_jose_do_calcado', label: 'São José do Calçado' },
+                      { id: 'bom_jesus_do_norte', label: 'Bom Jesus do Norte' },
+                    ],
+                  },
+                ],
+              })}
 
-              <FormField
-                control={form.control}
-                name="descricao"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Descrição</FormLabel>
-                    <FormControl>
-                      <Textarea {...field} disabled={isViewMode} />
-                    </FormControl>
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="data"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Data</FormLabel>
-                    <FormControl>
-                      <Input type="datetime-local" {...field} disabled={isViewMode} />
-                    </FormControl>
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="municipio"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Município</FormLabel>
-                    <FormControl>
-                      <Input {...field} disabled={isViewMode} />
-                    </FormControl>
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="endereco"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Endereço</FormLabel>
-                    <FormControl>
-                      <Input {...field} disabled={isViewMode} />
-                    </FormControl>
-                  </FormItem>
-                )}
-              />
+              {/* Endereço */}
+              <h3 className="text-md font-semibold mt-2 mb-1 col-span-full">Endereço</h3>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
+                {renderFormFields({
+                  group: 'endereco',
+                  control: form.control,
+                  isViewMode,
+                  fields: [
+                    { name: 'cep', label: 'CEP' },
+                    { name: 'logradouro', label: 'Logradouro' },
+                    { name: 'numero', label: 'Número' },
+                    { name: 'bairro', label: 'Bairro' },
+                    { name: 'cidade', label: 'Cidade' },
+                    { name: 'estado', label: 'Estado' },
+                  ],
+                })}
+              </div>
+              
             </div>
           </Form>
         </ScrollArea>

@@ -14,6 +14,15 @@ import { useForm } from "react-hook-form";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Textarea } from "@/components/ui/textarea";
 import { ImageUpload } from "@/components/ImageUpload";
+import { renderFormFields } from "../forms/form-helper";
+
+interface Contato {
+  email: string;
+  celular: string;
+  telefone: string;
+  whatsapp: string;
+  instagram: string;
+}
 
 interface MunicipalityModalProps {
   isOpen: boolean;
@@ -24,7 +33,7 @@ interface MunicipalityModalProps {
     nome: string;
     descricao: string;
     site: string;
-    contato: string;
+    contato: Contato;
     imagem?: string;
   };
   onSave: (municipalityData: any) => void;
@@ -36,7 +45,8 @@ export function MunicipalityModal({ isOpen, onClose, mode, initialData, onSave }
       nome: initialData?.nome || '',
       descricao: initialData?.descricao || '',
       site: initialData?.site || '',
-      contato: initialData?.contato || '',
+      contato: initialData?.contato && typeof initialData.contato === 'object' ? initialData.contato : { email: '', celular: '', telefone: '', whatsapp: '', instagram: '' },
+
     },
   });
 
@@ -77,57 +87,34 @@ export function MunicipalityModal({ isOpen, onClose, mode, initialData, onSave }
                 </FormControl>
               </FormItem>
 
-              <FormField
-                control={form.control}
-                name="nome"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Nome</FormLabel>
-                    <FormControl>
-                      <Input {...field} disabled={isViewMode} />
-                    </FormControl>
-                  </FormItem>
-                )}
-              />
+              {renderFormFields({
+                group: null,
+                control: form.control,
+                isViewMode,
+                fields: [
+                  { name: 'nome', label: 'Nome' },
+                  { name: 'descricao', label: 'Descrição', component: 'textarea' },
+                  { name: 'site', label: 'Site' },
+                ],
+              })}
 
-              <FormField
-                control={form.control}
-                name="descricao"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Descrição</FormLabel>
-                    <FormControl>
-                      <Textarea {...field} disabled={isViewMode} />
-                    </FormControl>
-                  </FormItem>
-                )}
-              />
+              {/* Contato */}
+              <h3 className="text-md font-semibold mt-4 mb-1 col-span-full">Contato</h3>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
+                {renderFormFields({
+                  group: 'contato',
+                  control: form.control,
+                  isViewMode,
+                  fields: [
+                    { name: 'email', label: 'Email', type: 'email' },
+                    { name: 'celular', label: 'Celular' },
+                    { name: 'telefone', label: 'Telefone' },
+                    { name: 'whatsapp', label: 'WhatsApp' },
+                    { name: 'instagram', label: 'Instagram' },
+                  ],
+                })}
+              </div>
 
-              <FormField
-                control={form.control}
-                name="site"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Site</FormLabel>
-                    <FormControl>
-                      <Input {...field} disabled={isViewMode} />
-                    </FormControl>
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="contato"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Contato</FormLabel>
-                    <FormControl>
-                      <Input {...field} disabled={isViewMode} />
-                    </FormControl>
-                  </FormItem>
-                )}
-              />
             </div>
           </Form>
         </ScrollArea>
