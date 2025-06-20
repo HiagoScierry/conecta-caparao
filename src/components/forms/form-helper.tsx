@@ -15,6 +15,7 @@ import {
   FormItem,
   FormLabel,
 } from "@/components/ui/form";
+import { cn } from "@/lib/utils";
 import { useForm } from "react-hook-form";
 
 type Option = {
@@ -22,12 +23,20 @@ type Option = {
   label: string;
 };
 
+type FieldClassNames ={
+  formItem?: string;
+  formLabel?: string;
+  formControl?: string;
+  input?: string;
+}
+
 type RenderFieldWithOptions = {
   name: string;
   label: string;
   type?: string;
   component?: "input" | "textarea" | "select" | "checkbox-group";
   options?: Option[];
+  classNames?: FieldClassNames;
 };
 
 export function renderFormFields({
@@ -41,7 +50,7 @@ export function renderFormFields({
   control: any;
   isViewMode: boolean;
 }) {
-  return fields.map(({ name, label, type, component, options }) => {
+  return fields.map(({ name, label, type, component, options, classNames }) => {
     const fieldName = group ? `${group}.${name}` : name;
 
     return (
@@ -50,20 +59,20 @@ export function renderFormFields({
         control={control}
         name={fieldName}
         render={({ field }) => (
-          <FormItem>
-            <FormLabel>{label}</FormLabel>
-            <FormControl>
+          <FormItem className={cn(classNames?.formItem)}>
+            <FormLabel className={cn(classNames?.formLabel)}>{label}</FormLabel>
+            <FormControl className={cn(classNames?.formControl)}>
               {(() => {
                 switch (component) {
                   case "checkbox-group":
                     return (
-                      <div className="space-y-2 rounded-md border p-4">
+                      <div className={cn("space-y-2 rounded-md border p-4", classNames?.input)}>
                         {options?.map((option) => (
                           <FormField
                             key={option.id}
                             control={control}
                             name={fieldName}
-                            render={({ field }) => {
+                            render={({ field }) => {  
                               return (
                                 <FormItem
                                   key={option.id}
@@ -107,7 +116,7 @@ export function renderFormFields({
                         defaultValue={field.value}
                         disabled={isViewMode}
                       >
-                        <SelectTrigger>
+                        <SelectTrigger className={cn(classNames?.input)}>
                           <SelectValue
                             placeholder={`Selecione um(a) ${label.toLowerCase()}`}
                           />
@@ -123,7 +132,7 @@ export function renderFormFields({
                     );
 
                   case "textarea":
-                    return <Textarea {...field} disabled={isViewMode} />;
+                    return <Textarea {...field} disabled={isViewMode} className={cn(classNames?.input)}/>;
 
                   default:
                     return (
@@ -131,6 +140,7 @@ export function renderFormFields({
                         type={type || "text"}
                         {...field}
                         disabled={isViewMode}
+                        className={cn(classNames?.input)}
                       />
                     );
                 }
