@@ -1,7 +1,7 @@
 import { z } from "zod";
 
 export const contatoSchema = z.object({
-  id: z.number().optional(),
+  id: z.string(),
   email: z.string().email(),
   celular: z.string().min(10).max(11),
   telefone: z.string().min(10).max(11),
