@@ -10,6 +10,7 @@ import {
 import { Form, FormControl, FormField, FormItem, FormLabel } from "@/components/ui/form";
 import { useForm } from "react-hook-form";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { ImageUpload } from "@/components/ImageUpload";
 import { AtracaoForm } from "@/forms/atracaoForm";
 
 const municipiosMock = [
@@ -94,6 +95,10 @@ export function AttractionModal({
 
   const isViewMode = mode === "view";
 
+  const handleImageSelect = (file: File) => {
+    console.log("Selected image:", file);
+    // Here you would typically handle the image upload to your backend
+  };
   const handleSubmit = () => {
     const formData = form.getValues();
     onSave(formData);
@@ -123,10 +128,25 @@ export function AttractionModal({
         <ScrollArea className="h-[60vh]">
           <Form {...form}>
               <div className="space-y-6 py-4">
+
+                {/* Bloco: Imagem */}
+                <section className="border rounded-lg p-6 space-y-6">
+                  <FormItem>
+                    <FormLabel className="text-base font-medium">
+                      Imagem
+                    </FormLabel>
+                    <FormControl>
+                      <ImageUpload
+                        onImageSelect={handleImageSelect}
+                        disabled={isViewMode}
+                      />
+                    </FormControl>
+                  </FormItem>
+                </section>
+
                 {/* Bloco: Dados da Atração */}
                 <section className="border rounded-lg p-6 space-y-6">
                   <h3 className="text-lg font-semibold">Dados da Atração</h3>
-
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-6">
                     <FormItem className="flex flex-col gap-1">
                       <FormLabel className="text-sm font-medium">

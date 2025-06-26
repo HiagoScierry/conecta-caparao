@@ -13,44 +13,57 @@ import { Form, FormControl, FormField, FormItem, FormLabel } from "@/components/
 import { useForm } from "react-hook-form";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Textarea } from "@/components/ui/textarea";
-import { renderFormFields } from "@/components/forms/form-helper";
+import { EventoForm } from "@/forms/eventoForm";
+import { ImageUpload } from "@/components/ImageUpload";
 
-interface Endereco {
-  cep: string;
-  logradouro: string;
-  numero: string;
-  bairro: string;
-  cidade: string;
-  estado: string;
-}
+const municipiosMock = [
+  { id: "1", nome: "São Paulo" },
+  { id: "2", nome: "Rio de Janeiro" },
+  { id: "3", nome: "Belo Horizonte" },
+  { id: "4", nome: "Curitiba" },
+  { id: "5", nome: "Porto Alegre" },
+]
 
 interface EventModalProps {
   isOpen: boolean;
   onClose: () => void;
-  mode: 'create' | 'edit' | 'view';
-  initialData?: {
-    id: number;
-    nome: string;
-    descricao: string;
-    data: string;
-    municipio: string;
-    endereco: Endereco;
-  };
-  onSave: (eventData: any) => void;
+  mode: "create" | "edit" | "view";
+  initialData?: EventoForm;
+  onSave: (eventData: EventoForm) => void;
 }
 
-export function EventModal({ isOpen, onClose, mode, initialData, onSave }: EventModalProps) {
+export function EventModal({
+  isOpen,
+  onClose,
+  mode,
+  initialData,
+  onSave,
+}: EventModalProps) {
   const form = useForm({
     defaultValues: {
-      nome: initialData?.nome || '',
-      descricao: initialData?.descricao || '',
-      data: initialData?.data || '',
-      municipio: initialData?.municipio || '',
-      endereco: initialData?.endereco || '',
+      evento: initialData?.evento || {
+        id: "",
+        nome: "",
+        descricao: "",
+        data: "",
+        fotos: {
+          url: "",
+          capa: false,
+        },
+      },
+      municipio: initialData?.municipio || {
+        id: "",
+        nome: "",
+      },
     },
   });
 
-  const isViewMode = mode === 'view';
+  const isViewMode = mode === "view";
+
+  const handleImageSelect = (file: File) => {
+    console.log("Selected image:", file);
+    // Here you would typically handle the image upload to your backend
+  };
 
   const handleSubmit = () => {
     const formData = form.getValues();
@@ -59,78 +72,138 @@ export function EventModal({ isOpen, onClose, mode, initialData, onSave }: Event
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-2xl max-h-[90vh]">
+      <DialogContent className="max-w-7xl max-h-[90vh]">
         <DialogHeader>
           <DialogTitle>
-            {mode === 'create' ? 'Novo Evento' : mode === 'edit' ? 'Editar Evento' : 'Detalhes do Evento'}
+            {mode === "create"
+              ? "Criar Evento"
+              : mode === "edit"
+              ? "Editar Evento"
+              : "Visualizar Evento"}
           </DialogTitle>
           <DialogDescription>
-            {mode === 'create' ? 'Preencha os dados para criar um novo evento.' : mode === 'edit' ? 'Modifique os dados do evento.' : 'Visualize os detalhes do evento.'}
+            {mode === "create"
+              ? "Preencha os dados para criar um novo evento."
+              : mode === "edit"
+              ? "Modifique os dados do evento."
+              : "Visualize os detalhes do evento selecionado."}
           </DialogDescription>
         </DialogHeader>
 
         <ScrollArea className="max-h-[60vh]">
           <Form {...form}>
-            <div className="grid gap-4 py-4">
-              
-              {renderFormFields({
-                group: null,
-                control: form.control,
-                isViewMode,
-                fields: [
-                  { name: 'nome', label: 'Nome' },
-                  { name: 'descricao', label: 'Descrição', component: 'textarea' },
-                  { name: 'data', label: 'Data', type: 'date' },
-                  { name: 'municipio',
-                    label: 'Município',
-                    component: 'select',
-                    options: [
-                      { id: 'ibatiba', label: 'Ibatiba' },
-                      { id: 'irupi', label: 'Irupi' },
-                      { id: 'iuna', label: 'Iúna' },
-                      { id: 'ibitirama', label: 'Ibitirama' },
-                      { id: 'muniz_freire', label: 'Muniz Freire' },
-                      { id: 'divino_de_sao_lourenco', label: 'Divino de São Lourenço' },
-                      { id: 'dores_do_rio_preto', label: 'Dores do Rio Preto' },
-                      { id: 'guacui', label: 'Guaçuí' },
-                      { id: 'alegre', label: 'Alegre' },
-                      { id: 'sao_jose_do_calcado', label: 'São José do Calçado' },
-                      { id: 'bom_jesus_do_norte', label: 'Bom Jesus do Norte' },
-                    ],
-                  },
-                ],
-              })}
+              <div className="space-y-6 py-4">
 
-              {/* Endereço */}
-              <h3 className="text-md font-semibold mt-2 mb-1 col-span-full">Endereço</h3>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
-                {renderFormFields({
-                  group: 'endereco',
-                  control: form.control,
-                  isViewMode,
-                  fields: [
-                    { name: 'cep', label: 'CEP' },
-                    { name: 'logradouro', label: 'Logradouro' },
-                    { name: 'numero', label: 'Número' },
-                    { name: 'bairro', label: 'Bairro' },
-                    { name: 'cidade', label: 'Cidade' },
-                    { name: 'estado', label: 'Estado' },
-                  ],
-                })}
+                {/* Bloco: Imagem */}
+                <section className="border rounded-lg p-6 space-y-6">
+                  <FormItem>
+                    <FormLabel className="text-base font-medium">
+                      Imagem
+                    </FormLabel>
+                    <FormControl>
+                      <ImageUpload
+                        onImageSelect={handleImageSelect}
+                        disabled={isViewMode}
+                      />
+                    </FormControl>
+                  </FormItem>
+                </section>
+
+                {/* Bloco: Dados do Evento */}
+                <section className="border rounded-lg p-6 space-y-6">
+                  <h3 className="text-lg font-semibold">Dados do Evento</h3>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <FormItem className="flex flex-col gap-1">
+                      <FormLabel className="text-sm font-medium">
+                        Título
+                      </FormLabel>
+                      <FormControl>
+                        <input
+                          type="text"
+                          {...form.register("evento.nome", { required: true })}
+                          disabled={isViewMode}
+                          className="border rounded-md p-2 w-full"
+                        />
+                      </FormControl>
+                    </FormItem>
+                  </div>
+                    {/* Textarea ocupa linha propria*/}
+                    <div>
+                      <FormItem className="flex flex-col gap-1">
+                        <FormLabel className="text-sm font-medium">
+                          Descrição
+                        </FormLabel>
+                        <FormControl>
+                          <textarea
+                            {...form.register("evento.descricao")}
+                            disabled={isViewMode}
+                            className="textarea w-full min-h-[100px] border rounded-md p-2"
+                          />
+                        </FormControl>
+                    </FormItem> 
+                    </div>
+                </section>
+
+                {/* Bloco: Data do Evento */}
+                <section className="border rounded-lg p-6 space-y-6">
+                  <h3 className="text-lg font-semibold">Data do Evento</h3>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <FormItem className="flex flex-col gap-1">
+                      <FormLabel className="text-sm font-medium">
+                        Data
+                      </FormLabel>
+                      <FormControl>
+                        <input
+                          type="date  "
+                          {...form.register("evento.data", { required: true })}
+                          disabled={isViewMode}
+                          className="border rounded-md p-2 w-full"
+                        />
+                      </FormControl>
+                    </FormItem>
+                  </div>
+                </section>
+
+                {/* Bloco: Municipios */}
+                <section className="border rounded-lg p-6 space-y-6">
+                  <h3 className="text-lg font-semibold">Municipio</h3>
+                  <FormItem className="flex flex-col gap-1">
+                    <FormLabel className="text-sm font-medium">
+                      Selecione o Municipio
+                    </FormLabel>
+                    <FormControl>
+                      <select
+                        {...form.register("municipio.id", { required: true })}
+                        disabled={isViewMode}
+                        className="border rounded-md p-2 w-full"
+                      >
+                        <option value="">Selecione o município</option>
+                        {municipiosMock.map((municipio) => (
+                          <option key={municipio.id} value={municipio.id}>
+                            {municipio.nome}
+                          </option>
+                        ))}
+                      </select>
+                    </FormControl>
+                  </FormItem>
+                </section>
               </div>
-              
-            </div>
-          </Form>
-        </ScrollArea>
+            </Form>
+          </ScrollArea>
 
         <DialogFooter>
           {!isViewMode && (
-            <Button type="submit" className="bg-tourism-primary" onClick={handleSubmit}>
-              {mode === 'create' ? 'Criar' : 'Salvar'}
+            <Button
+              type="submit"
+              className="bg-tourism-primary"
+              onClick={handleSubmit}
+            >
+              {mode === "create" ? "Criar" : "Salvar"}
             </Button>
           )}
           <Button variant="outline" onClick={onClose}>
-            {isViewMode ? 'Fechar' : 'Cancelar'}
+            {isViewMode ? "Fechar" : "Cancelar"}
           </Button>
         </DialogFooter>
       </DialogContent>
