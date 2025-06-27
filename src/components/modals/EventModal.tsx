@@ -155,7 +155,7 @@ export function EventModal({
                       </FormLabel>
                       <FormControl>
                         <input
-                          type="date  "
+                          type="date"
                           {...form.register("evento.data", { required: true })}
                           disabled={isViewMode}
                           className="border rounded-md p-2 w-full"
