@@ -11,10 +11,11 @@ import { Form, FormControl, FormField, FormItem, FormLabel } from "@/components/
 import { useForm } from "react-hook-form";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { ImageUpload } from "@/components/ImageUpload";
-import { AtracaoForm } from "@/forms/atracaoForm";
+import { AtracaoForm, atracaoTuristicaForm } from "@/forms/atracaoForm";
+import { zodResolver } from "@hookform/resolvers/zod";
 
 const municipiosMock = [
-  { id: "1", nome: "São Paulo" },
+  { id: "1", nome: "Sao Paulo" },
   { id: "2", nome: "Rio de Janeiro" },
   { id: "3", nome: "Belo Horizonte" },
   { id: "4", nome: "Curitiba" },
@@ -22,17 +23,17 @@ const municipiosMock = [
 ]
 
 const categoriasMock = [
-  { id: "1", nome: "Cultural" },
-  { id: "2", nome: "Natural" },
-  { id: "3", nome: "Histórica" },
+  { id: "1", tipo: "Cultural" },
+  { id: "2", tipo: "Natural" },
+  { id: "3", tipo: "Histórica" },
 ]
 
 const perfilClienteMock = [
-  { id: "1", nome: "individual" },
-  { id: "2", nome: "casal" },
-  { id: "3", nome: "familia" },
-  { id: "4", nome: "grupo" },
-  { id: "5", nome: "pet friendly" },
+  { id: "1", tipo: "individual" },
+  { id: "2", tipo: "casal" },
+  { id: "3", tipo: "familia" },
+  { id: "4", tipo: "grupo" },
+  { id: "5", tipo: "pet friendly" },
 ]
 
 interface AttractionModalProps {
@@ -51,6 +52,7 @@ export function AttractionModal({
   onSave,
 }: AttractionModalProps) {
   const form = useForm({
+    resolver: zodResolver(atracaoTuristicaForm),
     defaultValues: {
       atracaoTuristica: initialData?.atracaoTuristica || {
         id: "",
@@ -82,15 +84,19 @@ export function AttractionModal({
       },
       horarioFuncionamento: initialData?.horarioFuncionamento || {
         id: "",
-        diaSemana: "",
+        diaDaSemana: [],
         horaAbertura: "",
         horaFechamento: "",
       },
       categoria: initialData?.categoria || {
         id: "",
-        nome: "",
+        tipo: [],
       },
-    },
+      perfil: initialData?.perfil || {
+        id: "",
+        tipo: [],
+      },
+    }
   });
 
   const isViewMode = mode === "view";
@@ -99,9 +105,9 @@ export function AttractionModal({
     console.log("Selected image:", file);
     // Here you would typically handle the image upload to your backend
   };
-  const handleSubmit = () => {
-    const formData = form.getValues();
-    onSave(formData);
+  const onSubmit = (data: AtracaoForm) => {
+    console.log("Formulario válido! Enviando dados:", data);
+    onSave(data);
     onClose();
   };
 
@@ -127,6 +133,7 @@ export function AttractionModal({
 
         <ScrollArea className="h-[60vh]">
           <Form {...form}>
+            <form id="attraction-form" onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col h-full">
               <div className="space-y-6 py-4">
 
                 {/* Bloco: Imagem */}
@@ -160,6 +167,11 @@ export function AttractionModal({
                           className="border rounded-md p-2 w-full"
                         />
                       </FormControl>
+                      {form.formState.errors.atracaoTuristica?.nome && (
+                        <span className="text-red-500 text-xs">
+                          {form.formState.errors.atracaoTuristica.nome.message}
+                        </span>
+                      )}
                     </FormItem>
 
                     <FormItem className="flex flex-col gap-1">
@@ -174,6 +186,11 @@ export function AttractionModal({
                           className="border rounded-md p-2 w-full"
                         />
                       </FormControl>
+                      {form.formState.errors.atracaoTuristica?.mapaUrl && (
+                        <span className="text-red-500 text-xs">
+                          {form.formState.errors.atracaoTuristica.mapaUrl.message}
+                        </span>
+                      )}
                     </FormItem>
                   </div>
 
@@ -190,6 +207,11 @@ export function AttractionModal({
                           className="textarea w-full min-h-[100px] border rounded-md p-2"
                         />
                       </FormControl>
+                      {form.formState.errors.atracaoTuristica?.descricao && (
+                        <span className="text-red-500 text-xs">
+                          {form.formState.errors.atracaoTuristica.descricao.message}
+                        </span>
+                      )}
                     </FormItem>
                   </div>
                 </section>
@@ -219,6 +241,11 @@ export function AttractionModal({
                           ))}
                         </div>
                       </FormControl>
+                      {form.formState.errors.horarioFuncionamento?.diaDaSemana && (
+                        <span className="text-red-500 text-xs">
+                          {form.formState.errors.horarioFuncionamento.diaDaSemana.message}
+                        </span>
+                      )}
                     </FormItem>
                   </div>
 
@@ -285,20 +312,25 @@ export function AttractionModal({
                       Selecione as Categoria
                     </FormLabel>
                     <FormControl>
-                      <div className="flex flex-wrap gap-4">
-                        {categoriasMock.map((categoria) => (
-                          <label key={categoria.id} className="flex items-center gap-1">
-                            <input
-                              type="checkbox"
-                              value={categoria.id}
-                              {...form.register("categoria.id")}
-                              disabled={isViewMode}
-                            />
-                            {categoria.nome}
-                          </label>
-                        ))}
-                      </div>
+                        <div className="flex flex-wrap gap-4">
+                          {["Cultural", "Natural", "Histórica"].map((categoria) => (
+                            <label key={categoria} className="flex items-center gap-1">
+                              <input
+                                type="checkbox"
+                                value={categoria}
+                                {...form.register("categoria.tipo")}
+                                disabled={isViewMode}
+                              />
+                              {categoria.charAt(0) + categoria.slice(1).toLowerCase()}
+                            </label>
+                          ))}
+                        </div>
                     </FormControl>
+                      {form.formState.errors.categoria?.tipo && (
+                        <span className="text-red-500 text-xs">
+                          {form.formState.errors.categoria.tipo.message}
+                        </span>
+                      )}
                   </FormItem>
                 </section>
 
@@ -315,15 +347,20 @@ export function AttractionModal({
                           <label key={perfil.id} className="flex items-center gap-1">
                             <input
                               type="checkbox"
-                              value={perfil.id}
-                              {...form.register("perfil.id")}
+                              value={perfil.tipo}
+                              {...form.register("perfil.tipo")}
                               disabled={isViewMode}
                             />
-                            {perfil.nome}
+                            {perfil.tipo}
                           </label>
                         ))}
                       </div>
                     </FormControl>
+                        {form.formState.errors.perfil?.tipo && (
+                          <span className="text-red-500 text-xs">
+                            {form.formState.errors.perfil.tipo.message}
+                          </span>
+                        )}
                   </FormItem>
                 </section>
 
@@ -493,6 +530,7 @@ export function AttractionModal({
                   </div>
                 </section>
               </div>
+            </form>
           </Form>
         </ScrollArea>
 
@@ -500,8 +538,8 @@ export function AttractionModal({
           {!isViewMode && (
             <Button
               type="submit"
+              form="attraction-form"
               className="bg-tourism-primary"
-              onClick={handleSubmit}
             >
               {mode === "create" ? "Criar" : "Salvar"}
             </Button>

@@ -3,7 +3,7 @@ import { z } from "zod";
 export const municipioSchema = z.object({
   id: z.string().optional(),
   nome: z.string().min(1, "Nome é obrigatório"),
-  descricao: z.string().optional(),
-  site: z.string().optional(),
-  mapaUrl: z.string().optional(),
+  descricao: z.string().min(1, "Descrição é obrigatória"),
+  site: z.string().url("URL do site é obrigatória").optional(),
+  mapaUrl: z.string().url("URL do mapa é obrigatória").optional(),
 })
