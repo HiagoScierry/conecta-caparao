@@ -375,11 +375,16 @@ export function AttractionModal({
                       <FormControl>
                         <input
                           type="text"
-                          {...form.register("endereco.logradouro", { required: true })}
+                          {...form.register("endereco.logradouro")}
                           disabled={isViewMode}
                           className="border rounded-md p-2 w-full"
                         />
                       </FormControl>
+                      {form.formState.errors.endereco?.logradouro && (
+                        <span className="text-red-500 text-xs">
+                          {form.formState.errors.endereco.logradouro.message}
+                        </span>
+                      )}
                     </FormItem>
 
                     <FormItem className="flex flex-col gap-1">
@@ -389,11 +394,16 @@ export function AttractionModal({
                       <FormControl>
                         <input
                           type="text"
-                          {...form.register("endereco.numero", { required: true })}
+                          {...form.register("endereco.numero")}
                           disabled={isViewMode}
                           className="border rounded-md p-2 w-full"
                         />
                       </FormControl>
+                      {form.formState.errors.endereco?.numero && (
+                        <span className="text-red-500 text-xs">
+                          {form.formState.errors.endereco.numero.message}
+                        </span>
+                      )}
                     </FormItem>
 
                     <FormItem className="flex flex-col gap-1">
@@ -403,11 +413,16 @@ export function AttractionModal({
                       <FormControl>
                         <input
                           type="text"
-                          {...form.register("endereco.bairro", { required: true })}
+                          {...form.register("endereco.bairro")}
                           disabled={isViewMode}
                           className="border rounded-md p-2 w-full"
                         />
                       </FormControl>
+                      {form.formState.errors.endereco?.bairro && (
+                        <span className="text-red-500 text-xs">
+                          {form.formState.errors.endereco.bairro.message}
+                        </span>
+                      )}
                     </FormItem>
 
                     <FormItem className="flex flex-col gap-1">
@@ -417,11 +432,16 @@ export function AttractionModal({
                       <FormControl>
                         <input
                           type="text"
-                          {...form.register("endereco.cidade", { required: true })}
+                          {...form.register("endereco.cidade")}
                           disabled={isViewMode}
                           className="border rounded-md p-2 w-full"
                         />
                       </FormControl>
+                      {form.formState.errors.endereco?.cidade && (
+                        <span className="text-red-500 text-xs">
+                          {form.formState.errors.endereco.cidade.message}
+                        </span>
+                      )}
                     </FormItem>
 
                     <FormItem className="flex flex-col gap-1">
@@ -431,11 +451,16 @@ export function AttractionModal({
                       <FormControl>
                         <input
                           type="text"
-                          {...form.register("endereco.estado", { required: true })}
+                          {...form.register("endereco.estado")}
                           disabled={isViewMode}
                           className="border rounded-md p-2 w-full"
                         />
                       </FormControl>
+                      {form.formState.errors.endereco?.estado && (
+                        <span className="text-red-500 text-xs">
+                          {form.formState.errors.endereco.estado.message}
+                        </span>
+                      )}
                     </FormItem>
 
                     <FormItem className="flex flex-col gap-1">
@@ -445,11 +470,16 @@ export function AttractionModal({
                       <FormControl>
                         <input
                           type="text"
-                          {...form.register("endereco.cep", { required: true })}
+                          {...form.register("endereco.cep")}
                           disabled={isViewMode}
                           className="border rounded-md p-2 w-full"
                         />
                       </FormControl>
+                      {form.formState.errors.endereco?.cep && (
+                        <span className="text-red-500 text-xs">
+                          {form.formState.errors.endereco.cep.message}
+                        </span>
+                      )}
                     </FormItem>
                   </div>
                 </section>
@@ -470,6 +500,11 @@ export function AttractionModal({
                           className="border rounded-md p-2 w-full"
                         />
                       </FormControl>
+                      {form.formState.errors.contato?.email && (
+                        <span className="text-red-500 text-xs">
+                          {form.formState.errors.contato.email.message}
+                        </span>
+                      )}
                     </FormItem>
 
                     <FormItem className="flex flex-col gap-1">
@@ -498,6 +533,11 @@ export function AttractionModal({
                           className="border rounded-md p-2 w-full"
                         />
                       </FormControl>
+                      {form.formState.errors.contato?.celular && (
+                        <span className="text-red-500 text-xs">
+                          {form.formState.errors.contato.celular.message}
+                        </span>
+                      )}
                     </FormItem>
                     
                     <FormItem className="flex flex-col gap-1">
