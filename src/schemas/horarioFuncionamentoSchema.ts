@@ -2,7 +2,17 @@
 import { z } from "zod";
 
 export const horarioFuncionamentoSchema = z.object({
-  diaDaSemana: z.enum(["SEGUNDA", "TERCA", "QUARTA", "QUINTA", "SEXTA", "SABADO", "DOMINGO"]),
+  diaDaSemana: z.array(
+    z.enum([
+      "DOMINGO",
+      "SEGUNDA",
+      "TERCA",
+      "QUARTA",
+      "QUINTA",
+      "SEXTA",
+      "SABADO",
+    ])
+  ).min(1, "Selecione pelo menos um dia"),
   horaAbertura: z.string(),
   horaFechamento: z.string(),
   estabelecimentoId: z.string(),

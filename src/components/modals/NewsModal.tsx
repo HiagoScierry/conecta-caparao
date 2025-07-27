@@ -14,131 +14,167 @@ import { useForm } from "react-hook-form";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Textarea } from "@/components/ui/textarea";
 import { ImageUpload } from "@/components/ImageUpload";
+import { NoticiasForm } from "@/forms/noticiasForm";
 
 interface NewsModalProps {
   isOpen: boolean;
   onClose: () => void;
-  mode: 'create' | 'edit' | 'view';
-  initialData?: {
-    id: number;
-    titulo: string;
-    texto: string;
-    data: string;
-    autor: string;
-  };
-  onSave: (newsData: any) => void;
+  mode: "create" | "edit" | "view";
+  initialData?: NoticiasForm;
+  onSave: (newsData: NoticiasForm) => void;
 }
 
-export function NewsModal({ isOpen, onClose, mode, initialData, onSave }: NewsModalProps) {
-  const form = useForm({
+export function NewsModal({
+  isOpen,
+  onClose,
+  mode,
+  initialData,
+  onSave,
+}: NewsModalProps) {
+  const form = useForm<NoticiasForm>({
     defaultValues: {
-      titulo: initialData?.titulo || '',
-      texto: initialData?.texto || '',
-      data: initialData?.data || '',
-      autor: initialData?.autor || '',
+      noticia: initialData?.noticia || {
+        titulo: "",
+        texto: "",
+        data: new Date(),
+        fotos: [],
+      },
     },
   });
 
-  const isViewMode = mode === 'view';
+  const isViewMode = mode === "view";
 
   const handleImageSelect = (file: File) => {
-    console.log('Selected image:', file);
+    console.log("Selected image:", file);
     // Here you would typically handle the image upload to your backend
   };
+
 
   const handleSubmit = () => {
     const formData = form.getValues();
     onSave(formData);
+    onClose();
   };
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-2xl max-h-[90vh]">
+      <DialogContent className="max-w-7xl max-h-[90vh]">
         <DialogHeader>
           <DialogTitle>
-            {mode === 'create' ? 'Nova Notícia' : mode === 'edit' ? 'Editar Notícia' : 'Detalhes da Notícia'}
+            {mode === "create"
+              ? "Criar Notícia"
+              : mode === "edit"
+              ? "Editar Notícia"
+              : "Visualizar Notícia"}
           </DialogTitle>
           <DialogDescription>
-            {mode === 'create' ? 'Preencha os dados para criar uma nova notícia.' : mode === 'edit' ? 'Modifique os dados da notícia.' : 'Visualize os detalhes da notícia.'}
+            {mode === "create"
+              ? "Preencha os dados para criar uma nova notícia"
+              : mode === "edit"
+              ? "Edite os dados da notícia"
+              : "Visualize os detalhes da notícia selecionada"}
           </DialogDescription>
         </DialogHeader>
 
-        <ScrollArea className="max-h-[60vh]">
+        <ScrollArea className="h-[60vh]">
           <Form {...form}>
-            <div className="grid gap-4 py-4">
-              <FormItem>
-                <FormLabel>Imagem</FormLabel>
-                <FormControl>
-                  <ImageUpload
-                    onImageSelect={handleImageSelect}
-                    disabled={isViewMode}
-                  />
-                </FormControl>
-              </FormItem>
+            <div className="space-y-6 py-4">
 
-              <FormField
-                control={form.control}
-                name="titulo"
-                render={({ field }) => (
+              {/* Bloco: Imagem */}
+                <section className="border rounded-lg p-6 space-y-6">
                   <FormItem>
-                    <FormLabel>Título</FormLabel>
+                    <FormLabel className="text-base font-medium">
+                      Imagem
+                    </FormLabel>
                     <FormControl>
-                      <Input {...field} disabled={isViewMode} />
+                      <ImageUpload
+                        onImageSelect={handleImageSelect}
+                        disabled={isViewMode}
+                      />
                     </FormControl>
                   </FormItem>
-                )}
-              />
+                </section>
 
-              <FormField
-                control={form.control}
-                name="texto"
-                render={({ field }) => (
+              {/* Bloco: Título */}
+                <section className="border rounded-lg p-6 space-y-6">
                   <FormItem>
-                    <FormLabel>Texto</FormLabel>
+                    <FormLabel className="text-base font-medium">
+                      Título
+                    </FormLabel>
                     <FormControl>
-                      <Textarea {...field} disabled={isViewMode} />
+                      <Input
+                        {...form.register("noticia.titulo", { required: true })}
+                        disabled={isViewMode}
+                        placeholder="Título da notícia"
+                      />
                     </FormControl>
                   </FormItem>
-                )}
-              />
+                </section>
 
-              <FormField
-                control={form.control}
-                name="data"
-                render={({ field }) => (
+              { /* Bloco: Texto */ }
+                <section className="border rounded-lg p-6 space-y-6">
                   <FormItem>
-                    <FormLabel>Data</FormLabel>
+                    <FormLabel className="text-base font-medium">
+                      Texto
+                    </FormLabel>
                     <FormControl>
-                      <Input type="date" {...field} disabled={isViewMode} />
+                      <Textarea
+                        {...form.register("noticia.texto", { required: true })}
+                        disabled={isViewMode}
+                        placeholder="Conteúdo da notícia"
+                      />
                     </FormControl>
                   </FormItem>
-                )}
-              />
+                </section>
 
-              <FormField
-                control={form.control}
-                name="autor"
-                render={({ field }) => (
+              {/* Bloco: Data */}
+                <section className="border rounded-lg p-6 space-y-6">
                   <FormItem>
-                    <FormLabel>Autor</FormLabel>
+                    <FormLabel className="text-base font-medium">
+                      Data
+                    </FormLabel>
                     <FormControl>
-                      <Input {...field} disabled={isViewMode} />
+                      <Input
+                        type="date"
+                        {...form.register("noticia.data", { required: true })}
+                        disabled={isViewMode}
+                      />
                     </FormControl>
                   </FormItem>
-                )}
-              />
+                </section>
+
+                {/* Bloco: autor */}
+                <section className="border rounded-lg p-6 space-y-6">
+                  <FormItem>
+                    <FormLabel className="text-base font-medium">
+                      Autor
+                    </FormLabel>
+                    <FormControl>
+                      <Input
+                        {...form.register("noticia.autor", { required: true })}
+                        disabled={isViewMode}
+                        placeholder="Nome do autor"
+                      />
+                    </FormControl>
+                  </FormItem>
+                  
+                </section>
             </div>
           </Form>
         </ScrollArea>
 
         <DialogFooter>
           {!isViewMode && (
-            <Button type="submit" className="bg-tourism-primary" onClick={handleSubmit}>
-              {mode === 'create' ? 'Criar' : 'Salvar'}
+            <Button
+              type="submit"
+              className="bg-tourism-primary"
+              onClick={handleSubmit}
+            >
+              {mode === "create" ? "Criar" : "Salvar"}
             </Button>
           )}
           <Button variant="outline" onClick={onClose}>
-            {isViewMode ? 'Fechar' : 'Cancelar'}
+            {isViewMode ? "Fechar" : "Cancelar"}
           </Button>
         </DialogFooter>
       </DialogContent>
