@@ -47,7 +47,12 @@ export default {
           secondary: '#16A34A',
           light: '#E0F2FE',
           dark: '#1E40AF',
-          accent: '#F59E0B'
+          accent: '#F59E0B',
+          azul: '#0096E0',    
+          rosa: '#F09BBE',       
+          branco: '#FFFFFF',     
+          verde: '#2A7C4F',      
+          bege: '#F5E8C8',       
         },
         sidebar: {
           DEFAULT: 'hsl(var(--sidebar-background))',
