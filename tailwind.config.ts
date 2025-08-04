@@ -52,7 +52,8 @@ export default {
           rosa: '#F09BBE',       
           branco: '#FFFFFF',     
           verde: '#2A7C4F',      
-          bege: '#F5E8C8',       
+          bege: '#F5E8C8', 
+          cinza: '#4A4A4A',      
         },
         sidebar: {
           DEFAULT: 'hsl(var(--sidebar-background))',

@@ -38,7 +38,7 @@ export function Navbar() {
                             </NavigationMenuItem>
                             <NavigationMenuItem>
                                 <NavigationMenuLink>
-                                    <Link href="/" className="text-tourism-branco font-medium text-lg hover:text-tourism-rosa transition-colors">
+                                    <Link href="/municipios" className="text-tourism-branco font-medium text-lg hover:text-tourism-rosa transition-colors">
                                         Municípios
                                     </Link>
                                 </NavigationMenuLink>
