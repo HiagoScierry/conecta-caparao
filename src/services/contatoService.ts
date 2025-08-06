@@ -14,13 +14,20 @@ export class ContatoService {
 
   async update(data: ContatoDTO): Promise<ContatoDTO> {
     try {
-      const contato = await this.findById(data.id as number);
+      console.log("Updating contato:", data);
+      const contato = await this.findById(Number(data.id));
 
       if (!contato) {
         throw new Error("Contato não encontrado");
       }
 
-      return this.contatoRepository.update(data);
+      return this.contatoRepository.update(Number(data.id), {
+        email: data.email,
+        celular: data.celular,
+        telefone: data.telefone,
+        whatsapp: data.whatsapp,
+        instagram: data.instagram
+      });
 
     } catch (error) {
       throw new Error((error as Error).message);
@@ -29,7 +36,7 @@ export class ContatoService {
 
   async delete(id: number): Promise<void> {
     try {
-      const contato =  await this.findById(id);
+      const contato = await this.findById(id);
 
       if (!contato) {
         throw new Error("Contato não encontrado");

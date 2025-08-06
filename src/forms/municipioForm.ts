@@ -4,7 +4,7 @@ import { z } from "zod";
 
 export const municipioForm = z.object({
   municipio: municipioSchema,
-  contato: contatoSchema
+  contato: contatoSchema,
 });
 
 export type MunicipioForm = z.infer<typeof municipioForm>;

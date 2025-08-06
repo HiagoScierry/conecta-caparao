@@ -1,4 +1,4 @@
-import { parseForm, uploadDir } from "@/lib/upload";
+import { parseForm, uploadDir } from "@/lib/upload/upload";
 import path from "path";
 
 export const config = {

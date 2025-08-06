@@ -12,13 +12,14 @@ import { useForm } from "react-hook-form";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { ImageUpload } from "@/components/ImageUpload";
 import { MunicipioForm } from "@/forms/municipioForm";
+import { useEffect, useState } from "react";
 
 interface MunicipalityModalProps {
   isOpen: boolean;
   onClose: () => void;
   mode: "create" | "edit" | "view";
   initialData?: MunicipioForm;
-  onSave: (municipalityData: MunicipioForm) => void;
+  onSave: (data: MunicipioForm, files: File[]) => void;
 }
 
 export function MunicipalityModal({
@@ -28,16 +29,18 @@ export function MunicipalityModal({
   initialData,
   onSave,
 }: MunicipalityModalProps) {
-  const form = useForm({
+  const [files, setFiles] = useState<File[]>([]);
+
+  const form = useForm<MunicipioForm>({
     defaultValues: {
-      municipio: initialData?.municipio || {
+      municipio: initialData?.municipio ?? {
         id: "",
         nome: "",
         descricao: "",
         site: "",
         mapaUrl: "",
       },
-      contato: initialData?.contato || {
+      contato: initialData?.contato ?? {
         id: "",
         email: "",
         celular: "",
@@ -50,15 +53,25 @@ export function MunicipalityModal({
 
   const isViewMode = mode === "view";
 
-  const handleImageSelect = (file: File) => {
-    console.log("Selected image:", file);
-    // Here you would typically handle the image upload to your backend
+  const handleImageSelect = (files: File[]) => {
+    setFiles(files);
   };
 
   const handleSubmit = () => {
     const formData = form.getValues();
-    onSave(formData);
+    onSave(formData, files);
   };
+
+  useEffect(() => {
+    if (initialData) {
+      console.log("Setting initial data:", initialData);
+
+      form.reset({
+        municipio: initialData.municipio,
+        contato: initialData.contato,
+      });
+    }
+  }, [initialData, form]);
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
@@ -91,7 +104,7 @@ export function MunicipalityModal({
                   </FormLabel>
                   <FormControl>
                     <ImageUpload
-                      onImageSelect={handleImageSelect}
+                      onImagesSelect={handleImageSelect}
                       disabled={isViewMode}
                     />
                   </FormControl>
@@ -104,9 +117,7 @@ export function MunicipalityModal({
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                   <FormItem className="flex flex-col gap-1">
-                    <FormLabel className="text-sm font-medium">
-                      Nome
-                    </FormLabel>
+                    <FormLabel className="text-sm font-medium">Nome</FormLabel>
                     <FormControl>
                       <input
                         type="text"
@@ -118,9 +129,7 @@ export function MunicipalityModal({
                   </FormItem>
 
                   <FormItem className="flex flex-col gap-1">
-                    <FormLabel className="text-sm font-medium">
-                      Site
-                    </FormLabel>
+                    <FormLabel className="text-sm font-medium">Site</FormLabel>
                     <FormControl>
                       <input
                         type="url"
@@ -169,9 +178,7 @@ export function MunicipalityModal({
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                   <FormItem className="flex flex-col gap-1">
-                    <FormLabel className="text-sm font-medium">
-                      Email
-                    </FormLabel>
+                    <FormLabel className="text-sm font-medium">Email</FormLabel>
                     <FormControl>
                       <input
                         type="email"

@@ -6,7 +6,11 @@ export class MunicipioPrimaRepository implements IMunicipioRepository {
   async findById(id: string) {
     const municipio = await connection.municipio.findUnique({
       where: { id: Number(id) },
+      include: {
+        contato: true, // Include the contato relation
+      },
     });
+
     if (!municipio) {
       throw new Error(`Municipio with id ${id} not found`);
     }
@@ -19,17 +23,20 @@ export class MunicipioPrimaRepository implements IMunicipioRepository {
   }
 
   async create(municipioData: MunicipioDTO, contatoId: number) {
-    const municipio = await connection.municipio.create({
-      data: {
-        ...municipioData,
-        contato: {
-          connect: { id: contatoId },
-        },
-      },
-    });
-    return municipio;
+  const { id, ...data } = municipioData; // Remove o campo id
 
-  }
+  const municipio = await connection.municipio.create({
+    data: {
+      ...data,
+      contato: {
+        connect: { id: contatoId },
+      },
+    },
+  });
+
+  return municipio;
+}
+
 
   async update(id: string, data: MunicipioDTO) {
     const municipio = await connection.municipio.update({

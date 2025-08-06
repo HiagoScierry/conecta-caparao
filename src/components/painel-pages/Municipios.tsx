@@ -1,66 +1,79 @@
 "use client";
+
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import {
+  Table, TableBody, TableCell, TableHead, TableHeader, TableRow
+} from "@/components/ui/table";
 import { PlusCircle, Eye, Edit, Trash2 } from "lucide-react";
 import { MunicipalityModal } from "@/components/modals/MunicipalityModal";
 import { DeleteConfirmModal } from "@/components/modals/DeleteConfirmModal";
 import { useToast } from "@/hooks/use-toast";
+import {
+  useGetAllMunicipios,
+  useCreateMunicipio,
+  useUpdateMunicipio,
+  useDeleteMunicipio,
+  useGetMunicipioById
+} from "@/hooks/http/useMunicipio";
+import { MunicipioDTO } from "@/dto/municipioDTO";
+import { MunicipioForm } from "@/forms/municipioForm";
 
 export default function Municipios() {
   const { toast } = useToast();
+
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalMode, setModalMode] = useState<'create' | 'edit' | 'view'>('create');
-  const [selectedMunicipality, setSelectedMunicipality] = useState<any>(null);
+  const [selectedMunicipality, setSelectedMunicipality] = useState<MunicipioDTO | null>(null);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-  const [municipalityToDelete, setMunicipalityToDelete] = useState<any>(null);
+  const [municipalityToDelete, setMunicipalityToDelete] = useState<MunicipioDTO | null>(null);
 
-  const [municipios, setMunicipios] = useState([
-    { id: 1, nome: "Rio de Janeiro", descricao: "Cidade Maravilhosa", site: "https://rio.gov.br", contato: "contato@rio.gov.br" },
-    { id: 2, nome: "São Paulo", descricao: "Capital econômica", site: "https://sp.gov.br", contato: "contato@sp.gov.br" },
-    { id: 3, nome: "Salvador", descricao: "Terra da alegria", site: "https://salvador.gov.br", contato: "contato@salvador.gov.br" },
-    { id: 4, nome: "Recife", descricao: "Veneza brasileira", site: "https://recife.gov.br", contato: "contato@recife.gov.br" },
-    { id: 5, nome: "Fortaleza", descricao: "Terra da luz", site: "https://fortaleza.gov.br", contato: "contato@fortaleza.gov.br" },
-  ]);
+  const { data: municipios = [], isLoading } = useGetAllMunicipios();
 
-  const handleOpenModal = (mode: 'create' | 'edit' | 'view', municipality?: any) => {
+
+  const { data: municipioById } = useGetMunicipioById(selectedMunicipality?.id || '');
+  const { mutate: createMunicipio } = useCreateMunicipio();
+  const { mutate: updateMunicipio } = useUpdateMunicipio();
+  const { mutate: deleteMunicipio } = useDeleteMunicipio();
+
+  const handleOpenModal = (mode: 'create' | 'edit' | 'view', municipality?: MunicipioDTO) => {
     setModalMode(mode);
-    setSelectedMunicipality(municipality);
+    setSelectedMunicipality(municipality ?? null);
     setIsModalOpen(true);
   };
 
-  const handleOpenDeleteModal = (municipality: any) => {
+  const handleOpenDeleteModal = (municipality: MunicipioDTO) => {
     setMunicipalityToDelete(municipality);
     setIsDeleteModalOpen(true);
   };
 
   const handleDeleteMunicipality = () => {
-    if (municipalityToDelete) {
-      setMunicipios(municipios.filter(municipio => municipio.id !== municipalityToDelete.id));
+    if (municipalityToDelete?.id) {
+      deleteMunicipio(municipalityToDelete.id);
       toast({
         title: "Município excluído",
         description: `O município "${municipalityToDelete.nome}" foi excluído com sucesso.`,
       });
-      console.log('Município excluído:', municipalityToDelete);
+      setIsDeleteModalOpen(false);
     }
   };
 
-  const handleSaveMunicipality = (municipalityData: any) => {
+  const handleSaveMunicipality = (municipioData: MunicipioForm, files: File[]) => {
     if (modalMode === 'create') {
-      const newMunicipality = { ...municipalityData, id: Date.now() };
-      setMunicipios([...municipios, newMunicipality]);
+      createMunicipio({
+        form: municipioData,
+        files
+      });
       toast({
         title: "Município criado",
-        description: `O município "${municipalityData.nome}" foi criado com sucesso.`,
+        description: `O município "${municipioData.municipio.nome}" foi criado com sucesso.`,
       });
     } else if (modalMode === 'edit') {
-      setMunicipios(municipios.map(municipio => 
-        municipio.id === selectedMunicipality.id ? { ...municipio, ...municipalityData } : municipio
-      ));
+      updateMunicipio(municipioData);
       toast({
         title: "Município atualizado",
-        description: `O município "${municipalityData.nome}" foi atualizado com sucesso.`,
+        description: `O município "${municipioData.municipio.nome}" foi atualizado com sucesso.`,
       });
     }
     setIsModalOpen(false);
@@ -71,11 +84,9 @@ export default function Municipios() {
       <div className="flex justify-between items-center">
         <div>
           <h2 className="text-3xl font-bold tracking-tight">Municípios</h2>
-          <p className="text-muted-foreground">
-            Gerencie os municípios registrados no sistema.
-          </p>
+          <p className="text-muted-foreground">Gerencie os municípios registrados no sistema.</p>
         </div>
-        <Button 
+        <Button
           className="bg-tourism-primary"
           onClick={() => handleOpenModal('create')}
         >
@@ -109,23 +120,23 @@ export default function Municipios() {
                   <TableCell>{municipio.site}</TableCell>
                   <TableCell>{municipio.contato}</TableCell>
                   <TableCell className="text-right space-x-2">
-                    <Button 
-                      variant="ghost" 
+                    <Button
+                      variant="ghost"
                       size="sm"
                       onClick={() => handleOpenModal('view', municipio)}
                     >
                       <Eye className="h-4 w-4" />
                     </Button>
-                    <Button 
-                      variant="ghost" 
+                    <Button
+                      variant="ghost"
                       size="sm"
                       onClick={() => handleOpenModal('edit', municipio)}
                     >
                       <Edit className="h-4 w-4" />
                     </Button>
-                    <Button 
-                      variant="ghost" 
-                      size="sm" 
+                    <Button
+                      variant="ghost"
+                      size="sm"
                       className="text-destructive"
                       onClick={() => handleOpenDeleteModal(municipio)}
                     >
@@ -136,6 +147,7 @@ export default function Municipios() {
               ))}
             </TableBody>
           </Table>
+          {isLoading && <p className="text-sm text-muted-foreground mt-4">Carregando municípios...</p>}
         </CardContent>
       </Card>
 
@@ -143,7 +155,10 @@ export default function Municipios() {
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         mode={modalMode}
-        initialData={selectedMunicipality}
+        initialData={{
+          municipio: municipioById?.municipio || {},
+          contato: municipioById?.contato || {}
+        }}
         onSave={handleSaveMunicipality}
       />
 
@@ -152,7 +167,7 @@ export default function Municipios() {
         onClose={() => setIsDeleteModalOpen(false)}
         onConfirm={handleDeleteMunicipality}
         title="Excluir Município"
-        description="Tem certeza que deseja excluir o município"
+        description="Tem certeza que deseja excluir o município?"
         itemName={municipalityToDelete?.nome}
       />
     </div>
