@@ -4,17 +4,17 @@ import Image from "next/image";
 import { Card } from "@/components/ui/card"; 
 
 interface MunicipioCardProps {
+  id: number;
   nome: string;
-  imagemUrl: string | null | undefined;
-  slug: string;
+  imagemUrls: string[] | null | undefined;
 }
 
-export function MunicipiosCard({ nome, imagemUrl, slug }: MunicipioCardProps) {
+export function MunicipiosCard({ id, nome, imagemUrls }: MunicipioCardProps) {
   const altText = `Imagem do município de ${nome}`;
-  const imgSrc = imagemUrl || "/landscape.svg";
+  const imgSrc = imagemUrls?.[0] || "/landscape.svg";
 
   return (
-    <Link href={`/municipios/${slug}`} className="group block h-full">
+    <Link href={`/municipios/${id}`} className="group block h-full">
       <Card className="relative overflow-hidden rounded-lg shadow-md hover:shadow-xl transition-shadow duration-300 h-full aspect-[4/3]">
         <Image
           src={imgSrc}

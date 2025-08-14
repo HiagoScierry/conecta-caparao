@@ -4,28 +4,24 @@ import { LayoutPublic } from "@/components/public/Layout";
 
 const municipiosMock = [
   {
-    id: "1",
+    id: 1,
     nome: "Alegre",
-    imagemUrl: "",
-    slug: "alegre",
+    imagemUrls: [],
   },
   {
-    id: "2",
+    id: 2,
     nome: "Guaçuí",
-    imagemUrl: "",
-    slug: "guacui",
+    imagemUrls: [],
   },
   {
-    id: "3",
+    id: 3,
     nome: "Iúna",
-    imagemUrl: "",
-    slug: "iuna",
+    imagemUrls: [],
   },
   {
-    id: "4",
+    id: 4,
     nome: "Divino de São Lourenço",
-    imagemUrl: "",
-    slug: "divino-de-sao-lourenco",
+    imagemUrls: [],
   },
 ];
 
@@ -39,8 +35,8 @@ export default function PaginaMunicipios() {
             <MunicipiosCard
               key={municipio.id}
               nome={municipio.nome}
-              imagemUrl={municipio.imagemUrl}
-              slug={municipio.slug}
+              imagemUrls={municipio.imagemUrls}
+              id={municipio.id}
             />
           ))}
         </div>
