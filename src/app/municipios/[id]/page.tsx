@@ -4,6 +4,7 @@ import { DescriptionSection } from "@/components/public/DescriptionSection";
 import { GaleriaDeImagens } from "@/components/public/GaleriaDeImagens";
 import { Atrativos } from "@/components/public/Atrativos";
 import { faker } from "@faker-js/faker";
+import { Informacoes } from "@/components/public/Informacoes";
 
 export default function PaginaMunicipios({
   params,
@@ -35,10 +36,9 @@ export default function PaginaMunicipios({
         subtitulo={municipio.subtitulo}
         descricao={municipio.descricao}
       />
-
       <GaleriaDeImagens imagemUrls={municipio.imagemUrls} />
-
       <Atrativos />
+      <Informacoes />
     </LayoutPublic>
   );
 }
