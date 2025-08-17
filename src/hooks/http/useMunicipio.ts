@@ -40,25 +40,20 @@ export const useCreateMunicipio = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async ({ form, files }: { form: MunicipioForm; files: File[] }) => {
-      const formData = new FormData();
-      formData.append('municipio', JSON.stringify(form.municipio));
-      formData.append('contato', JSON.stringify(form.contato));
-
-      files.forEach(file => {
-        formData.append('files', file);
-      });
-
+    mutationFn: async (municipioForm: MunicipioForm) => {
       const response = await fetch('/api/municipio', {
         method: 'POST',
-        body: formData,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(municipioForm),
       });
 
       if (!response.ok) {
         throw new Error('Network response was not ok');
       }
 
-      const data = await response.json();
+      const { data } = await response.json();
       return data;
     },
     onSuccess: () => {

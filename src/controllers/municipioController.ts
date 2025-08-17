@@ -1,10 +1,9 @@
 import { ContatoDTO } from "@/dto/contatoDTO";
 import { MunicipioDTO } from "@/dto/municipioDTO";
 import { contatoServiceFactory } from "@/factories/contatoServiceFactory";
+import { fotoServiceFactory } from "@/factories/fotoServiceFactory";
 import { municipioServiceFactory } from "@/factories/municipioServiceFactory";
 import { MunicipioForm } from "@/forms/municipioForm";
-import { municipioSchema } from "@/schemas/municipioSchema";
-import { NextRequest } from "next/server";
 
 export const getAllMunicipios = async () => {
   try {
@@ -28,20 +27,25 @@ export const getMunicipioById = async (id: string) => {
   }
 }
 
-export const createMunicipio = async (municipio: MunicipioDTO, contato: ContatoDTO, imagemBuffer?: Buffer<ArrayBufferLike> | null) => {
+export const createMunicipio = async (municipio: MunicipioDTO, contato: ContatoDTO, fotos: string[]) => {
   try {
 
     const contatoCreated = await contatoServiceFactory().create({
       ...contato,
     });
 
-    if(imagemBuffer) {
+    const fotosCreated = [];
 
+    for (const foto of fotos) {
+      const fotoCreated = await fotoServiceFactory().createFoto(foto);
+
+      fotosCreated.push(fotoCreated);
     }
 
     await municipioServiceFactory().create(
       municipio as MunicipioDTO,
       Number(contatoCreated.id),
+      fotosCreated.map(f => f.id.toString()) // Assuming fotoServiceFactory returns an object with an 'id' property for each created photo
     );
 
     return {

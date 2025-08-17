@@ -59,12 +59,11 @@ export default function Municipios() {
     }
   };
 
-  const handleSaveMunicipality = (municipioData: MunicipioForm, files: File[]) => {
+  const handleSaveMunicipality = (municipioData: MunicipioForm, files: string[]) => {
+    municipioData.fotos = files;
+
     if (modalMode === 'create') {
-      createMunicipio({
-        form: municipioData,
-        files
-      });
+      createMunicipio(municipioData);
       toast({
         title: "Município criado",
         description: `O município "${municipioData.municipio.nome}" foi criado com sucesso.`,
@@ -105,9 +104,7 @@ export default function Municipios() {
               <TableRow>
                 <TableHead>ID</TableHead>
                 <TableHead>Nome</TableHead>
-                <TableHead>Descrição</TableHead>
                 <TableHead>Site</TableHead>
-                <TableHead>Contato</TableHead>
                 <TableHead className="text-right">Ações</TableHead>
               </TableRow>
             </TableHeader>
@@ -117,8 +114,6 @@ export default function Municipios() {
                   <TableCell className="font-medium">{municipio.id}</TableCell>
                   <TableCell>{municipio.nome}</TableCell>
                   <TableCell>{municipio.descricao}</TableCell>
-                  <TableCell>{municipio.site}</TableCell>
-                  <TableCell>{municipio.contato}</TableCell>
                   <TableCell className="text-right space-x-2">
                     <Button
                       variant="ghost"

@@ -13,13 +13,14 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { ImageUpload } from "@/components/ImageUpload";
 import { MunicipioForm } from "@/forms/municipioForm";
 import { useEffect, useState } from "react";
+import { useUpload } from "@/hooks/http/useUpload";
 
 interface MunicipalityModalProps {
   isOpen: boolean;
   onClose: () => void;
   mode: "create" | "edit" | "view";
   initialData?: MunicipioForm;
-  onSave: (data: MunicipioForm, files: File[]) => void;
+  onSave: (data: MunicipioForm, files: string[]) => void;
 }
 
 export function MunicipalityModal({
@@ -53,13 +54,36 @@ export function MunicipalityModal({
 
   const isViewMode = mode === "view";
 
+  const {
+    mutate: uploadFile,
+  } = useUpload();
+
   const handleImageSelect = (files: File[]) => {
     setFiles(files);
   };
 
   const handleSubmit = () => {
     const formData = form.getValues();
-    onSave(formData, files);
+
+    const fileUploadFinish: string[] = [];
+
+    const fileUploadPromises = files.map(file => {
+      return new Promise<string>((resolve, reject) => {
+        uploadFile(file, {
+          onSuccess: (data) => resolve(data.url),
+          onError: (error) => reject(error),
+        });
+      });
+    });
+
+    Promise.all(fileUploadPromises)
+      .then((urls) => {
+        fileUploadFinish.push(...urls);
+        onSave(formData, fileUploadFinish);
+      })
+      .catch((error) => {
+        console.error("Error uploading files:", error);
+      });
   };
 
   useEffect(() => {

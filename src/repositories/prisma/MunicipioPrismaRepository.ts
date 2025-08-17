@@ -22,8 +22,9 @@ export class MunicipioPrimaRepository implements IMunicipioRepository {
     return municipios;
   }
 
-  async create(municipioData: MunicipioDTO, contatoId: number) {
-  const { id, ...data } = municipioData; // Remove o campo id
+  async create(municipioData: MunicipioDTO, contatoId: number, fotos: string[] = []) {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const { id, ...data } = municipioData;
 
   const municipio = await connection.municipio.create({
     data: {
@@ -31,6 +32,9 @@ export class MunicipioPrimaRepository implements IMunicipioRepository {
       contato: {
         connect: { id: contatoId },
       },
+      fotos: {
+        connect: fotos.map(foto => ({ id: Number(foto) })), // Map each foto ID to the correct shape
+      }
     },
   });
 

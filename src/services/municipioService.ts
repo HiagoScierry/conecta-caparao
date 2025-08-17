@@ -11,8 +11,8 @@ export class MunicipioService {
     this.municipioRepository = municipioRepository;
   }
 
-  async create(municipio: MunicipioDTO, contactId: number): Promise<Municipio> {
-    const newMunicipio = await this.municipioRepository.create(municipio, contactId);
+  async create(municipio: MunicipioDTO, contactId: number, fotos: string[]): Promise<Municipio> {
+    const newMunicipio = await this.municipioRepository.create(municipio, contactId, fotos);
     return newMunicipio;
   }
 

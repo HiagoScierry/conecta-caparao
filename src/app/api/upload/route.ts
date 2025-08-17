@@ -1,33 +1,32 @@
-import { parseForm, uploadDir } from "@/lib/upload/upload";
-import path from "path";
+import { NextRequest, NextResponse } from "next/server";
+import { uploadDir } from "@/lib/upload";
 
-export const config = {
-  api: {
-    bodyParser: false,
-  },
-};
+export async function POST(request: NextRequest) {
+  const formData = await request.formData();
+  const file = formData.get("file");
 
-export default async function handler(req, res) {
-  if (req.method !== "POST")
-    return res.status(405).json({ message: "Method not allowed" });
+  if (!file || !(file instanceof File)) {
+    return NextResponse.json(
+      { status: "error", message: "No file provided or invalid file type" },
+      { status: 400 }
+    );
+  }
+
+  const buffer = Buffer.from(await file.arrayBuffer());
 
   try {
-    const { fields, files } = await parseForm(req);
+    const fileUrl = await uploadDir(buffer, file.name);
 
-    // Exemplo para pegar os arquivos chamados "photos"
-    let uploadedFiles = [];
-
-    if (Array.isArray(files.photos)) {
-      uploadedFiles = files.photos.map(
-        (file) => `/uploads/${path.basename(file.filepath)}`
-      );
-    } else if (files.photos) {
-      uploadedFiles = [`/uploads/${path.basename(files.photos.filepath)}`];
-    }
-
-    return res.status(200).json({ files: uploadedFiles });
-  } catch (error) {
-    console.error(error);
-    return res.status(500).json({ message: "Erro no upload" });
+    return NextResponse.json({
+      status: "success",
+      message: "File uploaded successfully",
+      fileUrl,
+    });
+  } catch (err) {
+    console.error("Error saving file:", err);
+    return NextResponse.json(
+      { status: "error", message: "Failed to save file" },
+      { status: 500 }
+    );
   }
 }
