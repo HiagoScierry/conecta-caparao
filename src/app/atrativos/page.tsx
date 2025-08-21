@@ -24,8 +24,8 @@ export default function PaginaAtrativos() {
     <LayoutPublic>
       <div className="container mx-auto py-8 px-4 md:px-16">
         <Banner titulo="A EXPERIÊNCIA VOCÊ QUEM ESCOLHE!" cor="bg-tourism-azul" />
-        <div className="flex  md:flex-row gap-6 mt-8">
-          <div className="w-1/4">
+        <div className="flex flex-col items-center md:flex-row md:items-start gap-6 mt-8">
+          <div className="w-full md:w-1/4 md:flex-shrink-0">
             <Filter
               title="Municípios"
               items={municipios.map((municipio) => ({
@@ -50,19 +50,34 @@ export default function PaginaAtrativos() {
             />
 
             <Filter
-              title="Faixa de Preço"
+              title="Perfil"
               items={[
-                { label: "Gratuito", value: "gratuito" },
-                { label: "Até R$ 50", value: "ate_50" },
-                { label: "R$ 50 a R$ 100", value: "50_a_100" },
-                { label: "Acima de R$ 100", value: "acima_100" },
+                { label: "Familia", value: "familia" },
+                { label: "Grupo", value: "grupo" },
+                { label: "Pet Friendly", value: "pet_friendly" },
+                { label: "Com Acessibilidade", value: "com_acessibilidade" },
+              ]}
+              onChange={(value) => console.log(value)}
+              className="mb-6"
+
+            />
+
+            <Filter
+              title="Apoio Turistico"
+              items={[
+                { label: "Rodiviaria", value: "rodoviaria" },
+                { label: "Hospital", value: "hospital" },
+                { label: "Farmácia", value: "farmácia" },
+                { label: "Mecânica", value: "mecânica" },
+                { label: "Posto de Combustivel", value: "posto_de_combustivel" },
+
               ]}
               onChange={(value) => console.log(value)}
               className="mb-6"
 
             />
           </div>
-          <div className="w-3/4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-12">
+          <div className="w-full md:flex-1 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
             {atracoes.map((atracao) => (
               <Link key={atracao.id} href={`/atrativos/${atracao.id}`} passHref>
                 <AtracoesCard

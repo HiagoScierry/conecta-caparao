@@ -18,7 +18,7 @@ export function Filter({ title, items, onChange, className }: FilterProps) {
       <Accordion type="single" collapsible>
         <AccordionItem value="item-1" className="bg-tourism-verde text-white rounded-lg border-b-0">
           <AccordionTrigger className="p-4">
-            <h3 className="font-bold">{title}</h3>
+            <h3 className="font-bold text-start">{title}</h3>
           </AccordionTrigger>
           <AccordionContent className="bg-[#BFBFB8] text-black rounded-b-lg">
             <ul className="p-4 space-y-2">

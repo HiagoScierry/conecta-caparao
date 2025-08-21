@@ -35,6 +35,7 @@ export default function PaginaMunicipios({
       <DescriptionSection
         subtitulo={municipio.subtitulo}
         descricao={municipio.descricao}
+        corSubtitulo={"text-tourism-azul"}
       />
       <GaleriaDeImagens imagemUrls={municipio.imagemUrls} />
       <Atrativos />
