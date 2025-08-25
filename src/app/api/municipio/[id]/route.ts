@@ -36,6 +36,8 @@ export async function PUT(request: Request, { params }: { params: { id: string }
       });
     }
 
+    console.error('An unexpected error occurred:', error);
+
     return new NextResponse("Internal Server Error", { status: 500 });
   }
 }

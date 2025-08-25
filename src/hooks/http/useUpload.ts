@@ -29,7 +29,7 @@ export function useUpload() {
 export function useDeleteUpload() {
   return useMutation<void, Error, string>({
     mutationFn: async (fotoId: string) => {
-      const response = await fetch(`/api/delete-upload/${fotoId}`, {
+      const response = await fetch(`/api/upload/${fotoId}`, {
         method: "DELETE",
       });
 

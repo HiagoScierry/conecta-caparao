@@ -1,5 +1,5 @@
 "use client";
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -8,7 +8,6 @@ import { MunicipalityModal } from "@/components/modals/MunicipalityModal";
 import { DeleteConfirmModal } from "@/components/modals/DeleteConfirmModal";
 import { useToast } from "@/hooks/use-toast";
 import { useCreateMunicipio, useDeleteMunicipio, useGetAllMunicipios, useUpdateMunicipio } from "@/hooks/http/useMunicipio";
-import { MunicipioDTO } from "@/dto/municipioDTO";
 import { MunicipioForm } from "@/forms/municipioForm";
 import { useUpload } from "@/hooks/http/useUpload";
 import { Contato, Foto, Municipio } from "@prisma/client";
@@ -21,36 +20,19 @@ export default function Municipios() {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [municipalityToDelete, setMunicipalityToDelete] = useState<Municipio | null>(null);
 
-    const municipalityInitialForm: MunicipioForm & { fotos: Foto[] } = useMemo(() => ({
-      municipio: {
-        id: selectedMunicipality?.id || "",
-        nome: selectedMunicipality?.nome || "",
-        descricao: selectedMunicipality?.descricao || "",
-        site: selectedMunicipality?.site || "",
-        mapaUrl: selectedMunicipality?.mapaUrl || "",
-      },
-      contato: selectedMunicipality?.contato || {
-        id: "",
-        email: "",
-        celular: "",
-        telefone: "",
-        whatsapp: "",
-        instagram: "",
-      },
-      fotos: selectedMunicipality?.fotos || [],
-    }), [selectedMunicipality]);
-
-
-  const { data: municipios } = useGetAllMunicipios();
+  const { data: municipios } = useGetAllMunicipios() as {
+    data: (Municipio & { contato: Contato; fotos: Foto[] })[] | undefined;
+  };
 
   const { mutateAsync: uploadImage } = useUpload();
   const { mutateAsync: createMunicipio } = useCreateMunicipio();
   const { mutateAsync: updateMunicipio } = useUpdateMunicipio();
   const { mutateAsync: deleteMunicipio } = useDeleteMunicipio();
 
-  const handleOpenModal = (mode: 'create' | 'edit' | 'view', municipality: Municipio & { contato: Contato; fotos: Foto[] }) => {
+  const handleOpenModal = (mode: 'create' | 'edit' | 'view', municipality?: Municipio & { contato: Contato; fotos: Foto[] }) => {
     setModalMode(mode);
-    setSelectedMunicipality(municipality);
+    console.log(municipality);
+    setSelectedMunicipality(municipality ?? null);
     setIsModalOpen(true);
   };
 
@@ -114,7 +96,7 @@ export default function Municipios() {
         </div>
         <Button 
           className="bg-tourism-primary"
-          onClick={() => handleOpenModal('create')}
+          onClick={() => handleOpenModal('create', undefined)}
         >
           <PlusCircle className="mr-2 h-4 w-4" />
           Novo Município
@@ -136,7 +118,7 @@ export default function Municipios() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {municipios?.map((municipio: MunicipioDTO) => (
+              {municipios?.map((municipio: Municipio & { contato: Contato; fotos: Foto[] }) => (
                 <TableRow key={municipio.id}>
                   <TableCell className="font-medium">{municipio.id}</TableCell>
                   <TableCell>{municipio.nome}</TableCell>
@@ -176,7 +158,7 @@ export default function Municipios() {
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         mode={modalMode}
-        initialData={municipalityInitialForm}
+        initialData={selectedMunicipality || undefined}
         onSave={handleSaveMunicipality}
       />
 
