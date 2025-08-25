@@ -18,7 +18,7 @@ export class MunicipioPrimaRepository implements IMunicipioRepository {
     return municipio;
   }
 
-  async findAll(): Promise<Municipio & { contato: Contato; fotos: Foto[]; }[]> {
+  async findAll(): Promise<Array<Municipio & { contato: Contato; fotos: Foto[] }>> {
     const municipios = await connection.municipio.findMany({
       include: {
         contato: true,
@@ -48,7 +48,7 @@ export class MunicipioPrimaRepository implements IMunicipioRepository {
 
   }
 
-  async update(id: string, data: MunicipioDTO) {
+  async update(id: string, data: MunicipioDTO, fotosUrl?: string[]) {
     // Remove 'id' from data to avoid Prisma type error
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { id: _, ...municipioDataWithoutId } = data;
@@ -57,6 +57,13 @@ export class MunicipioPrimaRepository implements IMunicipioRepository {
       where: { id: Number(id) },
       data: {
         ...municipioDataWithoutId,
+        ...(fotosUrl && fotosUrl.length > 0
+          ? {
+            fotos: {
+              create: fotosUrl.map(url => ({ url })),
+            },
+          }
+          : {}),
       },
       include: {
         contato: true,
