@@ -1,10 +1,10 @@
 import { MunicipioDTO } from "@/dto/municipioDTO";
-import {  Municipio } from "@prisma/client";
+import {  Contato, Municipio, Foto } from "@prisma/client";
 
 export interface IMunicipioRepository {
-  findById(id: string): Promise<Municipio>;
-  findAll(): Promise<Municipio[]>;
-  create(data: MunicipioDTO, contatoId:  number): Promise<Municipio>;
-  update(id: string, data: MunicipioDTO): Promise<Municipio>;
+  findById(id: string): Promise<Municipio & { contato: Contato; fotos: Foto[] }>;
+  findAll(): Promise<Municipio & { contato: Contato; fotos: Foto[] }[]>;
+  create(data: MunicipioDTO, contatoId:  number, fotosUrl: string[]): Promise<Municipio>;
+  update(id: string, municipio: MunicipioDTO, fotosUrl: string[]): Promise<Municipio>;
   delete(id: string): Promise<void>;
 }

@@ -12,7 +12,7 @@ export class ContatoService {
     return this.contatoRepository.create(data);
   }
 
-  async update(data: ContatoDTO): Promise<ContatoDTO> {
+  async update(p0: number, data: ContatoDTO): Promise<ContatoDTO> {
     try {
       const contato = await this.findById(data.id as number);
 

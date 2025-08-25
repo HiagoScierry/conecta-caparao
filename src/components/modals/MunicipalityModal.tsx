@@ -12,13 +12,16 @@ import { useForm } from "react-hook-form";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { ImageUpload } from "@/components/ImageUpload";
 import { MunicipioForm } from "@/forms/municipioForm";
+import { useState } from "react";
+import { useDeleteUpload } from "@/hooks/http/useUpload";
+import { Foto, Municipio } from "@prisma/client";
 
 interface MunicipalityModalProps {
   isOpen: boolean;
   onClose: () => void;
   mode: "create" | "edit" | "view";
-  initialData?: MunicipioForm;
-  onSave: (municipalityData: MunicipioForm) => void;
+  initialData?:  Municipio & { contato: Contato; fotos: Foto[] };
+  onSave: (municipalityData: MunicipioForm, urlFotos: File[]) => void;
 }
 
 export function MunicipalityModal({
@@ -28,7 +31,8 @@ export function MunicipalityModal({
   initialData,
   onSave,
 }: MunicipalityModalProps) {
-  const form = useForm({
+  const [selectedImages, setSelectedImages] = useState<File[]>([]);
+  const form = useForm<MunicipioForm> ({
     defaultValues: {
       municipio: initialData?.municipio || {
         id: "",
@@ -45,19 +49,30 @@ export function MunicipalityModal({
         whatsapp: "",
         instagram: "",
       },
+      fotos: initialData?.fotos || [],
     },
   });
 
   const isViewMode = mode === "view";
 
-  const handleImageSelect = (file: File) => {
-    console.log("Selected image:", file);
-    // Here you would typically handle the image upload to your backend
+  const {mutateAsync: deleteFoto} = useDeleteUpload()
+
+  const handleDeleteFoto = async (fotoId: string) => {
+    try {
+      await deleteFoto(fotoId);
+      // Aqui você pode adicionar lógica para remover a foto da lista exibida, se necessário
+    } catch (error) {
+      console.error("Erro ao deletar a foto:", error);
+    }
+  };
+
+  const handleImageSelect = (files: File[]) => {
+    setSelectedImages(files);
   };
 
   const handleSubmit = () => {
     const formData = form.getValues();
-    onSave(formData);
+    onSave(formData, selectedImages);
   };
 
   return (
@@ -91,7 +106,9 @@ export function MunicipalityModal({
                   </FormLabel>
                   <FormControl>
                     <ImageUpload
-                      onImageSelect={handleImageSelect}
+                      initialFotos={initialData?.fotos || []}
+                      onRemoveFoto={handleDeleteFoto}
+                      onImagesSelect={handleImageSelect}
                       disabled={isViewMode}
                     />
                   </FormControl>

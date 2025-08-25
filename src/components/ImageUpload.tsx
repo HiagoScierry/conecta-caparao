@@ -4,12 +4,20 @@ import { Image as LucideImage, X } from "lucide-react";
 import Image from "next/image";
 
 interface ImageUploadProps {
+  initialFotos?: { id: string; url: string }[];
+  onRemoveFoto?: (fotoId: string) => void;
   onImagesSelect?: (files: File[]) => void;
   disabled?: boolean;
   maxImages?: number;
 }
 
-export function ImageUpload({ onImagesSelect, disabled, maxImages = 5 }: ImageUploadProps) {
+export function ImageUpload({
+  initialFotos,
+  onImagesSelect,
+  onRemoveFoto,
+  disabled,
+  maxImages = 5,
+}: ImageUploadProps) {
   const [previews, setPreviews] = useState<string[]>([]);
   const [files, setFiles] = useState<File[]>([]);
 
@@ -71,16 +79,47 @@ export function ImageUpload({ onImagesSelect, disabled, maxImages = 5 }: ImageUp
           disabled={disabled || files.length >= maxImages}
         />
       </div>
-
       {previews.length > 0 && (
         <>
           <p className="text-sm text-muted-foreground mb-2">
             Pode acontecer distorções de imagem nos previews abaixo:
           </p>
           <div className="flex flex-wrap gap-4">
+            {initialFotos?.map((foto) => (
+              <div
+                key={foto.id}
+                className="relative w-48 h-32 rounded-lg border overflow-hidden"
+              >
+                <Image
+                  src={foto.url}
+                  alt={`Foto ${foto.id}`}
+                  fill
+                  className="object-cover"
+                  sizes="100%"
+                />
+                <button
+                  type="button"
+                  onClick={() => onRemoveFoto?.(foto.id)}
+                  className="absolute top-1 right-1 bg-white bg-opacity-75 hover:bg-opacity-100 text-black rounded-full p-1"
+                  aria-label={`Remover imagem ${foto.id}`}
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              </div>
+            ))}
+
             {previews.map((src, index) => (
-              <div key={index} className="relative w-48 h-32 rounded-lg border overflow-hidden">
-                <Image src={src} alt={`Preview ${index + 1}`} fill className="object-cover" sizes="100%" />
+              <div
+                key={index}
+                className="relative w-48 h-32 rounded-lg border overflow-hidden"
+              >
+                <Image
+                  src={src}
+                  alt={`Preview ${index + 1}`}
+                  fill
+                  className="object-cover"
+                  sizes="100%"
+                />
                 <button
                   type="button"
                   onClick={() => handleRemoveImage(index)}
