@@ -4,7 +4,8 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 
 export async function GET() {
-  return NextResponse.json(getAll());
+  const atrativos = await getAll();
+  return NextResponse.json(atrativos);
 }
 
 export async function POST(request: Request) {

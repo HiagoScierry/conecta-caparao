@@ -8,6 +8,7 @@ import { PlusCircle, Eye, Edit, Trash2 } from "lucide-react";
 import { AttractionModal } from "@/components/modals/AttractionModal";
 import { DeleteConfirmModal } from "@/components/modals/DeleteConfirmModal";
 import { useToast } from "@/hooks/use-toast";
+import { useGetAllAtrativos } from "@/hooks/http/useAtrativos";
 
 export default function Atracoes() {
   const {toast} = useToast();
@@ -18,13 +19,9 @@ export default function Atracoes() {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [attractionToDelete, setAttractionToDelete] = useState<any>(null);
 
-  const [atracoes, setAtracoes] = useState([
-    { id: 1, nome: "Cristo Redentor", municipio: "Rio de Janeiro", categoria: "Monumento", contato: "info@cristoredentor.com" },
-    { id: 2, nome: "Praia de Copacabana", municipio: "Rio de Janeiro", categoria: "Praia", contato: "info@riotur.com" },
-    { id: 3, nome: "MASP", municipio: "São Paulo", categoria: "Museu", contato: "contato@masp.org.br" },
-    { id: 4, nome: "Pelourinho", municipio: "Salvador", categoria: "Centro Histórico", contato: "info@pelourinho.com" },
-    { id: 5, nome: "Boa Viagem", municipio: "Recife", categoria: "Praia", contato: "turismo@recife.gov.br" },
-  ]);
+  const {
+    data: atracoes = [],
+  } = useGetAllAtrativos();
 
   const handleOpenModal = (mode: 'create' | 'edit' | 'view', attraction?: any) => {
     setModalMode(mode);
@@ -39,7 +36,7 @@ export default function Atracoes() {
 
   const handleDeleteAttraction = () => {
     if (attractionToDelete) {
-      setAtracoes(atracoes.filter(atracao => atracao.id !== attractionToDelete.id));
+      // setAtracoes(atracoes.filter(atracao => atracao.id !== attractionToDelete.id));
       console.log('Atração excluída:', attractionToDelete);
       toast({
         title: "Atração excluída",
@@ -78,12 +75,11 @@ export default function Atracoes() {
                 <TableHead>Nome</TableHead>
                 <TableHead>Município</TableHead>
                 <TableHead>Categoria</TableHead>
-                <TableHead>Contato</TableHead>
                 <TableHead className="text-right">Ações</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {atracoes.map((atracao) => (
+              {atracoes?.map((atracao) => (
                 <TableRow key={atracao.id}>
                   <TableCell className="font-medium">{atracao.id}</TableCell>
                   <TableCell>{atracao.nome}</TableCell>
@@ -93,7 +89,6 @@ export default function Atracoes() {
                       {atracao.categoria}
                     </Badge>
                   </TableCell>
-                  <TableCell>{atracao.contato}</TableCell>
                   <TableCell className="text-right space-x-2">
                     <Button 
                       variant="ghost" 

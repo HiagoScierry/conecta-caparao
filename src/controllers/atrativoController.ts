@@ -15,7 +15,7 @@ export async function getAll() {
 }
 
 export async function createAtrativo(atrativo: AtracaoForm) {
-  const {atracaoTuristica, contato, endereco, horarioFuncionamento, municipio, categoria, perfil} = atrativo;
+  const { atracaoTuristica, contato, endereco, horarioFuncionamento, municipio, categoria, perfil } = atrativo;
 
   const categoriaExists = await categoriaServiceFactory().findById(categoria.id);
 
@@ -36,7 +36,7 @@ export async function createAtrativo(atrativo: AtracaoForm) {
     ...atracaoTuristica,
     idCategoria: categoriaExists.id,
     idMunicipio: municipioExists.id,
-    idEndereco: enderecoCreated .id,
+    idEndereco: enderecoCreated.id,
     idContato: Number(contatoCreated.id),
   });
 
@@ -49,7 +49,7 @@ export async function createAtrativo(atrativo: AtracaoForm) {
 }
 
 export async function updateAtrativo(id: number, atrativo: AtracaoForm) {
-  const {atracaoTuristica, contato, endereco, horarioFuncionamento, municipio, categoria, perfil} = atrativo;
+  const { atracaoTuristica, contato, endereco, horarioFuncionamento, municipio, categoria, perfil } = atrativo;
 
   const atrativoExists = await atracaoTuristicaServiceFactory().findById(id);
 
@@ -93,4 +93,5 @@ export async function updateAtrativo(id: number, atrativo: AtracaoForm) {
 }
 
 export async function deleteAtrativo(id: number) {
-  return atracaoTuristicaServiceFactory().delete(id);}
+  return atracaoTuristicaServiceFactory().delete(id);
+}

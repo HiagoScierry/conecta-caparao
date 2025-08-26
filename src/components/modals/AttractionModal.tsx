@@ -13,20 +13,11 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { ImageUpload } from "@/components/ImageUpload";
 import { AtracaoForm, atracaoTuristicaForm } from "@/forms/atracaoForm";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useGetAllMunicipios } from "@/hooks/http/useMunicipio";
+import { usePerfis } from "@/hooks/http/usePerfis";
+import { useCategorias } from "@/hooks/http/useCategoria";
+import { Categoria, PerfilCliente } from "@prisma/client";
 
-const municipiosMock = [
-  { id: "1", nome: "Sao Paulo" },
-  { id: "2", nome: "Rio de Janeiro" },
-  { id: "3", nome: "Belo Horizonte" },
-  { id: "4", nome: "Curitiba" },
-  { id: "5", nome: "Porto Alegre" },
-]
-
-const categoriasMock = [
-  { id: "1", tipo: "Cultural" },
-  { id: "2", tipo: "Natural" },
-  { id: "3", tipo: "Histórica" },
-]
 
 const perfilClienteMock = [
   { id: "1", tipo: "individual" },
@@ -98,6 +89,18 @@ export function AttractionModal({
       },
     }
   });
+
+  // REQUEST DATA FROM API
+  const {
+    data: perfisCliente
+  } = usePerfis()
+  const {
+    data: categorias
+  } = useCategorias()
+  const {
+    data: municipios
+  } = useGetAllMunicipios()
+
 
   const isViewMode = mode === "view";
 
@@ -294,7 +297,7 @@ export function AttractionModal({
                         className="border rounded-md p-2 w-full"
                       >
                         <option value="">Selecione o município</option>
-                        {municipiosMock.map((municipio) => (
+                        {municipios?.map((municipio) => (
                           <option key={municipio.id} value={municipio.id}>
                             {municipio.nome}
                           </option>
@@ -312,16 +315,16 @@ export function AttractionModal({
                       Selecione as Categoria
                     </FormLabel>
                     <FormControl>
-                        <div className="flex flex-wrap gap-4">
-                          {["Cultural", "Natural", "Histórica"].map((categoria) => (
-                            <label key={categoria} className="flex items-center gap-1">
+                        <div className="grid grid-cols-4">
+                          {categorias?.map((categoria: Categoria) => (
+                            <label key={categoria.id} className="flex items-center gap-1">
                               <input
                                 type="checkbox"
-                                value={categoria}
+                                value={categoria.id}
                                 {...form.register("categoria.tipo")}
                                 disabled={isViewMode}
                               />
-                              {categoria.charAt(0) + categoria.slice(1).toLowerCase()}
+                              {categoria.nome.charAt(0) + categoria.nome.slice(1).toLowerCase()}
                             </label>
                           ))}
                         </div>
@@ -342,16 +345,16 @@ export function AttractionModal({
                       Selecione o Perfil
                     </FormLabel>
                     <FormControl>
-                      <div className="flex flex-wrap gap-4">
-                        {perfilClienteMock.map((perfil) => (
+                      <div className="grid grid-cols-4">
+                        {perfisCliente?.map((perfil: PerfilCliente) => (
                           <label key={perfil.id} className="flex items-center gap-1">
                             <input
                               type="checkbox"
-                              value={perfil.tipo}
+                              value={perfil.nome}
                               {...form.register("perfil.tipo")}
                               disabled={isViewMode}
                             />
-                            {perfil.tipo}
+                            {perfil.nome}
                           </label>
                         ))}
                       </div>
