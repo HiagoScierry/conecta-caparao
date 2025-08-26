@@ -17,7 +17,7 @@ export function MunicipiosCard({ id, nome, imagemUrls }: MunicipioCardProps) {
         <Image
           src={imgSrc}
           alt={altText}
-          fill // ✅ substitui layout="fill" + objectFit
+          fill 
           className="object-cover transition-transform duration-500 ease-in-out group-hover:scale-105"
         />
 
