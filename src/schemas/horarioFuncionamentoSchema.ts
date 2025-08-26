@@ -2,6 +2,7 @@
 import { z } from "zod";
 
 export const horarioFuncionamentoSchema = z.object({
+  id: z.number().optional(),
   diaDaSemana: z.array(
     z.enum([
       "DOMINGO",

@@ -1,6 +1,7 @@
 import { z } from "zod";
 
 export const categoriaSchema = z.object({
+  id: z.number(),
   tipo: z.array(
     z.enum([
       "Cultural",
