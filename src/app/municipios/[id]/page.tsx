@@ -1,52 +1,71 @@
+"use client";
 import { LayoutPublic } from "@/components/public/Layout";
 import { Hero } from "@/components/public/Hero";
 import { DescriptionSection } from "@/components/public/DescriptionSection";
 import { GaleriaDeImagens } from "@/components/public/GaleriaDeImagens";
 import { Atrativos } from "@/components/public/Atrativos";
-import { faker } from "@faker-js/faker";
 import { Informacoes } from "@/components/public/Informacoes";
+import { useGetMunicipioById } from "@/hooks/http/useMunicipio";
+import { Progress } from "@/components/ui/progress";
 
 export default function PaginaMunicipios({
   params,
 }: {
   params: { id: string };
 }) {
-  const municipio = {
-    id: Number(params.id),
-    nome: faker.address.city(),
-    subtitulo: faker.lorem.sentence(),
-    descricao: faker.lorem.paragraphs(3),
-    imagemUrls: Array.from({ length: 5 }, () =>
-      faker.image.url({ width: 640, height: 480 })
-    ),
-  };
-
-  if (!municipio) {
-    return <div>Município não encontrado</div>;
-  }
+  const { data: municipio, isLoading } = useGetMunicipioById(params.id);
 
   return (
     <LayoutPublic>
-      <Hero
-        nome={municipio.nome}
-        imagemUrl={municipio.imagemUrls ? municipio.imagemUrls[0] : undefined}
-      />
-
-      <DescriptionSection
-        subtitulo={municipio.subtitulo}
-        descricao={municipio.descricao}
-        corSubtitulo={"text-tourism-azul"}
-      />
-      <GaleriaDeImagens imagemUrls={municipio.imagemUrls} />
-
-      <div className="w-full bg-tourism-branco py-12">
-        <div className="container mx-auto flex flex-col items-center">
-          <h2 className="text-4xl font-bold pb-12 md:text-5xl">Atrativos</h2>
-          <Atrativos />
+      {isLoading || !municipio ? (
+        <div className="flex items-center justify-center min-h-[60vh]">
+          <Progress
+            about="Carregando..."
+            className="w-24 h-24 border-t-2 border-blue-600 solid animate-spin"
+            style={{
+              opacity: 0.5,
+            }}
+          />
         </div>
-      </div>
+      ) : (
+        <>
+          <Hero
+            nome={municipio.nome}
+            imagemUrl={
+              municipio.fotos && municipio.fotos.length > 0
+                ? municipio.fotos[0].url
+                : undefined
+            }
+          />
 
-      <Informacoes />
+          <DescriptionSection
+            descricao={municipio.descricao}
+            // subtitulo={municipio.descricao}
+            // corSubtitulo={"text-tourism-azul"}
+          />
+          <GaleriaDeImagens
+            imagemUrls={municipio.fotos.map((foto) => foto.url)}
+          />
+
+          <div className="w-full bg-tourism-branco py-12">
+            <div className="container mx-auto flex flex-col items-center">
+              <h2 className="text-4xl font-bold pb-12 md:text-5xl">
+                Atrativos
+              </h2>
+              <Atrativos />
+            </div>
+          </div>
+
+          <Informacoes
+            contato={{
+              telefone: municipio.contato.telefone,
+              email: municipio.contato.email,
+              site: municipio.contato.site,
+            }}
+            mapa={municipio.mapaUrl ?? undefined}
+          />
+        </>
+      )}
     </LayoutPublic>
   );
 }

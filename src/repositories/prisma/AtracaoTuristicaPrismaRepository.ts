@@ -1,19 +1,38 @@
 import { AtracaoTuristica } from "@prisma/client";
-import { AtracaoTuristicaWithRelations, IAtracaoTuristicaRepository } from "../interfaces/IAtracaoTuristicaRepository";
+import { AtracaoTuristicaFull, AtracaoTuristicaWithRelations, IAtracaoTuristicaRepository } from "../interfaces/IAtracaoTuristicaRepository";
 import { connection } from "@/config/database/connection";
 
 export class AtracaoTuristicaPrismaRepository implements IAtracaoTuristicaRepository {
-  async findAll(): Promise<AtracaoTuristica[]> {
-    return connection.atracaoTuristica.findMany();
-  }
-
-  async findById(id: number): Promise<AtracaoTuristica | null> {
-    return connection.atracaoTuristica.findFirst({
-      where: { id },
+  async findAll(): Promise<AtracaoTuristicaFull[]> {
+    return connection.atracaoTuristica.findMany({
+      include: {
+        categoria: true,
+        contato: true,
+        endereco: true,
+        municipio: true,
+        horarios: true,
+        fotos: true,
+        perfis: true,
+      }
     });
   }
 
-  async create(data: AtracaoTuristicaWithRelations): Promise<AtracaoTuristica> {
+  async findById(id: number): Promise<AtracaoTuristicaFull | null> {
+    return connection.atracaoTuristica.findFirst({
+      where: { id },
+      include: {
+        categoria: true,
+        contato: true,
+        endereco: true,
+        municipio: true,
+        horarios: true,
+        fotos: true,
+        perfis: true,
+      }
+    });
+  }
+
+  async create(data: AtracaoTuristicaWithRelations, fotos: string[]): Promise<AtracaoTuristica> {
     return connection.atracaoTuristica.create({
       data: {
         nome: data.nome,
@@ -24,10 +43,16 @@ export class AtracaoTuristicaPrismaRepository implements IAtracaoTuristicaReposi
         idMunicipio: data.idMunicipio,
         idEndereco: data.idEndereco,
         idContato: data.idContato,
+        perfis: {
+          connect: data.perfis?.map(id => ({ id: Number(id) })) || [],
+        },
+        fotos: {
+          create: fotos.map(url => ({ url })),
+        },
       },
     });
   }
-  async update(id: number, data: AtracaoTuristicaWithRelations): Promise<AtracaoTuristica> {
+  async update(id: number, data: AtracaoTuristicaWithRelations, perfisParaRemover: string[], fotos: string[]): Promise<AtracaoTuristica> {
     return connection.atracaoTuristica.update({
       where: { id },
       data: {
@@ -39,6 +64,13 @@ export class AtracaoTuristicaPrismaRepository implements IAtracaoTuristicaReposi
         idMunicipio: data.idMunicipio,
         idEndereco: data.idEndereco,
         idContato: data.idContato,
+        perfis: {
+          disconnect: perfisParaRemover.map(id => ({ id: Number(id) })) || [],
+          connect: data.perfis?.map(id => ({ id: Number(id) })) || [],
+        },
+        fotos: {
+          create: fotos.map(url => ({ url })),
+        },
       },
     });
   }

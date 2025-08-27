@@ -2,68 +2,106 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { PlusCircle, Calendar, Eye, Edit, Trash2 } from "lucide-react";
 import { EventModal } from "@/components/modals/EventModal";
 import { DeleteConfirmModal } from "@/components/modals/DeleteConfirmModal";
 import { useToast } from "@/hooks/use-toast";
+import {
+  useCreateEvento,
+  useDeleteEvento,
+  useEvento,
+  useUpdateEvento,
+} from "@/hooks/http/useEvento";
+import { EventoFull } from "@/repositories/interfaces/IEventoRepository";
+import { useUpload } from "@/hooks/http/useUpload";
+import { EventoForm } from "@/forms/eventoForm";
 
 export default function Eventos() {
   const { toast } = useToast();
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [modalMode, setModalMode] = useState<'create' | 'edit' | 'view'>('create');
-  const [selectedEvent, setSelectedEvent] = useState<any>(null);
+  const [modalMode, setModalMode] = useState<"create" | "edit" | "view">(
+    "create"
+  );
+  const [selectedEvent, setSelectedEvent] = useState<EventoFull | null>(null);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-  const [eventToDelete, setEventToDelete] = useState<any>(null);
+  const [eventToDelete, setEventToDelete] = useState<EventoFull | null>(null);
 
-  const [eventos, setEventos] = useState([
-    { id: 1, nome: "Festival de Verão", data: "2023-01-15", municipio: "Rio de Janeiro", endereco: "Praia de Copacabana" },
-    { id: 2, nome: "Exposição de Arte", data: "2023-02-20", municipio: "São Paulo", endereco: "MASP, Avenida Paulista" },
-    { id: 3, nome: "Carnaval 2023", data: "2023-02-25", municipio: "Salvador", endereco: "Circuito Barra-Ondina" },
-    { id: 4, nome: "Feira Gastronômica", data: "2023-03-10", municipio: "Recife", endereco: "Marco Zero" },
-    { id: 5, nome: "Festival de Jazz", data: "2023-04-05", municipio: "Fortaleza", endereco: "Centro Cultural Dragão do Mar" },
-  ]);
+  const { data: eventos } = useEvento();
 
-  const handleOpenModal = (mode: 'create' | 'edit' | 'view', event?: any) => {
+  const { mutateAsync: createEvento } = useCreateEvento();
+  const { mutateAsync: updateEvento } = useUpdateEvento();
+  const { mutateAsync: deleteEvento } = useDeleteEvento();
+  const { mutateAsync: uploadImagem } = useUpload();
+
+  const handleOpenModal = (
+    mode: "create" | "edit" | "view",
+    event?: EventoFull
+  ) => {
     setModalMode(mode);
-    setSelectedEvent(event);
+    setSelectedEvent(event || null);
     setIsModalOpen(true);
   };
 
-  const handleOpenDeleteModal = (event: any) => {
+  const handleOpenDeleteModal = (event: EventoFull) => {
     setEventToDelete(event);
     setIsDeleteModalOpen(true);
   };
 
-  const handleDeleteEvent = () => {
+  const handleDeleteEvent = async () => {
     if (eventToDelete) {
-      setEventos(eventos.filter(evento => evento.id !== eventToDelete.id));
+      await deleteEvento(eventToDelete.id);
       toast({
         title: "Evento excluído",
         description: `O evento "${eventToDelete.nome}" foi excluído com sucesso.`,
       });
-      console.log('Evento excluído:', eventToDelete);
+      console.log("Evento excluído:", eventToDelete);
     }
   };
 
-  const handleSaveEvent = (eventData: any) => {
-    if (modalMode === 'create') {
-      const newEvent = { ...eventData, id: Date.now() };
-      setEventos([...eventos, newEvent]);
+  const handleSaveEvent = async (eventData: EventoForm & { fotos: File[] }) => {
+    try {
+      const uploadFilesUrl = await Promise.all(
+        eventData.fotos.map(async (file) => {
+          const url = await uploadImagem(file);
+          return url;
+        })
+      );
+
+      if (modalMode === "create") {
+        await createEvento({
+          ...eventData,
+          fotosUrl: uploadFilesUrl,
+        });
+        toast({
+          title: "Evento criado",
+          description: `O evento "${eventData.evento.nome}" foi criado com sucesso.`,
+        });
+      } else if (modalMode === "edit") {
+        await updateEvento({
+          ...eventData,
+          fotosUrl: uploadFilesUrl.length > 0 ? uploadFilesUrl : undefined,
+        });
+        toast({
+          title: "Evento atualizado",
+          description: `O evento "${eventData.evento.nome}" foi atualizado com sucesso.`,
+        });
+      }
+      setIsModalOpen(false);
+    } catch (error) {
       toast({
-        title: "Evento criado",
-        description: `O evento "${eventData.nome}" foi criado com sucesso.`,
-      });
-    } else if (modalMode === 'edit') {
-      setEventos(eventos.map(evento => 
-        evento.id === selectedEvent.id ? { ...evento, ...eventData } : evento
-      ));
-      toast({
-        title: "Evento atualizado",
-        description: `O evento "${eventData.nome}" foi atualizado com sucesso.`,
+        title: "Erro ao salvar evento",
+        description: "Ocorreu um erro ao salvar o evento. Tente novamente.",
+        variant: "destructive",
       });
     }
-    setIsModalOpen(false);
   };
 
   return (
@@ -75,9 +113,9 @@ export default function Eventos() {
             Gerencie os eventos turísticos do sistema.
           </p>
         </div>
-        <Button 
+        <Button
           className="bg-tourism-primary"
-          onClick={() => handleOpenModal('create')}
+          onClick={() => handleOpenModal("create")}
         >
           <PlusCircle className="mr-2 h-4 w-4" />
           Novo Evento
@@ -96,39 +134,41 @@ export default function Eventos() {
                 <TableHead>Nome</TableHead>
                 <TableHead>Data</TableHead>
                 <TableHead>Município</TableHead>
-                <TableHead>Endereço</TableHead>
                 <TableHead className="text-right">Ações</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {eventos.map((evento) => (
+              {eventos?.map((evento: EventoFull) => (
                 <TableRow key={evento.id}>
                   <TableCell className="font-medium">{evento.id}</TableCell>
                   <TableCell className="flex items-center gap-2">
                     <Calendar className="h-4 w-4 text-tourism-primary" />
                     {evento.nome}
                   </TableCell>
-                  <TableCell>{evento.data}</TableCell>
-                  <TableCell>{evento.municipio}</TableCell>
-                  <TableCell>{evento.endereco}</TableCell>
+                  <TableCell>
+                    {evento.data instanceof Date
+                      ? evento.data.toLocaleDateString()
+                      : evento.data}
+                  </TableCell>
+                  <TableCell>{evento.municipio.nome}</TableCell>
                   <TableCell className="text-right space-x-2">
-                    <Button 
-                      variant="ghost" 
+                    <Button
+                      variant="ghost"
                       size="sm"
-                      onClick={() => handleOpenModal('view', evento)}
+                      onClick={() => handleOpenModal("view", evento)}
                     >
                       <Eye className="h-4 w-4" />
                     </Button>
-                    <Button 
-                      variant="ghost" 
+                    <Button
+                      variant="ghost"
                       size="sm"
-                      onClick={() => handleOpenModal('edit', evento)}
+                      onClick={() => handleOpenModal("edit", evento)}
                     >
                       <Edit className="h-4 w-4" />
                     </Button>
-                    <Button 
-                      variant="ghost" 
-                      size="sm" 
+                    <Button
+                      variant="ghost"
+                      size="sm"
                       className="text-destructive"
                       onClick={() => handleOpenDeleteModal(evento)}
                     >

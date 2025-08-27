@@ -1,6 +1,6 @@
 import { MunicipioDTO } from "@/dto/municipioDTO";
 import { IMunicipioRepository } from "@/repositories/interfaces/IMunicipioRepository";
-import { Municipio } from "@prisma/client";
+import { Contato, Foto, Municipio } from "@prisma/client";
 
 export class MunicipioService {
 
@@ -10,20 +10,20 @@ export class MunicipioService {
     this.municipioRepository = municipioRepository;
   }
 
-  async create(municipio: MunicipioDTO, contactId: number): Promise<Municipio> {
-    const newMunicipio = await this.municipioRepository.create(municipio, contactId);
+  async create(municipio: MunicipioDTO, contactId: number, fotosUrl: string[]): Promise<Municipio> {
+    const newMunicipio = await this.municipioRepository.create(municipio, contactId, fotosUrl);
     return newMunicipio;
   }
 
-  async findById(id: string): Promise<Municipio> {
+  async findById(id: string): Promise<Municipio & { contato: Contato; fotos: Foto[] }> {
     return this.municipioRepository.findById(id);
   }
-  async findAll(): Promise<Municipio[]> {
+  async findAll(): Promise<Municipio & { contato: Contato; fotos: Foto[] }[]> {
     return this.municipioRepository.findAll();
   }
 
-  async update(id: string, municipio: MunicipioDTO): Promise<Municipio> {
-    return this.municipioRepository.update(id, municipio);
+  async update(id: string, municipio: MunicipioDTO, fotosUrl: string[]): Promise<Municipio> {
+    return this.municipioRepository.update(id, municipio, fotosUrl);
   }
 
   async delete(id: string): Promise<void> {

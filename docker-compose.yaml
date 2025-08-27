@@ -27,5 +27,16 @@ services:
     ports:
       - 3000:3000
     command: npm run dev
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.incaper.rule=Host(`incaper.${TRAEFIK_DOMAIN}`)"
+      - "traefik.http.routers.incaper.entrypoints=websecure"
+      - "traefik.http.routers.incaper.tls.certresolver=letsencrypt"
+    networks:
+      - web
     depends_on:
       - mysql
+
+networks:
+  web:
+    external: true

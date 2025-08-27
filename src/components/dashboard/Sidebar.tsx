@@ -54,7 +54,7 @@ export function Sidebar() {
     { icon: Calendar, label: "Eventos", href: "/painel/eventos" },
     { icon: Newspaper, label: "Notícias", href: "/painel/noticias" },
     { icon: Store, label: "Serviços", href: "/painel/servicos" },
-    { icon: Settings, label: "Configurações", href: "/painel/configuracoes" },
+    // { icon: Settings, label: "Configurações", href: "/painel/configuracoes" },
   ];
 
  const handleLogout = () => {

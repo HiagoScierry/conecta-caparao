@@ -2,49 +2,114 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { PlusCircle, Eye, Edit, Trash2 } from "lucide-react";
 import { AttractionModal } from "@/components/modals/AttractionModal";
 import { DeleteConfirmModal } from "@/components/modals/DeleteConfirmModal";
 import { useToast } from "@/hooks/use-toast";
+import {
+  useCreateAtrativo,
+  useDeleteAtrativo,
+  useGetAllAtrativos,
+  useUpdateAtrativo,
+} from "@/hooks/http/useAtrativos";
+import { AtracaoForm } from "@/forms/atracaoForm";
+import { useUpload } from "@/hooks/http/useUpload";
+import { AtracaoTuristicaFull } from "@/repositories/interfaces/IAtracaoTuristicaRepository";
 
 export default function Atracoes() {
-  const {toast} = useToast();
+  const { toast } = useToast();
 
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [modalMode, setModalMode] = useState<'create' | 'edit' | 'view'>('create');
-  const [selectedAttraction, setSelectedAttraction] = useState<any>(null);
+  const [modalMode, setModalMode] = useState<"create" | "edit" | "view">(
+    "create"
+  );
+  const [selectedAttraction, setSelectedAttraction] =
+    useState<AtracaoTuristicaFull | null>(null);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-  const [attractionToDelete, setAttractionToDelete] = useState<any>(null);
+  const [attractionToDelete, setAttractionToDelete] =
+    useState<AtracaoTuristicaFull | null>(null);
 
-  const [atracoes, setAtracoes] = useState([
-    { id: 1, nome: "Cristo Redentor", municipio: "Rio de Janeiro", categoria: "Monumento", contato: "info@cristoredentor.com" },
-    { id: 2, nome: "Praia de Copacabana", municipio: "Rio de Janeiro", categoria: "Praia", contato: "info@riotur.com" },
-    { id: 3, nome: "MASP", municipio: "São Paulo", categoria: "Museu", contato: "contato@masp.org.br" },
-    { id: 4, nome: "Pelourinho", municipio: "Salvador", categoria: "Centro Histórico", contato: "info@pelourinho.com" },
-    { id: 5, nome: "Boa Viagem", municipio: "Recife", categoria: "Praia", contato: "turismo@recife.gov.br" },
-  ]);
+  const { data: atracoes = [] } = useGetAllAtrativos();
 
-  const handleOpenModal = (mode: 'create' | 'edit' | 'view', attraction?: any) => {
+  const { mutateAsync: uploadImage } = useUpload();
+
+  const { mutateAsync: createAtrativo } = useCreateAtrativo();
+  const { mutateAsync: updateAtrativo } = useUpdateAtrativo();
+  const { mutateAsync: deleteAtrativo } = useDeleteAtrativo();
+
+  const handleOpenModal = (
+    mode: "create" | "edit" | "view",
+    attraction?: AtracaoTuristicaFull | null
+  ) => {
     setModalMode(mode);
-    setSelectedAttraction(attraction);
+    setSelectedAttraction(attraction || null);
     setIsModalOpen(true);
   };
 
-  const handleOpenDeleteModal = (attraction: any) => {
+  const handleOpenDeleteModal = (attraction: AtracaoTuristicaFull | null) => {
     setAttractionToDelete(attraction);
     setIsDeleteModalOpen(true);
   };
 
-  const handleDeleteAttraction = () => {
+  const handleDeleteAttraction = async () => {
     if (attractionToDelete) {
-      setAtracoes(atracoes.filter(atracao => atracao.id !== attractionToDelete.id));
-      console.log('Atração excluída:', attractionToDelete);
+      await deleteAtrativo(attractionToDelete.id);
+      console.log("Atração excluída:", attractionToDelete);
       toast({
         title: "Atração excluída",
         description: `A atração ${attractionToDelete.nome} foi excluída com sucesso.`,
-      })
+      });
+    }
+  };
+
+  const handleSave = async (attractionData: AtracaoForm & { fotos: File[] }) => {
+    try {
+      const uploadedUrls = await Promise.all(
+        (attractionData.fotos || []).map(async (file) => {
+          const url = await uploadImage(file);
+          return url;
+        })
+      );
+
+      if (modalMode === "create") {
+        createAtrativo({
+          ...attractionData,
+          fotosURL: uploadedUrls,
+        });
+        toast({
+          title: "Atração criada",
+          description: `A atração "${attractionData.atracaoTuristica.nome}" foi criada com sucesso.`,
+        });
+      } else if (modalMode === "edit") {
+        console.log(attractionData);
+        console.log(uploadedUrls);
+
+        await updateAtrativo({
+          ...attractionData,
+          fotosURL: uploadedUrls,
+        });
+        toast({
+          title: "Atração atualizada",
+          description: `A atração "${attractionData.atracaoTuristica.nome}" foi atualizada com sucesso.`,
+        });
+      }
+      setIsModalOpen(false);
+    } catch (error) {
+      console.error("Error saving attraction:", error);
+      toast({
+        title: "Erro ao salvar atração",
+        description: "Ocorreu um erro ao salvar a atração. Tente novamente.",
+        variant: "destructive",
+      });
     }
   };
 
@@ -52,14 +117,16 @@ export default function Atracoes() {
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <div>
-          <h2 className="text-3xl font-bold tracking-tight">Atrações Turísticas</h2>
+          <h2 className="text-3xl font-bold tracking-tight">
+            Atrações Turísticas
+          </h2>
           <p className="text-muted-foreground">
             Gerencie as atrações turísticas cadastradas no sistema.
           </p>
         </div>
-        <Button 
+        <Button
           className="bg-tourism-primary"
-          onClick={() => handleOpenModal('create')}
+          onClick={() => handleOpenModal("create")}
         >
           <PlusCircle className="mr-2 h-4 w-4" />
           Nova Atração
@@ -78,40 +145,41 @@ export default function Atracoes() {
                 <TableHead>Nome</TableHead>
                 <TableHead>Município</TableHead>
                 <TableHead>Categoria</TableHead>
-                <TableHead>Contato</TableHead>
                 <TableHead className="text-right">Ações</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {atracoes.map((atracao) => (
+              {atracoes?.map((atracao: AtracaoTuristicaFull) => (
                 <TableRow key={atracao.id}>
                   <TableCell className="font-medium">{atracao.id}</TableCell>
                   <TableCell>{atracao.nome}</TableCell>
-                  <TableCell>{atracao.municipio}</TableCell>
+                  <TableCell>{atracao.municipio.nome}</TableCell>
                   <TableCell>
-                    <Badge variant="outline" className="bg-tourism-light text-tourism-primary">
-                      {atracao.categoria}
+                    <Badge
+                      variant="outline"
+                      className="bg-tourism-light text-tourism-primary"
+                    >
+                      {atracao.categoria.nome}
                     </Badge>
                   </TableCell>
-                  <TableCell>{atracao.contato}</TableCell>
                   <TableCell className="text-right space-x-2">
-                    <Button 
-                      variant="ghost" 
+                    <Button
+                      variant="ghost"
                       size="sm"
-                      onClick={() => handleOpenModal('view', atracao)}
+                      onClick={() => handleOpenModal("view", atracao)}
                     >
                       <Eye className="h-4 w-4" />
                     </Button>
-                    <Button 
-                      variant="ghost" 
+                    <Button
+                      variant="ghost"
                       size="sm"
-                      onClick={() => handleOpenModal('edit', atracao)}
+                      onClick={() => handleOpenModal("edit", atracao)}
                     >
                       <Edit className="h-4 w-4" />
                     </Button>
-                    <Button 
-                      variant="ghost" 
-                      size="sm" 
+                    <Button
+                      variant="ghost"
+                      size="sm"
                       className="text-destructive"
                       onClick={() => handleOpenDeleteModal(atracao)}
                     >
@@ -130,6 +198,7 @@ export default function Atracoes() {
         onClose={() => setIsModalOpen(false)}
         mode={modalMode}
         initialData={selectedAttraction}
+        onSave={handleSave}
       />
 
       <DeleteConfirmModal

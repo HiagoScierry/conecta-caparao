@@ -15,12 +15,12 @@ export class AtracaoTuristicaService {
     return this.atracaoTuristicaRepository.findById(id);
   }
 
-  async create(data: AtracaoTuristicaWithRelations) {
-    return this.atracaoTuristicaRepository.create(data);
+  async create(data: AtracaoTuristicaWithRelations, fotos: string[]) {
+    return this.atracaoTuristicaRepository.create(data, fotos);
   }
 
-  async update(id: number, data: AtracaoTuristicaWithRelations) {
-    return this.atracaoTuristicaRepository.update(id, data);
+  async update(id: number, data: AtracaoTuristicaWithRelations, perfisParaRemover: string[], fotos: string[]) {
+    return this.atracaoTuristicaRepository.update(id, data, perfisParaRemover, fotos);
   }
 
   async delete(id: number) {

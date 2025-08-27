@@ -16,12 +16,12 @@ export class EventoService {
     return this.eventoRepository.findById(id);
   }
 
-  async create(data: EventoWithRelations) {
-    return this.eventoRepository.create(data);
+  async create(data: EventoWithRelations, fotosUrl: string[]) {
+    return this.eventoRepository.create(data, fotosUrl);
   }
 
-  async update(id: number, data: EventoWithRelations) {
-    return this.eventoRepository.update(id, data);
+  async update(id: number, data: EventoWithRelations, fotosUrl?: string[]) {
+    return this.eventoRepository.update(id, data, fotosUrl);
   }
 
   async delete(id: number) {

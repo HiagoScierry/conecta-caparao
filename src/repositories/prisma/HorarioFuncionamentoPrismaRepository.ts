@@ -1,4 +1,4 @@
-import { HorarioDeFuncionamento, Prisma } from "@prisma/client";
+import { HorarioDeFuncionamento } from "@prisma/client";
 import { connection } from "@/config/database/connection";
 import { IHorarioDeFuncionamentoRepository } from "../interfaces/IHoraDeFuncionamentoRepository";
 import { HorarioDeFuncionamentoDTO } from "@/dto/horaFuncionamentoDTO";
@@ -14,25 +14,31 @@ export class HorarioFuncionamentoPrismaRepository implements IHorarioDeFuncionam
     });
   }
 
-  async create(data: HorarioDeFuncionamentoDTO): Promise<HorarioDeFuncionamento> {
+  async create(data: HorarioDeFuncionamentoDTO): Promise<HorarioDeFuncionamento[]> {
     const { horaAbertura, horaFechamento, diaDaSemana, estabelecimentoId, tipoTurismo } = data;
 
-    const baseData: Omit<Prisma.HorarioDeFuncionamentoCreateInput, 'atracaoTuristica' | 'servicoTuristico'> = {
+    const baseData = diaDaSemana.map(dia => ({
       horario: `${horaAbertura} - ${horaFechamento}`,
-      dia: diaDaSemana,
-    };
+      dia,
+    }));
 
-    const relacionamentos: Partial<Pick<Prisma.HorarioDeFuncionamentoCreateInput, 'atracaoTuristica' | 'servicoTuristico'>> =
+    const relacionamentos =
       tipoTurismo === "ATRAÇÃO"
-        ? { atracaoTuristica: { connect: { id: Number(estabelecimentoId) } } }
-        : { servicoTuristico: { connect: { id: Number(estabelecimentoId) } } };
+      ? { atracaoTuristica: { connect: { id: Number(estabelecimentoId) } } }
+      : { servicoTuristico: { connect: { id: Number(estabelecimentoId) } } };
 
-    return connection.horarioDeFuncionamento.create({
-      data: {
-        ...baseData,
-        ...relacionamentos,
-      },
-    });
+    const createdRecords = await Promise.all(
+      baseData.map(item =>
+        connection.horarioDeFuncionamento.create({
+          data: {
+            ...item,
+            ...relacionamentos,
+          },
+        })
+      )
+    );
+    // Return the first created record or adjust as needed
+    return createdRecords;
   }
 
 

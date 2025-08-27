@@ -16,12 +16,12 @@ export class NoticiaService {
     return this.noticiaRepository.findById(id);
   }
 
-  async create(data: NoticiaDTO) {
-    return this.noticiaRepository.create(data);
+  async create(data: NoticiaDTO, fotosUrl: string[]) {
+    return this.noticiaRepository.create(data, fotosUrl);
   }
 
-  async update(id: number, data: NoticiaDTO) {
-    return this.noticiaRepository.update(id, data);
+  async update(id: number, data: NoticiaDTO, fotosUrl: string[]) {
+    return this.noticiaRepository.update(id, data, fotosUrl);
   }
 
   async delete(id: number) {

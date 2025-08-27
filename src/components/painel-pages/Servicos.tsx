@@ -2,82 +2,128 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { PlusCircle, Eye, Edit, Trash2 } from "lucide-react";
 import { ServiceModal } from "@/components/modals/ServiceModal";
 import { DeleteConfirmModal } from "@/components/modals/DeleteConfirmModal";
 import { useToast } from "@/hooks/use-toast";
+import {
+  useCreateServico,
+  useGetAllServicos,
+  useUpdateServico,
+  useDeleteServico,
+} from "@/hooks/http/useServicos";
+import { ServicoTuristicoFull } from "@/repositories/interfaces/IServicoTuristicoRepository";
+import { ServicoForm } from "@/forms/servicoForm";
+import { useUpload } from "@/hooks/http/useUpload";
 
 export default function Servicos() {
   const { toast } = useToast();
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [modalMode, setModalMode] = useState<'create' | 'edit' | 'view'>('create');
-  const [selectedService, setSelectedService] = useState<any>(null);
+  const [modalMode, setModalMode] = useState<"create" | "edit" | "view">(
+    "create"
+  );
+  const [selectedService, setSelectedService] =
+    useState<ServicoTuristicoFull | null>(null);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-  const [serviceToDelete, setServiceToDelete] = useState<any>(null);
+  const [serviceToDelete, setServiceToDelete] =
+    useState<ServicoTuristicoFull | null>(null);
 
-  const [servicos, setServicos] = useState([
-    { id: 1, nome: "Hotel Atlântico", descricao: "Hotel 5 estrelas na orla", endereco: "Av. Atlântica, 1000", contato: "contato@atlantico.com" },
-    { id: 2, nome: "Restaurante Mar Azul", descricao: "Especializado em frutos do mar", endereco: "Rua das Conchas, 123", contato: "reservas@marazul.com" },
-    { id: 3, nome: "Agência Aventura", descricao: "Passeios ecológicos", endereco: "Av. das Árvores, 456", contato: "contato@aventura.com" },
-    { id: 4, nome: "Pousada Recanto", descricao: "Hospedagem familiar", endereco: "Estrada do Sol, 789", contato: "reservas@recanto.com" },
-    { id: 5, nome: "Transportes Turísticos", descricao: "Traslados e city tours", endereco: "Av. Central, 321", contato: "reservas@transportestur.com" },
-  ]);
+  const { data: servicos } = useGetAllServicos();
 
-  const handleOpenModal = (mode: 'create' | 'edit' | 'view', service?: any) => {
+  const { mutateAsync: uploadFiles } = useUpload();
+
+  const { mutateAsync: createServico } = useCreateServico();
+  const { mutateAsync: updateServico } = useUpdateServico();
+  const { mutateAsync: deleteServico } = useDeleteServico();
+
+  const handleOpenModal = (
+    mode: "create" | "edit" | "view",
+    service?: ServicoTuristicoFull | null
+  ) => {
     setModalMode(mode);
-    setSelectedService(service);
+    setSelectedService(service || null);
     setIsModalOpen(true);
   };
 
-  const handleOpenDeleteModal = (service: any) => {
+  const handleOpenDeleteModal = (service: ServicoTuristicoFull | null) => {
     setServiceToDelete(service);
     setIsDeleteModalOpen(true);
   };
 
-  const handleDeleteService = () => {
+  const handleDeleteService = async () => {
     if (serviceToDelete) {
-      setServicos(servicos.filter(servico => servico.id !== serviceToDelete.id));
+      await deleteServico(serviceToDelete.id);
       toast({
         title: "Serviço excluído",
         description: `O serviço "${serviceToDelete.nome}" foi excluído com sucesso.`,
       });
-      console.log('Serviço excluído:', serviceToDelete);
+      console.log("Serviço excluído:", serviceToDelete);
     }
   };
 
-  const handleSaveService = (serviceData: any) => {
-    if (modalMode === 'create') {
-      const newService = { ...serviceData, id: Date.now() };
-      setServicos([...servicos, newService]);
+  const handleSaveService = async (
+    serviceData: ServicoForm & { fotos: File[] }
+  ) => {
+    try {
+      const uploadedUrls = await Promise.all(
+        (serviceData.fotos || []).map(async (file) => {
+          const url = await uploadFiles(file);
+          return url;
+        })
+      );
+
+      if (modalMode === "create") {
+        await createServico({
+          ...serviceData,
+          fotoUrl: uploadedUrls[0] || "",
+        });
+        toast({
+          title: "Serviço criado",
+          description: `O serviço "${serviceData?.servico.nome}" foi criado com sucesso.`,
+        });
+      } else if (modalMode === "edit") {
+        await updateServico({
+          ...serviceData,
+          fotoUrl: uploadedUrls[0] || ""
+        });
+        toast({
+          title: "Serviço atualizado",
+          description: `O serviço "${serviceData.servico.nome}" foi atualizado com sucesso.`,
+        });
+      }
+      setIsModalOpen(false);
+    } catch (error) {
       toast({
-        title: "Serviço criado",
-        description: `O serviço "${serviceData.nome}" foi criado com sucesso.`,
+        title: "Erro",
+        description: "Ocorreu um erro ao salvar o serviço. Tente novamente.",
+        variant: "destructive",
       });
-    } else if (modalMode === 'edit') {
-      setServicos(servicos.map(servico => 
-        servico.id === selectedService.id ? { ...servico, ...serviceData } : servico
-      ));
-      toast({
-        title: "Serviço atualizado",
-        description: `O serviço "${serviceData.nome}" foi atualizado com sucesso.`,
-      });
+      console.error("Erro ao salvar serviço:", error);
     }
-    setIsModalOpen(false);
   };
 
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <div>
-          <h2 className="text-3xl font-bold tracking-tight">Serviços Turísticos</h2>
+          <h2 className="text-3xl font-bold tracking-tight">
+            Serviços Turísticos
+          </h2>
           <p className="text-muted-foreground">
             Gerencie os serviços turísticos disponíveis.
           </p>
         </div>
-        <Button 
+        <Button
           className="bg-tourism-primary"
-          onClick={() => handleOpenModal('create')}
+          onClick={() => handleOpenModal("create")}
         >
           <PlusCircle className="mr-2 h-4 w-4" />
           Novo Serviço
@@ -95,37 +141,35 @@ export default function Servicos() {
                 <TableHead>ID</TableHead>
                 <TableHead>Nome</TableHead>
                 <TableHead>Descrição</TableHead>
-                <TableHead>Endereço</TableHead>
-                <TableHead>Contato</TableHead>
+                {/* <TableHead>Contato</TableHead> */}
                 <TableHead className="text-right">Ações</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {servicos.map((servico) => (
+              {servicos?.map((servico: ServicoTuristicoFull) => (
                 <TableRow key={servico.id}>
                   <TableCell className="font-medium">{servico.id}</TableCell>
                   <TableCell>{servico.nome}</TableCell>
                   <TableCell>{servico.descricao}</TableCell>
-                  <TableCell>{servico.endereco}</TableCell>
-                  <TableCell>{servico.contato}</TableCell>
+                  {/* <TableCell>{servico.contato}</TableCell> */}
                   <TableCell className="text-right space-x-2">
-                    <Button 
-                      variant="ghost" 
+                    <Button
+                      variant="ghost"
                       size="sm"
-                      onClick={() => handleOpenModal('view', servico)}
+                      onClick={() => handleOpenModal("view", servico)}
                     >
                       <Eye className="h-4 w-4" />
                     </Button>
-                    <Button 
-                      variant="ghost" 
+                    <Button
+                      variant="ghost"
                       size="sm"
-                      onClick={() => handleOpenModal('edit', servico)}
+                      onClick={() => handleOpenModal("edit", servico)}
                     >
                       <Edit className="h-4 w-4" />
                     </Button>
-                    <Button 
-                      variant="ghost" 
-                      size="sm" 
+                    <Button
+                      variant="ghost"
+                      size="sm"
                       className="text-destructive"
                       onClick={() => handleOpenDeleteModal(servico)}
                     >
@@ -143,7 +187,7 @@ export default function Servicos() {
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         mode={modalMode}
-        initialData={selectedService}
+        initialData={selectedService ?? undefined}
         onSave={handleSaveService}
       />
 

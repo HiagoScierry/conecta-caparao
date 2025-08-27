@@ -2,68 +2,112 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { PlusCircle, Eye, Edit, Trash2 } from "lucide-react";
 import { NewsModal } from "@/components/modals/NewsModal";
 import { DeleteConfirmModal } from "@/components/modals/DeleteConfirmModal";
 import { useToast } from "@/hooks/use-toast";
+import {
+  useCreateNoticia,
+  useDeleteNoticia,
+  useGetNoticias,
+  useUpdateNoticia,
+} from "@/hooks/http/useNoticia";
+import { NoticiasForm } from "@/forms/noticiasForm";
+import { useUpload } from "@/hooks/http/useUpload";
+import { updateNoticia } from "@/controllers/noticiaController";
+import { NoticiaFull } from "@/repositories/interfaces/INoticiaRepository";
 
 export default function Noticias() {
   const { toast } = useToast();
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [modalMode, setModalMode] = useState<'create' | 'edit' | 'view'>('create');
-  const [selectedNews, setSelectedNews] = useState<any>(null);
+  const [modalMode, setModalMode] = useState<"create" | "edit" | "view">(
+    "create"
+  );
+  const [selectedNews, setSelectedNews] = useState<NoticiaFull | null>(null);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-  const [newsToDelete, setNewsToDelete] = useState<any>(null);
+  const [newsToDelete, setNewsToDelete] = useState<NoticiaFull | null>(null);
 
-  const [noticias, setNoticias] = useState([
-    { id: 1, titulo: "Nova atração turística inaugurada", data: "2023-01-05", autor: "João Silva" },
-    { id: 2, titulo: "Festival de Verão bate recorde de público", data: "2023-01-20", autor: "Maria Souza" },
-    { id: 3, titulo: "Turismo aquece economia local", data: "2023-02-10", autor: "Carlos Oliveira" },
-    { id: 4, titulo: "Novas rotas turísticas são anunciadas", data: "2023-03-15", autor: "Ana Santos" },
-    { id: 5, titulo: "Exposição internacional chega à cidade", data: "2023-04-01", autor: "Pedro Costa" },
-  ]);
+  const { data: noticias } = useGetNoticias();
 
-  const handleOpenModal = (mode: 'create' | 'edit' | 'view', news?: any) => {
+  const { mutateAsync: uploadFile } = useUpload();
+  const { mutateAsync: createNoticia } = useCreateNoticia();
+  const { mutateAsync: updateNoticia } = useUpdateNoticia();
+  const { mutateAsync: deleteNoticia } = useDeleteNoticia();
+
+  const handleOpenModal = (mode: "create" | "edit" | "view", news?: NoticiaFull) => {
     setModalMode(mode);
-    setSelectedNews(news);
+    setSelectedNews(news || null);
     setIsModalOpen(true);
   };
 
-  const handleOpenDeleteModal = (news: any) => {
+  const handleOpenDeleteModal = (news: NoticiaFull) => {
     setNewsToDelete(news);
     setIsDeleteModalOpen(true);
   };
 
-  const handleDeleteNews = () => {
+  const handleDeleteNews = async () => {
     if (newsToDelete) {
-      setNoticias(noticias.filter(noticia => noticia.id !== newsToDelete.id));
+      await deleteNoticia(newsToDelete.id);
+
       toast({
         title: "Notícia excluída",
         description: `A notícia "${newsToDelete.titulo}" foi excluída com sucesso.`,
       });
-      console.log('Notícia excluída:', newsToDelete);
+      console.log("Notícia excluída:", newsToDelete);
     }
   };
 
-  const handleSaveNews = (newsData: any) => {
-    if (modalMode === 'create') {
-      const newNews = { ...newsData, id: Date.now() };
-      setNoticias([...noticias, newNews]);
+  const handleSaveNews = async (newsData: NoticiasForm & { fotos: File[] }) => {
+    try {
+
+      const uploadedUrls = await Promise.all(
+        newsData.fotos.map(async (file) => uploadFile(file))
+      );
+
+      if (modalMode === "create") {
+        await createNoticia({
+          noticia: newsData.noticia,
+          fotosUrl: uploadedUrls,
+        });
+
+        toast({
+          title: "Notícia criada",
+          description: `A notícia "${newsData.noticia.titulo}" foi criada com sucesso.`,
+        });
+      } else if (modalMode === "edit") {
+
+        if (newsData.noticia.id === undefined) {
+          throw new Error("ID da notícia não definido para atualização.");
+        }
+
+        await updateNoticia({
+          ...newsData,
+          fotosUrl: uploadedUrls,
+        });
+
+        toast({
+          title: "Notícia atualizada",
+          description: `A notícia "${newsData.noticia.titulo}" foi atualizada com sucesso.`,
+        });
+      }
+      setIsModalOpen(false);
+    } catch (error) {
+      console.error("Erro ao salvar notícia:", error);
+
       toast({
-        title: "Notícia criada",
-        description: `A notícia "${newsData.titulo}" foi criada com sucesso.`,
-      });
-    } else if (modalMode === 'edit') {
-      setNoticias(noticias.map(noticia => 
-        noticia.id === selectedNews.id ? { ...noticia, ...newsData } : noticia
-      ));
-      toast({
-        title: "Notícia atualizada",
-        description: `A notícia "${newsData.titulo}" foi atualizada com sucesso.`,
+        title: "Erro ao salvar notícia",
+        description: "Ocorreu um erro ao salvar a notícia.",
+        variant: "destructive",
       });
     }
-    setIsModalOpen(false);
   };
 
   return (
@@ -73,11 +117,11 @@ export default function Noticias() {
           <h2 className="text-3xl font-bold tracking-tight">Notícias</h2>
           <p className="text-muted-foreground">
             Gerencie as notícias do portal de turismo.
-          </p>
+          </p>\
         </div>
-        <Button 
+        <Button
           className="bg-tourism-primary"
-          onClick={() => handleOpenModal('create')}
+          onClick={() => handleOpenModal("create")}
         >
           <PlusCircle className="mr-2 h-4 w-4" />
           Nova Notícia
@@ -100,30 +144,30 @@ export default function Noticias() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {noticias.map((noticia) => (
+              {noticias?.map((noticia) => (
                 <TableRow key={noticia.id}>
                   <TableCell className="font-medium">{noticia.id}</TableCell>
                   <TableCell>{noticia.titulo}</TableCell>
                   <TableCell>{noticia.data}</TableCell>
                   <TableCell>{noticia.autor}</TableCell>
                   <TableCell className="text-right space-x-2">
-                    <Button 
-                      variant="ghost" 
+                    <Button
+                      variant="ghost"
                       size="sm"
-                      onClick={() => handleOpenModal('view', noticia)}
+                      onClick={() => handleOpenModal("view", noticia)}
                     >
                       <Eye className="h-4 w-4" />
                     </Button>
-                    <Button 
-                      variant="ghost" 
+                    <Button
+                      variant="ghost"
                       size="sm"
-                      onClick={() => handleOpenModal('edit', noticia)}
+                      onClick={() => handleOpenModal("edit", noticia)}
                     >
                       <Edit className="h-4 w-4" />
                     </Button>
-                    <Button 
-                      variant="ghost" 
-                      size="sm" 
+                    <Button
+                      variant="ghost"
+                      size="sm"
                       className="text-destructive"
                       onClick={() => handleOpenDeleteModal(noticia)}
                     >

@@ -4,7 +4,8 @@ import { z } from "zod";
 
 export const municipioForm = z.object({
   municipio: municipioSchema,
-  contato: contatoSchema
+  contato: contatoSchema,
+  fotos: z.array(z.object({ id: z.string(), url: z.string() })).optional(),
 });
 
 export type MunicipioForm = z.infer<typeof municipioForm>;

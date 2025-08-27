@@ -1,4 +1,5 @@
-
+import { useEffect, useState } from "react";
+import { useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -8,18 +9,77 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Form, FormControl, FormField, FormItem, FormLabel } from "@/components/ui/form";
-import { useForm } from "react-hook-form";
+import { Form, FormControl, FormItem, FormLabel } from "@/components/ui/form";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { ServicoForm } from "@/forms/servicoForm";
 import { ImageUpload } from "@/components/ImageUpload";
+import { useGetAllMunicipios } from "@/hooks/http/useMunicipio";
+import { ServicoForm } from "@/forms/servicoForm";
+import { ServicoTuristicoFull } from "@/repositories/interfaces/IServicoTuristicoRepository";
+import { useDeleteUpload } from "@/hooks/http/useUpload";
 
 interface ServiceModalProps {
   isOpen: boolean;
   onClose: () => void;
   mode: "create" | "edit" | "view";
-  initialData?: ServicoForm;
-  onSave: (serviceData: ServicoForm) => void;
+  initialData?: ServicoTuristicoFull;
+  onSave: (serviceData: ServicoForm & { fotos: File[] }) => void;
+}
+
+const defaultFormValues: ServicoForm = {
+  servico: { nome: "", descricao: "", site: "" },
+  contato: {
+    email: "",
+    celular: "",
+    telefone: "",
+    whatsapp: "",
+    instagram: "",
+  },
+  endereco: { cep: "", logradouro: "", numero: "", bairro: "" },
+  municipio: "",
+  horarioFuncionamento: {
+    diaDaSemana: [],
+    horaAbertura: "",
+    horaFechamento: "",
+  },
+};
+
+function getDefaultValues(data?: ServicoTuristicoFull): ServicoForm {
+  if (!data) return defaultFormValues;
+
+  const primeiroHorario = data.horarios?.[0]?.horario ?? "";
+  const [abertura, fechamento] = primeiroHorario.includes("-")
+    ? primeiroHorario.split("-").map((s) => s.trim())
+    : ["", ""];
+
+  return {
+    servico: {
+      id: data.id ?? "",
+      nome: data.nome ?? "",
+      descricao: data.descricao ?? "",
+      site: data.site ?? "",
+    },
+    horarioFuncionamento: {
+      diaDaSemana: data.horarios?.map((h) => h.dia) ?? [],
+      horaAbertura: abertura,
+      horaFechamento: fechamento,
+    },
+    endereco: {
+      id: data.endereco?.id ?? 0,
+      logradouro: data.endereco?.rua ?? "",
+      numero: data.endereco?.numero ?? "",
+      bairro: data.endereco?.bairro ?? "",
+      cep: data.endereco?.cep ?? "",
+    },
+    contato: {
+      id: data.contato?.id?.toString() ?? "",
+      email: data.contato?.email ?? "",
+      telefone: data.contato?.telefone ?? "",
+      celular: data.contato?.celular ?? "",
+      whatsapp: data.contato?.whatsapp ?? "",
+      instagram: data.contato?.instagram ?? "",
+    },
+    municipio: data.municipio?.id?.toString() ?? "",
+  };
 }
 
 export function ServiceModal({
@@ -29,51 +89,47 @@ export function ServiceModal({
   initialData,
   onSave,
 }: ServiceModalProps) {
-  const form = useForm({
-    defaultValues: {
-      servico: initialData?.servico || {
-        id: "",
-        nome: "",
-        descricao: "",
-        site: "",
-        horarios: {
-          diaDaSemana: "",
-          horarioAbertura: "",
-          horarioFechamento: "",
-        },
-      },
-      contato: initialData?.contato || {
-        id: "",
-        email: "",
-        celular: "",
-        telefone: "",
-        whatsapp: "",
-        instagram: "",
-      },
-      endereco: initialData?.endereco || {
-        id: "",
-        cep: "",
-        logradouro: "",
-        numero: "",
-        bairro: "",
-        cidade: "",
-        estado: "",
-      },
-    },
+  const [selectedImages, setSelectedImages] = useState<File[]>([]);
+
+  const form = useForm<ServicoForm>({
+    defaultValues: getDefaultValues(initialData),
   });
+
+  const { data: municipios } = useGetAllMunicipios();
+
+  const { mutateAsync: deleteFoto } = useDeleteUpload();
 
   const isViewMode = mode === "view";
 
-  const handleImageSelect = (file: File) => {
-    console.log("Selected image:", file);
-    // Here you would typically handle the image upload to your backend
+  // Atualiza valores do formulário sempre que initialData mudar
+  useEffect(() => {
+    form.reset(getDefaultValues(initialData));
+  }, [initialData]);
+
+  const handleDeleteFoto = async (fotoId: string) => {
+    try {
+      await deleteFoto(fotoId);
+    } catch (error) {
+      console.error("Erro ao deletar a foto:", error);
+    }
   };
 
+  const handleImageSelect = (files: File[]) => {
+    setSelectedImages(files);
+  };
 
-  const handleSubmit = () => {
-    const formData = form.getValues();
-    onSave(formData);
-    onClose();
+  const onSubmit = (data: ServicoForm) => {
+    // Pega os erros do formulário
+    const errors = form.formState.errors;
+    if (Object.keys(errors).length > 0) {
+      // Se houver erros, não prossegue
+      console.error("Erros no formulário:", errors);
+      return;
+    }
+
+
+    onSave({ ...data, fotos: selectedImages });
+    onClose(); // Idealmente, fechar o modal apenas se o onSave for bem-sucedido.
   };
 
   return (
@@ -98,63 +154,58 @@ export function ServiceModal({
 
         <ScrollArea className="max-h-[60vh]">
           <Form {...form}>
-            <div className="space-y-6 py-4">
-
-              {/* Bloco: Imagem */}
+            <form id="service-form" onSubmit={form.handleSubmit(onSubmit)}>
+              <div className="space-y-6 py-4">
+                {/* Imagem */}
                 <section className="border rounded-lg p-6 space-y-6">
                   <FormItem>
-                    <FormLabel className="text-base font-medium">
-                      Imagem
-                    </FormLabel>
+                    <FormLabel>Imagem</FormLabel>
                     <FormControl>
                       <ImageUpload
-                        onImageSelect={handleImageSelect}
+                        initialFotos={[{
+                          id: initialData?.foto?.id ?? "",
+                          url: initialData?.foto?.url ?? "",
+                        }]}
+                        onRemoveFoto={handleDeleteFoto}
+                        onImagesSelect={handleImageSelect}
                         disabled={isViewMode}
+                        multiple={false}
                       />
                     </FormControl>
                   </FormItem>
                 </section>
 
-              {/* Bloco: Dados do Serviço */}
-              <section className="border rounded-lg p-6 space-y-6">
-                <h3 className="text-lg font-semibold">Dados do Serviço</h3>
+                {/* Dados do Serviço */}
+                <section className="border rounded-lg p-6 space-y-6">
+                  <h3 className="text-lg font-semibold">Dados do Serviço</h3>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <FormItem>
+                      <FormLabel>Nome</FormLabel>
+                      <FormControl>
+                        <input
+                          type="text"
+                          {...form.register("servico.nome", { required: true })}
+                          disabled={isViewMode}
+                          className="border rounded-md p-2 w-full"
+                        />
+                      </FormControl>
+                    </FormItem>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                  <FormItem className="flex flex-col gap-1"> 
-                    <FormLabel className="text-sm font-medium">
-                      Nome
-                    </FormLabel>
-                    <FormControl>
-                      <input
-                        type="text"
-                        {...form.register("servico.nome", { required: true })}
-                        disabled={isViewMode}
-                        className="border rounded-md p-2 w-full"
-                      />
-                    </FormControl>
-                  </FormItem>
+                    <FormItem>
+                      <FormLabel>Site</FormLabel>
+                      <FormControl>
+                        <input
+                          type="text"
+                          {...form.register("servico.site")}
+                          disabled={isViewMode}
+                          className="border rounded-md p-2 w-full"
+                        />
+                      </FormControl>
+                    </FormItem>
+                  </div>
 
-                  <FormItem className="flex flex-col gap-1">
-                    <FormLabel className="text-sm font-medium">
-                      Site
-                    </FormLabel>
-                    <FormControl>
-                      <input
-                        type="text"
-                        {...form.register("servico.site")}
-                        disabled={isViewMode}
-                        className="border rounded-md p-2 w-full"
-                      />
-                    </FormControl>
-                  </FormItem>
-                </div>
-              
-                {/* Textarea ocupa linha propria*/}
-                <div>
-                  <FormItem className="flex flex-col gap-1">
-                    <FormLabel className="text-sm font-medium">
-                      Descrição
-                    </FormLabel>
+                  <FormItem>
+                    <FormLabel>Descrição</FormLabel>
                     <FormControl>
                       <textarea
                         {...form.register("servico.descricao")}
@@ -163,178 +214,149 @@ export function ServiceModal({
                       />
                     </FormControl>
                   </FormItem>
-                </div>
-              </section>
+                </section>
 
-              {/* Bloco: Endereço */}
-              <section className="border rounded-lg p-6 space-y-6">
-                <h3 className="text-lg font-semibold">Endereço</h3>
+                {/* Contato */}
+                <section className="border rounded-lg p-6 space-y-6">
+                  <h3 className="text-lg font-semibold">Contato</h3>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {[
+                      "email",
+                      "celular",
+                      "telefone",
+                      "whatsapp",
+                      "instagram",
+                    ].map((field) => (
+                      <FormItem key={field}>
+                        <FormLabel>
+                          {field.charAt(0).toUpperCase() + field.slice(1)}
+                        </FormLabel>
+                        <FormControl>
+                          <input
+                            type={field === "email" ? "email" : "text"}
+                            {...form.register(`contato.${field}` as const)}
+                            disabled={isViewMode}
+                            className="border rounded-md p-2 w-full"
+                          />
+                        </FormControl>
+                      </FormItem>
+                    ))}
+                  </div>
+                </section>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                  <FormItem className="flex flex-col gap-1">
-                    <FormLabel className="text-sm font-medium">
-                      Cep
-                    </FormLabel>
+                {/* Horário de Funcionamento */}
+                <section className="border rounded-lg p-6 space-y-6">
+                  <h3 className="text-lg font-semibold">
+                    Horário de Funcionamento
+                  </h3>
+
+                  <FormItem>
+                    <FormLabel>Dias de Funcionamento</FormLabel>
                     <FormControl>
-                      <input
-                        type="text"
-                        {...form.register("endereco.cep")}
-                        disabled={isViewMode}
-                        className="border rounded-md p-2 w-full"
-                      />
+                      <div className="flex flex-wrap gap-4">
+                        {[
+                          "SEGUNDA",
+                          "TERCA",
+                          "QUARTA",
+                          "QUINTA",
+                          "SEXTA",
+                          "SABADO",
+                          "DOMINGO",
+                        ].map((dia) => (
+                          <label key={dia} className="flex items-center gap-1">
+                            <input
+                              type="checkbox"
+                              value={dia}
+                              {...form.register(
+                                "horarioFuncionamento.diaDaSemana"
+                              )}
+                              disabled={isViewMode}
+                            />
+                            {dia.charAt(0) + dia.slice(1).toLowerCase()}
+                          </label>
+                        ))}
+                      </div>
                     </FormControl>
                   </FormItem>
 
-                  <FormItem className="flex flex-col gap-1">
-                    <FormLabel className="text-sm font-medium">
-                      Logradouro
-                    </FormLabel>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                    <FormItem>
+                      <FormLabel>Horário de Abertura</FormLabel>
+                      <FormControl>
+                        <input
+                          type="time"
+                          {...form.register(
+                            "horarioFuncionamento.horaAbertura",
+                            { required: true }
+                          )}
+                          disabled={isViewMode}
+                          className="border rounded-md p-2 w-full"
+                        />
+                      </FormControl>
+                    </FormItem>
+
+                    <FormItem>
+                      <FormLabel>Horário de Fechamento</FormLabel>
+                      <FormControl>
+                        <input
+                          type="time"
+                          {...form.register(
+                            "horarioFuncionamento.horaFechamento",
+                            { required: true }
+                          )}
+                          disabled={isViewMode}
+                          className="border rounded-md p-2 w-full"
+                        />
+                      </FormControl>
+                    </FormItem>
+                  </div>
+                </section>
+
+                {/* Município */}
+                <section className="border rounded-lg p-6 space-y-6">
+                  <h3 className="text-lg font-semibold">Municípios</h3>
+                  <FormItem>
+                    <FormLabel>Selecione o Município</FormLabel>
                     <FormControl>
-                      <input
-                        type="text"
-                        {...form.register("endereco.logradouro")}
+                      <select
+                        {...form.register("municipio", { required: true })}
                         disabled={isViewMode}
                         className="border rounded-md p-2 w-full"
-                      />
+                      >
+                        <option value="">Selecione o município</option>
+                        {municipios?.map((m) => (
+                          <option key={m.id} value={m.id}>
+                            {m.nome}
+                          </option>
+                        ))}
+                      </select>
                     </FormControl>
                   </FormItem>
+                </section>
 
-                  <FormItem className="flex flex-col gap-1">
-                    <FormLabel className="text-sm font-medium">
-                      Número
-                    </FormLabel>
-                    <FormControl>
-                      <input
-                        type="text"
-                        {...form.register("endereco.numero")}
-                        disabled={isViewMode}
-                        className="border rounded-md p-2 w-full"
-                      />
-                    </FormControl>
-                  </FormItem>
-
-                  <FormItem className="flex flex-col gap-1">
-                    <FormLabel className="text-sm font-medium">
-                      Bairro
-                    </FormLabel>
-                    <FormControl>
-                      <input
-                        type="text"
-                        {...form.register("endereco.bairro")}
-                        disabled={isViewMode}
-                        className="border rounded-md p-2 w-full"
-                      />
-                    </FormControl>
-                  </FormItem>
-
-                  <FormItem className="flex flex-col gap-1">
-                    <FormLabel className="text-sm font-medium">
-                      Cidade
-                    </FormLabel>
-                    <FormControl>
-                      <input
-                        type="text"
-                        {...form.register("endereco.cidade")}
-                        disabled={isViewMode}
-                        className="border rounded-md p-2 w-full"
-                      />
-                    </FormControl>
-                  </FormItem>
-
-                  <FormItem className="flex flex-col gap-1">
-                    <FormLabel className="text-sm font-medium">
-                      Estado
-                    </FormLabel>
-                    <FormControl>
-                      <input
-                        type="text"
-                        {...form.register("endereco.estado")}
-                        disabled={isViewMode}
-                        className="border rounded-md p-2 w-full"
-                      />
-                    </FormControl>
-                  </FormItem>
-                </div>
-              </section>
-
-                            {/* Bloco: Contato */}
-              <section className="border rounded-lg p-6 space-y-6">
-                <h3 className="text-lg font-semibold">Contato</h3>
-
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                  <FormItem className="flex flex-col gap-1">
-                    <FormLabel className="text-sm font-medium">
-                      Email
-                    </FormLabel>
-                    <FormControl>
-                      <input
-                        type="email"
-                        {...form.register("contato.email")}
-                        disabled={isViewMode}
-                        className="border rounded-md p-2 w-full"
-                      />
-                    </FormControl>
-                  </FormItem>
-
-                  <FormItem className="flex flex-col gap-1">
-                    <FormLabel className="text-sm font-medium">
-                      Celular
-                    </FormLabel>
-                    <FormControl>
-                      <input
-                        type="tel"
-                        {...form.register("contato.celular")}
-                        disabled={isViewMode}
-                        className="border rounded-md p-2 w-full"
-                      />
-                    </FormControl>
-                  </FormItem>
-
-                  <FormItem className="flex flex-col gap-1">
-                    <FormLabel className="text-sm font-medium">
-                      Telefone
-                    </FormLabel>
-                    <FormControl>
-                      <input
-                        type="tel"
-                        {...form.register("contato.telefone")}
-                        disabled={isViewMode}
-                        className="border rounded-md p-2 w-full"
-                      />
-                    </FormControl>
-                  </FormItem>
-
-                  <FormItem className="flex flex-col gap-1">
-                    <FormLabel className="text-sm font-medium">
-                      Whatsapp
-                    </FormLabel>
-                    <FormControl>
-                      <input
-                        type="text"
-                        {...form.register("contato.whatsapp")}
-                        disabled={isViewMode}
-                        className="border rounded-md p-2 w-full"
-                      />
-                    </FormControl>
-                  </FormItem>
-
-                                    <FormItem className="flex flex-col gap-1">
-                    <FormLabel className="text-sm font-medium">
-                      Instagram
-                    </FormLabel>
-                    <FormControl>
-                      <input
-                        type="text"
-                        {...form.register("contato.instagram")}
-                        disabled={isViewMode}
-                        className="border rounded-md p-2 w-full"
-                      />
-                    </FormControl>
-                  </FormItem>
-                  
-                </div>
-              </section>
-            </div>
+                {/* Endereço */}
+                <section className="border rounded-lg p-6 space-y-6">
+                  <h3 className="text-lg font-semibold">Endereço</h3>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {["cep", "logradouro", "numero", "bairro"].map((field) => (
+                      <FormItem key={field}>
+                        <FormLabel>
+                          {field.charAt(0).toUpperCase() + field.slice(1)}
+                        </FormLabel>
+                        <FormControl>
+                          <input
+                            type="text"
+                            {...form.register(`endereco.${field}` as const)}
+                            disabled={isViewMode}
+                            className="border rounded-md p-2 w-full"
+                          />
+                        </FormControl>
+                      </FormItem>
+                    ))}
+                  </div>
+                </section>
+              </div>
+            </form>
           </Form>
         </ScrollArea>
 
@@ -343,7 +365,7 @@ export function ServiceModal({
             <Button
               type="submit"
               className="bg-tourism-primary"
-              onClick={handleSubmit}
+              form="service-form"
             >
               {mode === "create" ? "Criar" : "Salvar"}
             </Button>
@@ -356,5 +378,3 @@ export function ServiceModal({
     </Dialog>
   );
 }
-
-

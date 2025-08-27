@@ -1,4 +1,3 @@
-
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -9,21 +8,55 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
-import { Form, FormControl, FormField, FormItem, FormLabel } from "@/components/ui/form";
+import { Form, FormControl, FormItem, FormLabel } from "@/components/ui/form";
 import { useForm } from "react-hook-form";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Textarea } from "@/components/ui/textarea";
 import { ImageUpload } from "@/components/ImageUpload";
 import { NoticiasForm } from "@/forms/noticiasForm";
+import { useEffect, useState } from "react";
+import { NoticiaFull } from "@/repositories/interfaces/INoticiaRepository";
+import { useDeleteUpload } from "@/hooks/http/useUpload";
 
 interface NewsModalProps {
   isOpen: boolean;
   onClose: () => void;
   mode: "create" | "edit" | "view";
-  initialData?: NoticiasForm;
-  onSave: (newsData: NoticiasForm) => void;
+  initialData?: NoticiaFull | null;
+  onSave: (newsData: NoticiasForm & { fotos: File[] }) => void;
 }
 
+const defaultValue = {
+  noticia: {
+    titulo: "",
+    texto: "",
+    data: new Date(),
+    autor: "",
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    fotos: [],
+    id: undefined,
+  },
+  fotos: [],
+};
+
+const getDefault = (data: NoticiaFull | null | undefined) => {
+  if (!data) return defaultValue;
+  return {
+    noticia: {
+      id: data.id,
+      titulo: data.titulo,
+      texto: data.texto,
+      data: new Date(data.data).toISOString().split("T")[0], // string in 'YYYY-MM-DD'
+      fotos: data.fotos?.map(foto => ({
+        capa: foto.capa,
+        id: foto.id,
+        url: foto.foto.url,
+      })) || [],
+    },
+    fotos: data.fotos || [],
+  };
+};
 export function NewsModal({
   isOpen,
   onClose,
@@ -31,30 +64,36 @@ export function NewsModal({
   initialData,
   onSave,
 }: NewsModalProps) {
+  const [selectedImages, setSelectedImages] = useState<File[]>([]);
+
   const form = useForm<NoticiasForm>({
-    defaultValues: {
-      noticia: initialData?.noticia || {
-        titulo: "",
-        texto: "",
-        data: new Date(),
-        fotos: [],
-      },
-    },
+    defaultValues: getDefault(initialData) ?? defaultValue,
   });
 
   const isViewMode = mode === "view";
 
-  const handleImageSelect = (file: File) => {
-    console.log("Selected image:", file);
-    // Here you would typically handle the image upload to your backend
+  const { mutateAsync: deleteFoto } = useDeleteUpload();
+
+
+  const handleDeleteFoto = async (fotoId: string) => {
+    try {
+      await deleteFoto(fotoId);
+    } catch (error) {
+      console.error("Erro ao deletar a foto:", error);
+    }
   };
 
+  const handleImageSelect = (files: File[]) => {
+    setSelectedImages(files);
+  };
 
   const handleSubmit = () => {
     const formData = form.getValues();
-    onSave(formData);
+    onSave({ ...formData, fotos: selectedImages });
     onClose();
   };
+
+  useEffect(() => form.reset(getDefault(initialData)), [initialData, form]);
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
@@ -79,86 +118,69 @@ export function NewsModal({
         <ScrollArea className="h-[60vh]">
           <Form {...form}>
             <div className="space-y-6 py-4">
-
               {/* Bloco: Imagem */}
-                <section className="border rounded-lg p-6 space-y-6">
-                  <FormItem>
-                    <FormLabel className="text-base font-medium">
-                      Imagem
-                    </FormLabel>
-                    <FormControl>
-                      <ImageUpload
-                        onImageSelect={handleImageSelect}
-                        disabled={isViewMode}
-                      />
-                    </FormControl>
-                  </FormItem>
-                </section>
+              <section className="border rounded-lg p-6 space-y-6">
+                <FormItem>
+                  <FormLabel className="text-base font-medium">
+                    Imagem
+                  </FormLabel>
+                  <FormControl>
+                    <ImageUpload
+                      initialFotos={initialData?.fotos?.map(f => ({
+                        id: f.id,
+                        url: f.foto.url
+                      })) || []}
+                      onRemoveFoto={handleDeleteFoto}
+                      onImagesSelect={handleImageSelect}
+                      disabled={isViewMode}
+                    />
+                  </FormControl>
+                </FormItem>
+              </section>
 
               {/* Bloco: Título */}
-                <section className="border rounded-lg p-6 space-y-6">
-                  <FormItem>
-                    <FormLabel className="text-base font-medium">
-                      Título
-                    </FormLabel>
-                    <FormControl>
-                      <Input
-                        {...form.register("noticia.titulo", { required: true })}
-                        disabled={isViewMode}
-                        placeholder="Título da notícia"
-                      />
-                    </FormControl>
-                  </FormItem>
-                </section>
+              <section className="border rounded-lg p-6 space-y-6">
+                <FormItem>
+                  <FormLabel className="text-base font-medium">
+                    Título
+                  </FormLabel>
+                  <FormControl>
+                    <Input
+                      {...form.register("noticia.titulo", { required: true })}
+                      disabled={isViewMode}
+                      placeholder="Título da notícia"
+                    />
+                  </FormControl>
+                </FormItem>
+              </section>
 
-              { /* Bloco: Texto */ }
-                <section className="border rounded-lg p-6 space-y-6">
-                  <FormItem>
-                    <FormLabel className="text-base font-medium">
-                      Texto
-                    </FormLabel>
-                    <FormControl>
-                      <Textarea
-                        {...form.register("noticia.texto", { required: true })}
-                        disabled={isViewMode}
-                        placeholder="Conteúdo da notícia"
-                      />
-                    </FormControl>
-                  </FormItem>
-                </section>
+              {/* Bloco: Texto */}
+              <section className="border rounded-lg p-6 space-y-6">
+                <FormItem>
+                  <FormLabel className="text-base font-medium">Texto</FormLabel>
+                  <FormControl>
+                    <Textarea
+                      {...form.register("noticia.texto", { required: true })}
+                      disabled={isViewMode}
+                      placeholder="Conteúdo da notícia"
+                    />
+                  </FormControl>
+                </FormItem>
+              </section>
 
               {/* Bloco: Data */}
-                <section className="border rounded-lg p-6 space-y-6">
-                  <FormItem>
-                    <FormLabel className="text-base font-medium">
-                      Data
-                    </FormLabel>
-                    <FormControl>
-                      <Input
-                        type="date"
-                        {...form.register("noticia.data", { required: true })}
-                        disabled={isViewMode}
-                      />
-                    </FormControl>
-                  </FormItem>
-                </section>
-
-                {/* Bloco: autor */}
-                <section className="border rounded-lg p-6 space-y-6">
-                  <FormItem>
-                    <FormLabel className="text-base font-medium">
-                      Autor
-                    </FormLabel>
-                    <FormControl>
-                      <Input
-                        {...form.register("noticia.autor", { required: true })}
-                        disabled={isViewMode}
-                        placeholder="Nome do autor"
-                      />
-                    </FormControl>
-                  </FormItem>
-                  
-                </section>
+              <section className="border rounded-lg p-6 space-y-6">
+                <FormItem>
+                  <FormLabel className="text-base font-medium">Data</FormLabel>
+                  <FormControl>
+                    <Input
+                      type="date"
+                      {...form.register("noticia.data", { required: true })}
+                      disabled={isViewMode}
+                    />
+                  </FormControl>
+                </FormItem>
+              </section>
             </div>
           </Form>
         </ScrollArea>

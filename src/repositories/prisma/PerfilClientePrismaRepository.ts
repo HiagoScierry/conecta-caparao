@@ -10,7 +10,7 @@ export class PerfilClienteRepository implements IPerfilClienteRepository {
   }
 
   async findById(id: number): Promise<PerfilCliente | null> {
-    return connection.perfilCliente.findUnique({
+    return connection.perfilCliente.findFirst({
       where: { id },
       include: { atracoesTuristicas: true }, // inclui atrações relacionadas
     });

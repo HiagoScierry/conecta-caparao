@@ -6,6 +6,4 @@ export const enderecoSchema = z.object({
   logradouro: z.string().min(1, "Logradouro é obrigatório"),
   numero: z.string().min(1, "Número é obrigatório"),
   bairro: z.string().min(1, "Bairro é obrigatório"),
-  cidade: z.string().min(1, "Cidade é obrigatória"),
-  estado: z.string().length(2, "Estado deve ter exatamente 2 caracteres")
 })

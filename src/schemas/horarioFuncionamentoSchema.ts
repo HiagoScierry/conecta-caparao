@@ -2,6 +2,7 @@
 import { z } from "zod";
 
 export const horarioFuncionamentoSchema = z.object({
+  id: z.number().optional(),
   diaDaSemana: z.array(
     z.enum([
       "DOMINGO",
@@ -15,7 +16,7 @@ export const horarioFuncionamentoSchema = z.object({
   ).min(1, "Selecione pelo menos um dia"),
   horaAbertura: z.string(),
   horaFechamento: z.string(),
-  estabelecimentoId: z.string(),
-  tipoTurismo: z.enum(["ATRAÇÃO", "SERVIÇO"]),
+  estabelecimentoId: z.string().optional(),
+  tipoTurismo: z.enum(["ATRAÇÃO", "SERVIÇO"]).optional(),
 });
 

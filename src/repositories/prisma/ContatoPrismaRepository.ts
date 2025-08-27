@@ -13,14 +13,16 @@ export class ContatoPrismaRepository implements IContatoRepository {
         instagram: data.instagram
       }
     })
-
-    return newRegister;
+    return {
+      ...newRegister,
+      id: newRegister.id.toString()
+    };
   }
 
   async update(data: ContatoDTO): Promise<ContatoDTO> {
     const updatedRegister = await connection.contato.update({
       where: {
-        id: data.id
+        id: typeof data.id === "string" ? Number(data.id) : data.id
       },
       data: {
         email: data.email,
@@ -31,8 +33,10 @@ export class ContatoPrismaRepository implements IContatoRepository {
       }
     })
 
-    return updatedRegister;
-
+    return {
+      ...updatedRegister,
+      id: updatedRegister.id.toString()
+    };
   }
 
   async delete(id: number): Promise<void> {
@@ -44,15 +48,34 @@ export class ContatoPrismaRepository implements IContatoRepository {
   }
 
   async findAll(): Promise<ContatoDTO[]> {
-    return connection.contato.findMany();
+    const contatos = await connection.contato.findMany();
+    return contatos.map(contato => ({
+      id: contato.id.toString(),
+      email: contato.email,
+      celular: contato.celular,
+      telefone: contato.telefone,
+      whatsapp: contato.whatsapp,
+      instagram: contato.instagram
+    }));
   }
 
   async findById(id: number): Promise<ContatoDTO | null> {
-    return connection.contato.findUnique({
+    const contato = await connection.contato.findUnique({
       where: {
         id
       }
-    })
+    });
+
+    if (!contato) return null;
+
+    return {
+      id: contato.id.toString(),
+      email: contato.email,
+      celular: contato.celular,
+      telefone: contato.telefone,
+      whatsapp: contato.whatsapp,
+      instagram: contato.instagram
+    };
   }
 
 }
