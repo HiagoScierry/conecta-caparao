@@ -1,5 +1,5 @@
 import { ServicoTuristicoDTO } from "@/dto/servicoTuristicoDTO";
-import { ServicoTuristico } from "@prisma/client";
+import { Contato, Endereco, Foto, Municipio, ServicoTuristico } from "@prisma/client";
 
 export type ServicoTuristicoWithRelations = ServicoTuristicoDTO & {
   idEndereco: number;
@@ -7,6 +7,12 @@ export type ServicoTuristicoWithRelations = ServicoTuristicoDTO & {
   idMunicipio: number;
 }
 
+export type ServicoTuristicoFull = ServicoTuristico & {
+  endereco: Endereco;
+  contato: Contato;
+  municipio: Municipio;
+  foto: Foto;
+}
 
 export interface IServicoTuristicoRepository {
   findById(id: number): Promise<ServicoTuristico>;

@@ -1,15 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import {
-  createAtrativo,
-  deleteAtrativo,
-  getAtrativoById,
-  updateAtrativo,
-} from "@/controllers/atrativoController";
-import { AtracaoForm } from "@/forms/atracaoForm";
+
+import { deleteServico, getServicoById } from "@/controllers/servicoController";
 import { atracaoTuristicaSchema } from "@/schemas/atracaoTuristicaSchema";
-import { contatoSchema } from "@/schemas/contatoSchema";
-import { enderecoSchema } from "@/schemas/enderecoSchema";
-import { horarioFuncionamentoSchema } from "@/schemas/horarioFuncionamentoSchema";
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 
@@ -21,7 +13,7 @@ export async function GET(
   try {
     const { id } = await context.params;
 
-    const atrativo = await getAtrativoById(Number(id));
+    const atrativo = await getServicoById(Number(id));
     if (!atrativo) {
       return new NextResponse("Atrativo not found", { status: 404 });
     }
@@ -100,8 +92,8 @@ export async function DELETE(
   try {
     const { id } = await context.params;
 
-    await deleteAtrativo(Number(id));
-    return new NextResponse("Atrativo deleted", { status: 200 });
+    await deleteServico(Number(id));
+    return new NextResponse("Serviço deleted", { status: 200 });
   } catch (error) {
     console.error("DELETE error:", error);
     const errorMessage =

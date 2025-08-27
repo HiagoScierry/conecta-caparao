@@ -1,17 +1,12 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { atracaoTuristicaServiceFactory } from "@/factories/atracaoTuristicaServiceFactory";
-import { categoriaServiceFactory } from "@/factories/categoriaServiceFactory";
 import { contatoServiceFactory } from "@/factories/contatoServiceFactory";
 import { enderecoServiceFactory } from "@/factories/enderecoServiceFactory";
 import { horarioFuncionamentoServiceFactory } from "@/factories/horarioFuncionamentoServiceFactory";
 import { municipioServiceFactory } from "@/factories/municipioServiceFactory";
-import { perfilClienteServiceFactory } from "@/factories/perfilClienteServiceFactory";
 import { servicoTuristicoServiceFactory } from "@/factories/servicoTuristicoServiceFactory";
-import { AtracaoForm } from "@/forms/atracaoForm";
 import { ServicoForm } from "@/forms/servicoForm";
-import { PerfilCliente } from "@prisma/client";
 
-export async function getAtrativoById(id: number) {
+export async function getServicoById(id: number) {
   return servicoTuristicoServiceFactory().findById(id);
 }
 

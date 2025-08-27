@@ -20,6 +20,8 @@ import {
   useUpdateServico,
   useDeleteServico,
 } from "@/hooks/http/useServicos";
+import { ServicoTuristicoFull } from "@/repositories/interfaces/IServicoTuristicoRepository";
+import { ServicoForm } from "@/forms/servicoForm";
 
 export default function Servicos() {
   const { toast } = useToast();
@@ -27,23 +29,23 @@ export default function Servicos() {
   const [modalMode, setModalMode] = useState<"create" | "edit" | "view">(
     "create"
   );
-  const [selectedService, setSelectedService] = useState<any>(null);
+  const [selectedService, setSelectedService] = useState<ServicoTuristicoFull | null>(null);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-  const [serviceToDelete, setServiceToDelete] = useState<any>(null);
+  const [serviceToDelete, setServiceToDelete] = useState<ServicoTuristicoFull | null>(null);
 
   const { data: servicos } = useGetAllServicos();
 
-  const { mutateAsync: createServico } = useCreateServico();
+  const { mutateAsync: createServico } = useCreateServico();gi
   const { mutateAsync: updateServico } = useUpdateServico();
   const { mutateAsync: deleteServico } = useDeleteServico();
 
-  const handleOpenModal = (mode: "create" | "edit" | "view", service?: any) => {
+  const handleOpenModal = (mode: "create" | "edit" | "view", service?: ServicoTuristicoFull | null) => {
     setModalMode(mode);
     setSelectedService(service);
     setIsModalOpen(true);
   };
 
-  const handleOpenDeleteModal = (service: any) => {
+  const handleOpenDeleteModal = (service: ServicoTuristicoFull | null) => {
     setServiceToDelete(service);
     setIsDeleteModalOpen(true);
   };
@@ -59,18 +61,18 @@ export default function Servicos() {
     }
   };
 
-  const handleSaveService = async(serviceData: any) => {
+  const handleSaveService = async (serviceData: ServicoForm | null) => {
     if (modalMode === "create") {
       await createServico(serviceData);
       toast({
         title: "Serviço criado",
-        description: `O serviço "${serviceData.nome}" foi criado com sucesso.`,
+        description: `O serviço "${serviceData?.nome}" foi criado com sucesso.`,
       });
     } else if (modalMode === "edit") {
       await updateServico({
         ...serviceData,
         id: selectedService.id,
-        fotosURL: selectedService.fotosURL,
+        fotosURL: selectedService[0],
       });
       toast({
         title: "Serviço atualizado",

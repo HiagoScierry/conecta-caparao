@@ -6,6 +6,12 @@ export class ServicoTuristicoPrismaRepository implements IServicoTuristicoReposi
   async findById(id: number): Promise<ServicoTuristico> {
     const servicoTuristico = await connection.servicoTuristico.findUnique({
       where: { id },
+      include: {
+        contato: true,
+        endereco: true,
+        municipio: true,
+        foto: true,
+      }
     });
 
     if (!servicoTuristico) {
@@ -16,7 +22,14 @@ export class ServicoTuristicoPrismaRepository implements IServicoTuristicoReposi
   }
 
   async findAll(): Promise<ServicoTuristico[]> {
-    return connection.servicoTuristico.findMany();
+    return connection.servicoTuristico.findMany({
+      include: {
+        contato: true,
+        endereco: true,
+        municipio: true,
+        foto: true,
+      }
+    });
   }
 
   async create(data: ServicoTuristicoWithRelations, fotosURL?: string): Promise<ServicoTuristico> {
