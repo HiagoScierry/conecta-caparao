@@ -8,8 +8,8 @@ export const servicoFormSchema = z.object({
   servico: servicoTuristicoSchema,
   contato: contatoSchema,
   endereco: enderecoSchema,
+  horarioFuncionamento: horarioFuncionamentoSchema,
   municipio: z.string().min(1, "Município é obrigatório"),
-  horarioFuncionamento: horarioFuncionamentoSchema
 });
 
 export type ServicoForm = z.infer<typeof servicoFormSchema>;

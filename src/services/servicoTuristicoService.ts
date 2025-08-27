@@ -15,7 +15,7 @@ export class ServicoTuristicoService {
     return this.repository.findAll();
   }
 
-  async create(data: ServicoTuristicoWithRelations, fotoURL: string) {
+  async create(data: ServicoTuristicoWithRelations, fotoURL?: string) {
     return this.repository.create(data, fotoURL);
   }
 

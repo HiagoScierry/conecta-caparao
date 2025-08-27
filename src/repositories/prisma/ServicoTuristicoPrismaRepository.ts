@@ -11,6 +11,7 @@ export class ServicoTuristicoPrismaRepository implements IServicoTuristicoReposi
         endereco: true,
         municipio: true,
         foto: true,
+        horarios: true,
       }
     });
 
@@ -28,12 +29,15 @@ export class ServicoTuristicoPrismaRepository implements IServicoTuristicoReposi
         endereco: true,
         municipio: true,
         foto: true,
+        horarios: true,
       }
     });
   }
 
   async create(data: ServicoTuristicoWithRelations, fotosURL?: string): Promise<ServicoTuristico> {
     let idFoto: number | null = null;
+
+    console.log("Fotos URL recebidas:", fotosURL);
 
     if (fotosURL) {
       const foto = await connection.foto.create({
@@ -43,6 +47,8 @@ export class ServicoTuristicoPrismaRepository implements IServicoTuristicoReposi
       });
       idFoto = foto.id;
     }
+
+    console.log("Foto ID criada:", idFoto);
 
     const servicoTuristico = await connection.servicoTuristico.create({
       data: {

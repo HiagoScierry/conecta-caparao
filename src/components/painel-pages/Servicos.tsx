@@ -22,6 +22,7 @@ import {
 } from "@/hooks/http/useServicos";
 import { ServicoTuristicoFull } from "@/repositories/interfaces/IServicoTuristicoRepository";
 import { ServicoForm } from "@/forms/servicoForm";
+import { useUpload } from "@/hooks/http/useUpload";
 
 export default function Servicos() {
   const { toast } = useToast();
@@ -35,13 +36,15 @@ export default function Servicos() {
 
   const { data: servicos } = useGetAllServicos();
 
-  const { mutateAsync: createServico } = useCreateServico();gi
+  const { mutateAsync: uploadFiles } = useUpload();
+
+  const { mutateAsync: createServico } = useCreateServico();
   const { mutateAsync: updateServico } = useUpdateServico();
   const { mutateAsync: deleteServico } = useDeleteServico();
 
   const handleOpenModal = (mode: "create" | "edit" | "view", service?: ServicoTuristicoFull | null) => {
     setModalMode(mode);
-    setSelectedService(service);
+    setSelectedService(service || null);
     setIsModalOpen(true);
   };
 
@@ -61,25 +64,45 @@ export default function Servicos() {
     }
   };
 
-  const handleSaveService = async (serviceData: ServicoForm | null) => {
+  const handleSaveService = async (serviceData: ServicoForm & { fotos: File[]}) => {
+    try {
+      const uploadedUrls = await Promise.all(
+      (serviceData.fotos || []).map(async (file) => {
+        const url = await uploadFiles(file);
+        return url;
+      })
+    );
+
     if (modalMode === "create") {
-      await createServico(serviceData);
+      await createServico({
+        ...serviceData,
+        fotoUrl: uploadedUrls[0] || "",
+      });
       toast({
         title: "Serviço criado",
-        description: `O serviço "${serviceData?.nome}" foi criado com sucesso.`,
-      });
-    } else if (modalMode === "edit") {
-      await updateServico({
-        ...serviceData,
-        id: selectedService.id,
-        fotosURL: selectedService[0],
-      });
-      toast({
-        title: "Serviço atualizado",
-        description: `O serviço "${serviceData.nome}" foi atualizado com sucesso.`,
+        description: `O serviço "${serviceData?.servico.nome}" foi criado com sucesso.`,
       });
     }
+    // } else if (modalMode === "edit") {
+    //   // await updateServico({
+    //   //   ...serviceData,
+    //   //   id: selectedService.id,
+    //   //   fotosURL: selectedService[0],
+    //   // });
+    //   toast({
+    //     title: "Serviço atualizado",
+    //     description: `O serviço "${serviceData.nome}" foi atualizado com sucesso.`,
+    //   });
+    // }
     setIsModalOpen(false);
+    } catch (error) {
+      toast({
+        title: "Erro",
+        description: "Ocorreu um erro ao salvar o serviço. Tente novamente.",
+        variant: "destructive",
+      });
+      console.error("Erro ao salvar serviço:", error);
+    }
   };
 
   return (
@@ -159,7 +182,7 @@ export default function Servicos() {
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         mode={modalMode}
-        initialData={selectedService}
+        initialData={selectedService ?? undefined}
         onSave={handleSaveService}
       />
 

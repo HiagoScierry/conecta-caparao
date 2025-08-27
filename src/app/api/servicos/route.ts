@@ -21,8 +21,8 @@ export async function POST(request: NextRequest) {
       endereco,
       municipio,
       horarioFuncionamento,
-      fotoURL,
-    }: ServicoForm & { fotoURL?: string } = await request.json();
+      fotoUrl,
+    }: ServicoForm & { fotoUrl?: string } = await request.json();
 
     servicoTuristicoSchema.parse(servico);
     contatoSchema.parse(contato);
@@ -34,7 +34,7 @@ export async function POST(request: NextRequest) {
       endereco,
       municipio,
       horarioFuncionamento,
-      fotoURL,
+      fotoUrl,
     });
 
 

@@ -1,5 +1,5 @@
 import { ServicoTuristicoDTO } from "@/dto/servicoTuristicoDTO";
-import { Contato, Endereco, Foto, Municipio, ServicoTuristico } from "@prisma/client";
+import { Contato, Endereco, Foto, HorarioDeFuncionamento, Municipio, ServicoTuristico } from "@prisma/client";
 
 export type ServicoTuristicoWithRelations = ServicoTuristicoDTO & {
   idEndereco: number;
@@ -12,6 +12,7 @@ export type ServicoTuristicoFull = ServicoTuristico & {
   contato: Contato;
   municipio: Municipio;
   foto: Foto;
+  horarios: HorarioDeFuncionamento[];
 }
 
 export interface IServicoTuristicoRepository {

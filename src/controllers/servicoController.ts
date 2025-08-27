@@ -14,8 +14,8 @@ export async function getAll() {
   return servicoTuristicoServiceFactory().findAll();
 }
 
-export async function createServico(servicoData: ServicoForm & { fotoURL?: string }) {
-  const { servico, contato, endereco, municipio, fotoURL, horarioFuncionamento } = servicoData;
+export async function createServico(servicoData: ServicoForm & { fotoUrl?: string }) {
+  const { servico, contato, endereco, municipio, fotoUrl, horarioFuncionamento } = servicoData;
 
   const municipioExists = await municipioServiceFactory().findById(String(municipio));
 
@@ -32,7 +32,7 @@ export async function createServico(servicoData: ServicoForm & { fotoURL?: strin
     idMunicipio: municipioExists.id,
     idEndereco: enderecoCreated.id,
     idContato: Number(contatoCreated.id),
-  }, fotoURL || "");
+  }, fotoUrl);
 
   await horarioFuncionamentoServiceFactory().create({
     ...horarioFuncionamento,

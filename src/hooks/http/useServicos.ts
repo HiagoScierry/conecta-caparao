@@ -32,18 +32,14 @@ export function useCreateServico() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async (newServico: ServicoForm & { fotosURL: string[] }) => {
-      const response = await fetch('/api/servicos', {
+    mutationFn: async (newServico: ServicoForm & { fotoUrl: string }) => {
+      await fetch('/api/servicos', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(newServico),
+        body: JSON.stringify({...newServico}),
       });
-      if (!response.ok) {
-        throw new Error('Erro ao criar serviço');
-      }
-      return response.json();
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['servicos'] });
