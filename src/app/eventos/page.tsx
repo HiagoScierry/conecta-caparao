@@ -17,12 +17,12 @@ export default function PaginaEventos() {
 
   return (
     <LayoutPublic>
-        <div className="w-full flex justify-center items-center mb-8 mt-8">
+        <div className="w-full mx-auto flex justify-center items-center my-8">
           <DefaultHeader
             titulo="Eventos"
             imagemUrl={faker.image.url({ width: 640, height: 480 })}
             linkHref={`/eventos/1`}
-            linkText="Ver todos os eventos"
+            linkText="Acesse"
             linkStyle="text"
           />
         </div>

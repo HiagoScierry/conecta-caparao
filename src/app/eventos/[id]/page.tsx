@@ -1,5 +1,6 @@
 import React from "react";
 import Image from "next/image";
+import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { DefaultCard } from "@/components/public/DefaultCard";
 import { LayoutPublic } from "@/components/public/Layout";
@@ -16,7 +17,7 @@ export default function PaginaEvento() {
         <main className="container mx-auto px-4 py-8 md:py-16">
           {/* Título Principal */}
           <div className="text-center mb-8 md:mb-12">
-            <h1 className="text-3xl md:text-5xl font-bold text-tourism-verde-escuro leading-tight">
+            <h1 className="text-3xl md:text-5xl font-bold text-tourism-azul text-center leading-tight">
               As montanhas ondulantes do Parque Nacional do Caparaó
             </h1>
           </div>
@@ -32,7 +33,7 @@ export default function PaginaEvento() {
           </div>
 
           {/* Corpo do Texto */}
-          <div className="max-w-3xl mx-auto text-lg text-gray-700 leading-relaxed space-y-6 mb-12">
+          <div className="max-w-3xl mx-auto text-lg text-tourism-cinza text-justify leading-relaxed space-y-6 mb-12">
             <p>
               As montanhas do Parque Nacional do Caparaó, com suas altitudes
               imponentes e paisagens deslumbrantes, são um convite para quem
@@ -55,14 +56,14 @@ export default function PaginaEvento() {
           {/* Galeria de Imagens */}
           <GaleriaDeImagens imagemUrls={galleryImages} />
 
-          {/* Seção "Outras Notícias" */}
-          <div className="text-center mb-12">
-            <h2 className="text-2xl md:text-3xl font-bold text-gray-800 mb-6">
-              Outras Notícias
+          {/* Seção "Outras Eventos" */}
+          <div className="flex flex-col mx-auto md:mx-16 my-12">
+            <h2 className="text-3xl md:text-4xl font-bold text-tourism-cinza mb-12">
+              Outros Eventos
             </h2>
 
-            {/* Grid de Cards de Notícia */}
-            <div className="flex justify-between m-auto">
+            {/* Grid de Cards de Evento */}
+            <div className="flex flex-col md:flex-row md:justify-center gap-6 md:gap-12 lg:gap-24 m-auto">
               {Array.from({ length: 3 }).map((_, index) => (
                 <DefaultCard
                   key={index}
@@ -74,11 +75,13 @@ export default function PaginaEvento() {
             </div>
           </div>
 
-          {/* Botão "Mais Notícias" */}
+          {/* Botão "Mais Eventos" */}
           <div className="text-center">
-            <Button className="bg-tourism-verde text-white hover:bg-tourism-verde-escuro text-lg px-8 py-6 rounded-full">
-              Mais Notícias
-            </Button>
+            <Link href="/eventos">
+              <Button className="text-lg px-8 py-6 bg-tourism-verde text-white hover:bg-tourism-verde/80 transition-colors duration-300">
+                Mais Eventos
+              </Button>
+            </Link>
           </div>
         </main>
     </LayoutPublic>
