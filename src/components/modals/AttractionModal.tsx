@@ -61,6 +61,7 @@ const getFormValues = (data: AtracaoTuristicaFull | null | undefined): AtracaoFo
       horaFechamento: fechamento ?? "",
     },
     endereco: {
+      id: data.endereco?.id ?? 0,
       logradouro: data.endereco?.rua ?? "",
       numero: data.endereco?.numero ?? "",
       bairro: data.endereco?.bairro ?? "",
@@ -69,6 +70,7 @@ const getFormValues = (data: AtracaoTuristicaFull | null | undefined): AtracaoFo
       cep: data.endereco?.cep ?? "",
     },
     contato: {
+      id: data.contato?.id ? data.contato.id.toString() : "",
       email: data.contato?.email ?? "",
       telefone: data.contato?.telefone ?? "",
       celular: data.contato?.celular ?? "",

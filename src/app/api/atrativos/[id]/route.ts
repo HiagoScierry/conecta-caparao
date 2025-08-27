@@ -1,5 +1,10 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { createAtrativo, deleteAtrativo, getAtrativoById, updateAtrativo } from "@/controllers/atrativoController";
+import {
+  createAtrativo,
+  deleteAtrativo,
+  getAtrativoById,
+  updateAtrativo,
+} from "@/controllers/atrativoController";
 import { AtracaoForm } from "@/forms/atracaoForm";
 import { atracaoTuristicaSchema } from "@/schemas/atracaoTuristicaSchema";
 import { contatoSchema } from "@/schemas/contatoSchema";
@@ -8,19 +13,35 @@ import { horarioFuncionamentoSchema } from "@/schemas/horarioFuncionamentoSchema
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 
-export async function GET(request: NextRequest, { params }: { params: { id: string } }) {
+// ✅ GET atrativo por ID
+export async function GET(
+  request: NextRequest,
+  context: { params: Promise<{ id: string }> }
+) {
   try {
-    const atrativo = await getAtrativoById(Number(params.id));
+    const { id } = await context.params;
+
+    const atrativo = await getAtrativoById(Number(id));
+    if (!atrativo) {
+      return new NextResponse("Atrativo not found", { status: 404 });
+    }
+
     return NextResponse.json(atrativo, { status: 200 });
   } catch (error) {
+    console.error("GET error:", error);
     return new NextResponse("Atrativo not found", { status: 404 });
   }
 }
 
-export async function PUT(request: Request, { params }: { params: { id: string } }) {
+// ✅ Atualizar atrativo
+export async function PUT(
+  request: NextRequest,
+  context: { params: Promise<{ id: string }> }
+) {
   try {
-    const atrativo = await getAtrativoById(Number(params.id));
+    const { id } = await context.params;
 
+    const atrativo = await getAtrativoById(Number(id));
     if (!atrativo) {
       return new NextResponse("Atrativo not found", { status: 404 });
     }
@@ -33,47 +54,61 @@ export async function PUT(request: Request, { params }: { params: { id: string }
       horarioFuncionamento,
       fotosURL,
       municipio,
-      perfil
+      perfil,
     }: AtracaoForm & { fotosURL: string[] } = await request.json();
 
+    // validações
     atracaoTuristicaSchema.parse(atracaoTuristica);
     contatoSchema.parse(contato);
     enderecoSchema.parse(endereco);
     horarioFuncionamentoSchema.parse(horarioFuncionamento);
 
-    await updateAtrativo(Number(params.id), {
-      atracaoTuristica,
-      contato,
-      endereco,
-      categoria,
-      horarioFuncionamento,
-      municipio,
-      perfil
-    }, fotosURL);
+    await updateAtrativo(
+      Number(id),
+      {
+        atracaoTuristica,
+        contato,
+        endereco,
+        categoria,
+        horarioFuncionamento,
+        municipio,
+        perfil,
+      },
+      fotosURL
+    );
 
-
+    return new NextResponse("Atrativo updated", { status: 200 });
   } catch (error) {
     if (error instanceof z.ZodError) {
-      console.error('Validation failed!', error.errors);
+      console.error("Validation failed!", error.errors);
       return new NextResponse(JSON.stringify({ errors: error.errors }), {
         status: 400,
         headers: { "Content-Type": "application/json" },
       });
     }
 
-    console.error('An unexpected error occurred:', error);
-
+    console.error("PUT error:", error);
     return new NextResponse("Internal Server Error", { status: 500 });
   }
 }
 
-export async function DELETE(request: NextRequest, { params }: { params: { id: string } }) {
+// ✅ Deletar atrativo
+export async function DELETE(
+  request: NextRequest,
+  context: { params: Promise<{ id: string }> }
+) {
   try {
-    await deleteAtrativo(Number(params.id));
+    const { id } = await context.params;
 
+    await deleteAtrativo(Number(id));
     return new NextResponse("Atrativo deleted", { status: 200 });
   } catch (error) {
-    const errorMessage = (error && typeof error === "object" && "message" in error) ? (error as { message: string }).message : "Municipio not found";
+    console.error("DELETE error:", error);
+    const errorMessage =
+      error && typeof error === "object" && "message" in error
+        ? (error as { message: string }).message
+        : "Atrativo not found";
+
     return new NextResponse(errorMessage, { status: 500 });
   }
 }

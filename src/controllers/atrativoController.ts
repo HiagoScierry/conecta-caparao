@@ -119,9 +119,6 @@ export async function updateAtrativo(id: number, atrativo: AtracaoForm, fotosURL
     perfis: perfisParaAdicionar,
   }, perfisParaRemover, fotosURL);
 
-  if (!horarioFuncionamento.id) {
-    throw new Error("Horário de funcionamento não possui ID");
-  }
 
   const horariosAtuais = await horarioFuncionamentoServiceFactory().getByAtracaoTuristicaId(id);
 
