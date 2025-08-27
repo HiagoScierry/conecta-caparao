@@ -1,4 +1,5 @@
 import { NoticiasForm } from "@/forms/noticiasForm";
+import { NoticiaFull } from "@/repositories/interfaces/INoticiaRepository";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 export function useGetNoticias() {
@@ -16,7 +17,7 @@ export function useGetNoticias() {
 
 
 export function useGetNoticiaById(id: number) {
-  return useQuery({
+  return useQuery<NoticiaFull>({
     queryKey: ["noticia", id],
     queryFn: async () => {
       const response = await fetch(`/api/noticia/${id}`);

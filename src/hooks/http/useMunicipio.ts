@@ -1,11 +1,12 @@
 import { ContatoDTO } from "@/dto/contatoDTO";
 import { MunicipioDTO } from "@/dto/municipioDTO";
+import { MunicipioFull } from "@/repositories/interfaces/IMunicipioRepository";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 
 import { UseQueryResult } from "@tanstack/react-query";
 
-export function useGetAllMunicipios(): UseQueryResult<MunicipioDTO[], Error> {
-  return useQuery<MunicipioDTO[], Error>({
+export function useGetAllMunicipios(): UseQueryResult<MunicipioFull[], Error> {
+  return useQuery<MunicipioFull[], Error>({
     queryKey: ['municipios'],
     queryFn: async () => {
       const response = await fetch('/api/municipio');
@@ -16,6 +17,21 @@ export function useGetAllMunicipios(): UseQueryResult<MunicipioDTO[], Error> {
     }
   });
 }
+
+export function useGetMunicipioById(id: string) {
+  return useQuery<MunicipioFull, Error>({
+    queryKey: ['municipio', id],
+    queryFn: async () => {
+      const response = await fetch(`/api/municipio/${id}`);
+      if (!response.ok) {
+        throw new Error('Erro ao buscar município');
+      }
+      return response.json();
+    },
+    enabled: !!id,
+  });
+}
+      
 
 export function useCreateMunicipio() {
   const queryClient = useQueryClient();

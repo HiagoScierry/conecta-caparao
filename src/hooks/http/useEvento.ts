@@ -1,8 +1,9 @@
 import { EventoForm } from "@/forms/eventoForm";
+import { EventoFull } from "@/repositories/interfaces/IEventoRepository";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 export function useEvento() {
-  return useQuery({
+  return useQuery<EventoFull[]>({
     queryKey: ["eventos"],
     queryFn: async () => {
       const response = await fetch("/api/eventos");
@@ -13,6 +14,21 @@ export function useEvento() {
     }
   });
 }
+
+export function useGetEventoById(id: number) {
+  return useQuery<EventoFull>({
+    queryKey: ["evento", id],
+    queryFn: async () => {
+      const response = await fetch(`/api/eventos/${id}`);
+      if (!response.ok) {
+        throw new Error("Failed to fetch evento");
+      }
+      return response.json();
+    },
+    enabled: !!id,
+  });
+}
+
 
 export function useCreateEvento() {
   const queryClient = useQueryClient();
