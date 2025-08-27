@@ -57,3 +57,20 @@ export function useUpdateAtrativo(){
     }
   })
 }
+
+export function useDeleteAtrativo(){
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: async (id: number) => {
+      await fetch(`/api/atrativos/${id}`, {
+        method: "DELETE",
+      })
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey:['atrativos']
+      })
+    }
+  })
+}

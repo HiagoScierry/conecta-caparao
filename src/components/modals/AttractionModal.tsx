@@ -1,3 +1,8 @@
+import { useEffect, useState } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Categoria, PerfilCliente } from "@prisma/client";
+
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -8,26 +13,76 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Form, FormControl, FormField, FormItem, FormLabel } from "@/components/ui/form";
-import { useForm } from "react-hook-form";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { ImageUpload } from "@/components/ImageUpload";
+
 import { AtracaoForm, atracaoTuristicaForm } from "@/forms/atracaoForm";
-import { zodResolver } from "@hookform/resolvers/zod";
+import { AtracaoTuristicaFull } from "@/repositories/interfaces/IAtracaoTuristicaRepository";
 import { useGetAllMunicipios } from "@/hooks/http/useMunicipio";
 import { usePerfis } from "@/hooks/http/usePerfis";
 import { useCategorias } from "@/hooks/http/useCategoria";
-import { Categoria, PerfilCliente, Foto } from "@prisma/client";
 import { useDeleteUpload } from "@/hooks/http/useUpload";
-import { useState } from "react";
 
-
+// Interface das Props (sem alterações)
 interface AttractionModalProps {
   isOpen: boolean;
   onClose: () => void;
   mode: "create" | "edit" | "view";
-  initialData?: AtracaoForm;
+  initialData?: AtracaoTuristicaFull | null;
   onSave: (attractionData: AtracaoForm & { fotos: File[] }) => void;
 }
+
+// Valores padrão para o formulário em modo de criação (sem alterações)
+const defaultFormValues: AtracaoForm = {
+  atracaoTuristica: { nome: "", descricao: "", mapaUrl: "" },
+  horarioFuncionamento: { diaDaSemana: [], horaAbertura: "", horaFechamento: "" },
+  endereco: { logradouro: "", numero: "", bairro: "", cidade: "", estado: "", cep: "" },
+  contato: { email: "", telefone: "", celular: "", whatsapp: "", instagram: "" },
+  municipio: "",
+  categoria: 0,
+  perfil: [],
+};
+
+// **NOVO: Função auxiliar para transformar initialData no formato do formulário**
+// Isso centraliza a lógica de mapeamento e torna o código mais limpo.
+const getFormValues = (data: AtracaoTuristicaFull | null | undefined): AtracaoForm => {
+  if (!data) {
+    return defaultFormValues;
+  }
+
+  // Mapeia os dados recebidos para a estrutura esperada pelo formulário.
+  return {
+    atracaoTuristica: {
+      nome: data.nome ?? defaultFormValues.atracaoTuristica.nome,
+      descricao: data.descricao ?? defaultFormValues.atracaoTuristica.descricao,
+      mapaUrl: data.mapaUrl ?? defaultFormValues.atracaoTuristica.mapaUrl,
+    },
+    horarioFuncionamento: {
+      diaDaSemana: data.horarios.map(h => h.dia) ?? defaultFormValues.horarioFuncionamento.diaDaSemana,
+      horaAbertura: data.horarios[0].horario.split("-")[0].trim() ?? defaultFormValues.horarioFuncionamento.horaAbertura,
+      horaFechamento: data.horarios[0].horario.split("-")[1].trim() ?? defaultFormValues.horarioFuncionamento.horaFechamento,
+    },
+    endereco:{
+      logradouro: data.endereco?.rua ?? defaultFormValues.endereco.logradouro,
+      numero: data.endereco?.numero ?? defaultFormValues.endereco.numero,
+      bairro: data.endereco?.bairro ?? defaultFormValues.endereco.bairro,
+      cidade: data.endereco?.cidade ?? defaultFormValues.endereco.cidade,
+      estado: data.endereco?.estado ?? defaultFormValues.endereco.estado,
+      cep: data.endereco?.cep ?? defaultFormValues.endereco.cep,
+    },
+    contato: {
+      email: data.contato?.email ?? defaultFormValues.contato.email,
+      telefone: data.contato?.telefone ?? defaultFormValues.contato.telefone,
+      celular: data.contato?.celular ?? defaultFormValues.contato.celular,
+      whatsapp: data.contato?.whatsapp ?? defaultFormValues.contato.whatsapp,
+      instagram: data.contato?.instagram ?? defaultFormValues.contato.instagram,
+    },
+    municipio: data.municipio?.id.toString() ?? "",
+    categoria: data.categoria?.id ?? "",
+    perfil: data.perfis.map(p => p.id.toString()) ?? [],
+  };
+};
+
 
 export function AttractionModal({
   isOpen,
@@ -37,31 +92,26 @@ export function AttractionModal({
   onSave,
 }: AttractionModalProps) {
   const [selectedImages, setSelectedImages] = useState<File[]>([]);
+  const isViewMode = mode === "view";
 
-  const form = useForm<AtracaoForm & { fotos: Foto[] }>({
-    defaultValues: initialData
+  const form = useForm<AtracaoForm>({
+    resolver: zodResolver(atracaoTuristicaForm),
+    defaultValues: getFormValues(initialData),
   });
 
-  // REQUEST DATA FROM API
-  const {
-    data: perfisCliente
-  } = usePerfis()
-  const {
-    data: categorias
-  } = useCategorias()
-  const {
-    data: municipios
-  } = useGetAllMunicipios()
+  const { data: perfisCliente } = usePerfis();
+  const { data: categorias } = useCategorias();
+  const { data: municipios } = useGetAllMunicipios();
+  const { mutateAsync: deleteFoto } = useDeleteUpload();
 
-  const {
-    mutateAsync: deleteFoto
-  } = useDeleteUpload()
-
-  const isViewMode = mode === "view";
+  useEffect(() => {
+    form.reset(getFormValues(initialData));
+  }, [initialData, form]);
 
   const handleDeleteFoto = async (fotoId: string) => {
     try {
       await deleteFoto(fotoId);
+      // Lógica para atualizar a UI após deletar a foto
     } catch (error) {
       console.error("Erro ao deletar a foto:", error);
     }
@@ -72,11 +122,9 @@ export function AttractionModal({
   };
 
   const onSubmit = (data: AtracaoForm) => {
-    console.log("Formulario válido! Enviando dados:", data);
-    onSave(data, selectedImages);
-    onClose();
+    onSave({ ...data, fotos: selectedImages });
+    onClose(); // Idealmente, fechar o modal apenas se o onSave for bem-sucedido.
   };
-
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-7xl max-h-[90vh]">
@@ -291,6 +339,7 @@ export function AttractionModal({
                               <input
                                 type="radio"
                                 value={categoria.id}
+                                checked={form.getValues("categoria")?.toString() === categoria.id.toString()}
                                 {...form.register("categoria")}
                                 disabled={isViewMode}
                               />
@@ -512,7 +561,7 @@ export function AttractionModal({
                         </span>
                       )}
                     </FormItem>
-                    
+
                     <FormItem className="flex flex-col gap-1">
                       <FormLabel className="text-sm font-medium">
                         WhatsApp
@@ -565,4 +614,3 @@ export function AttractionModal({
     </Dialog>
   );
 }
-    

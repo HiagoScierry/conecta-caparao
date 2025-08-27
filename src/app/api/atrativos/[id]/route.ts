@@ -36,7 +36,7 @@ export async function PUT(request: Request, { params }: { params: { id: string }
 
 export async function DELETE(request: NextRequest, { params }: { params: { id: string } }) {
   try {
-    const atrativo = await getAtrativoById(Number(params.id));
+    await deleteAtrativo(Number(params.id));
 
     return new NextResponse("Atrativo deleted", { status: 200 });
   } catch (error) {

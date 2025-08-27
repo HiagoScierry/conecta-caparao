@@ -110,5 +110,15 @@ export async function updateAtrativo(id: number, atrativo: AtracaoForm) {
 }
 
 export async function deleteAtrativo(id: number) {
-  return atracaoTuristicaServiceFactory().delete(id);
+  const atrativoExists = await atracaoTuristicaServiceFactory().findById(id);
+
+  if (!atrativoExists) {
+    throw new Error("Atrativo não existe");
+  }
+
+  await atracaoTuristicaServiceFactory().delete(id);
+
+  await enderecoServiceFactory().delete(atrativoExists.idEndereco);
+
+  await contatoServiceFactory().delete(Number(atrativoExists.idContato));
 }

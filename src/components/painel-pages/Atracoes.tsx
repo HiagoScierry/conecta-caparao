@@ -8,18 +8,19 @@ import { PlusCircle, Eye, Edit, Trash2 } from "lucide-react";
 import { AttractionModal } from "@/components/modals/AttractionModal";
 import { DeleteConfirmModal } from "@/components/modals/DeleteConfirmModal";
 import { useToast } from "@/hooks/use-toast";
-import { useCreateAtrativo, useGetAllAtrativos, useUpdateAtrativo } from "@/hooks/http/useAtrativos";
+import { useCreateAtrativo, useDeleteAtrativo, useGetAllAtrativos, useUpdateAtrativo } from "@/hooks/http/useAtrativos";
 import { AtracaoForm } from "@/forms/atracaoForm";
 import { useUpload } from "@/hooks/http/useUpload";
+import { AtracaoTuristicaFull } from "@/repositories/interfaces/IAtracaoTuristicaRepository";
 
 export default function Atracoes() {
   const {toast} = useToast();
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalMode, setModalMode] = useState<'create' | 'edit' | 'view'>('create');
-  const [selectedAttraction, setSelectedAttraction] = useState<any>(null);
+  const [selectedAttraction, setSelectedAttraction] = useState<AtracaoTuristicaFull | null>(null);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-  const [attractionToDelete, setAttractionToDelete] = useState<any>(null);
+  const [attractionToDelete, setAttractionToDelete] = useState<AtracaoTuristicaFull | null>(null);
 
   const {
     data: atracoes = [],
@@ -29,22 +30,23 @@ export default function Atracoes() {
 
   const { mutateAsync: createAtrativo } = useCreateAtrativo();
   const { mutateAsync: updateAtrativo } = useUpdateAtrativo();
+  const { mutateAsync: deleteAtrativo } = useDeleteAtrativo();
 
 
-  const handleOpenModal = (mode: 'create' | 'edit' | 'view', attraction?: any) => {
+  const handleOpenModal = (mode: 'create' | 'edit' | 'view', attraction?: AtracaoTuristicaFull | null) => {
     setModalMode(mode);
     setSelectedAttraction(attraction);
     setIsModalOpen(true);
   };
 
-  const handleOpenDeleteModal = (attraction: any) => {
+  const handleOpenDeleteModal = (attraction: AtracaoTuristicaFull | null) => {
     setAttractionToDelete(attraction);
     setIsDeleteModalOpen(true);
   };
 
-  const handleDeleteAttraction = () => {
+  const handleDeleteAttraction = async () => {
     if (attractionToDelete) {
-      // setAtracoes(atracoes.filter(atracao => atracao.id !== attractionToDelete.id));
+      await deleteAtrativo(attractionToDelete.id);
       console.log('Atração excluída:', attractionToDelete);
       toast({
         title: "Atração excluída",
@@ -117,14 +119,14 @@ export default function Atracoes() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {atracoes?.map((atracao) => (
+              {atracoes?.map((atracao: AtracaoTuristicaFull) => (
                 <TableRow key={atracao.id}>
                   <TableCell className="font-medium">{atracao.id}</TableCell>
                   <TableCell>{atracao.nome}</TableCell>
-                  <TableCell>{atracao.municipio}</TableCell>
+                  <TableCell>{atracao.municipio.nome}</TableCell>
                   <TableCell>
                     <Badge variant="outline" className="bg-tourism-light text-tourism-primary">
-                      {atracao.categoria}
+                      {atracao.categoria.nome}
                     </Badge>
                   </TableCell>
                   <TableCell className="text-right space-x-2">

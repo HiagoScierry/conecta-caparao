@@ -1,9 +1,9 @@
 import { AtracaoTuristica } from "@prisma/client";
-import { AtracaoTuristicaWithRelations, IAtracaoTuristicaRepository } from "../interfaces/IAtracaoTuristicaRepository";
+import { AtracaoTuristicaFull, AtracaoTuristicaWithRelations, IAtracaoTuristicaRepository } from "../interfaces/IAtracaoTuristicaRepository";
 import { connection } from "@/config/database/connection";
 
 export class AtracaoTuristicaPrismaRepository implements IAtracaoTuristicaRepository {
-  async findAll(): Promise<AtracaoTuristica[]> {
+  async findAll(): Promise<AtracaoTuristicaFull[]> {
     return connection.atracaoTuristica.findMany({
       include: {
         categoria: true,
@@ -17,7 +17,7 @@ export class AtracaoTuristicaPrismaRepository implements IAtracaoTuristicaReposi
     });
   }
 
-  async findById(id: number): Promise<AtracaoTuristica | null> {
+  async findById(id: number): Promise<AtracaoTuristicaFull | null> {
     return connection.atracaoTuristica.findFirst({
       where: { id },
       include: {
