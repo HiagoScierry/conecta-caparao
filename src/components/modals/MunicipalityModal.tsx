@@ -53,7 +53,6 @@ export function MunicipalityModal({
     defaultValues: initialData || DEFAULT_FORM_VALUES,
   });
 
-  // Reseta o formulário quando a modal é aberta com novos dados
   useEffect(() => {
     if (initialData) {
       form.reset(initialData);

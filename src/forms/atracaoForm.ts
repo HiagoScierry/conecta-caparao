@@ -12,10 +12,10 @@ export const atracaoTuristicaForm = z.object({
     atracaoTuristica: atracaoTuristicaSchema,
     contato: contatoSchema,
     endereco: enderecoSchema,
-    municipio: municipioSchema,
     horarioFuncionamento: horarioFuncionamentoSchema,
-    categoria: categoriaSchema,
-    perfil: perfilSchema
+    municipio: z.string(),
+    categoria: z.number(),
+    perfil: z.array(z.string())
 })
 
 export type AtracaoForm = z.infer<typeof atracaoTuristicaForm>;

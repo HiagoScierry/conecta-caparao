@@ -16,23 +16,17 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useGetAllMunicipios } from "@/hooks/http/useMunicipio";
 import { usePerfis } from "@/hooks/http/usePerfis";
 import { useCategorias } from "@/hooks/http/useCategoria";
-import { Categoria, PerfilCliente } from "@prisma/client";
+import { Categoria, PerfilCliente, Foto } from "@prisma/client";
+import { useDeleteUpload } from "@/hooks/http/useUpload";
+import { useState } from "react";
 
-
-const perfilClienteMock = [
-  { id: "1", tipo: "individual" },
-  { id: "2", tipo: "casal" },
-  { id: "3", tipo: "familia" },
-  { id: "4", tipo: "grupo" },
-  { id: "5", tipo: "pet friendly" },
-]
 
 interface AttractionModalProps {
   isOpen: boolean;
   onClose: () => void;
   mode: "create" | "edit" | "view";
   initialData?: AtracaoForm;
-  onSave: (attractionData: AtracaoForm) => void;
+  onSave: (attractionData: AtracaoForm & { fotos: File[] }) => void;
 }
 
 export function AttractionModal({
@@ -42,52 +36,10 @@ export function AttractionModal({
   initialData,
   onSave,
 }: AttractionModalProps) {
-  const form = useForm({
-    resolver: zodResolver(atracaoTuristicaForm),
-    defaultValues: {
-      atracaoTuristica: initialData?.atracaoTuristica || {
-        id: "",
-        nome: "",
-        descricao: "",
-        mapaUrl: "",
-        site: "",
-      },
-      contato: initialData?.contato || {
-        id: "",
-        email: "",
-        celular: "",
-        telefone: "",
-        whatsapp: "",
-        instagram: "",
-      },
-      endereco: initialData?.endereco || {
-        id: "",
-        cep: "",
-        logradouro: "",
-        numero: "",
-        bairro: "",
-        cidade: "",
-        estado: "",
-      },
-      municipio: initialData?.municipio || {
-        id: "",
-        nome: "",
-      },
-      horarioFuncionamento: initialData?.horarioFuncionamento || {
-        id: "",
-        diaDaSemana: [],
-        horaAbertura: "",
-        horaFechamento: "",
-      },
-      categoria: initialData?.categoria || {
-        id: "",
-        tipo: [],
-      },
-      perfil: initialData?.perfil || {
-        id: "",
-        tipo: [],
-      },
-    }
+  const [selectedImages, setSelectedImages] = useState<File[]>([]);
+
+  const form = useForm<AtracaoForm & { fotos: Foto[] }>({
+    defaultValues: initialData
   });
 
   // REQUEST DATA FROM API
@@ -101,16 +53,27 @@ export function AttractionModal({
     data: municipios
   } = useGetAllMunicipios()
 
+  const {
+    mutateAsync: deleteFoto
+  } = useDeleteUpload()
 
   const isViewMode = mode === "view";
 
-  const handleImageSelect = (file: File) => {
-    console.log("Selected image:", file);
-    // Here you would typically handle the image upload to your backend
+  const handleDeleteFoto = async (fotoId: string) => {
+    try {
+      await deleteFoto(fotoId);
+    } catch (error) {
+      console.error("Erro ao deletar a foto:", error);
+    }
   };
+
+  const handleImageSelect = (files: File[]) => {
+    setSelectedImages(files);
+  };
+
   const onSubmit = (data: AtracaoForm) => {
     console.log("Formulario válido! Enviando dados:", data);
-    onSave(data);
+    onSave(data, selectedImages);
     onClose();
   };
 
@@ -146,8 +109,15 @@ export function AttractionModal({
                       Imagem
                     </FormLabel>
                     <FormControl>
-                      <ImageUpload
-                        onImageSelect={handleImageSelect}
+                     <ImageUpload
+                        initialFotos={
+                          initialData?.fotos?.map((foto) => ({
+                            id: foto.id.toString(),
+                            url: foto.url,
+                          }))
+                        }
+                        onRemoveFoto={handleDeleteFoto}
+                        onImagesSelect={handleImageSelect}
                         disabled={isViewMode}
                       />
                     </FormControl>
@@ -292,7 +262,7 @@ export function AttractionModal({
                     </FormLabel>
                     <FormControl>
                       <select
-                        {...form.register("municipio.id", { required: true })}
+                        {...form.register("municipio", { required: true })}
                         disabled={isViewMode}
                         className="border rounded-md p-2 w-full"
                       >
@@ -319,9 +289,9 @@ export function AttractionModal({
                           {categorias?.map((categoria: Categoria) => (
                             <label key={categoria.id} className="flex items-center gap-1">
                               <input
-                                type="checkbox"
+                                type="radio"
                                 value={categoria.id}
-                                {...form.register("categoria.tipo")}
+                                {...form.register("categoria")}
                                 disabled={isViewMode}
                               />
                               {categoria.nome.charAt(0) + categoria.nome.slice(1).toLowerCase()}
@@ -329,9 +299,9 @@ export function AttractionModal({
                           ))}
                         </div>
                     </FormControl>
-                      {form.formState.errors.categoria?.tipo && (
+                      {form.formState.errors.categoria?.nome && (
                         <span className="text-red-500 text-xs">
-                          {form.formState.errors.categoria.tipo.message}
+                          {form.formState.errors.categoria.nome.message}
                         </span>
                       )}
                   </FormItem>
@@ -350,8 +320,8 @@ export function AttractionModal({
                           <label key={perfil.id} className="flex items-center gap-1">
                             <input
                               type="checkbox"
-                              value={perfil.nome}
-                              {...form.register("perfil.tipo")}
+                              value={perfil.id}
+                              {...form.register("perfil")}
                               disabled={isViewMode}
                             />
                             {perfil.nome}

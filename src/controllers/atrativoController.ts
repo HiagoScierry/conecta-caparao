@@ -4,7 +4,9 @@ import { contatoServiceFactory } from "@/factories/contatoServiceFactory";
 import { enderecoServiceFactory } from "@/factories/enderecoServiceFactory";
 import { horarioFuncionamentoServiceFactory } from "@/factories/horarioFuncionamentoServiceFactory";
 import { municipioServiceFactory } from "@/factories/municipioServiceFactory";
+import { perfilClienteServiceFactory } from "@/factories/perfilClienteServiceFactory";
 import { AtracaoForm } from "@/forms/atracaoForm";
+import { PerfilCliente } from "@prisma/client";
 
 export async function getAtrativoById(id: number) {
   return atracaoTuristicaServiceFactory().findById(id);
@@ -14,19 +16,33 @@ export async function getAll() {
   return atracaoTuristicaServiceFactory().findAll();
 }
 
-export async function createAtrativo(atrativo: AtracaoForm) {
-  const { atracaoTuristica, contato, endereco, horarioFuncionamento, municipio, categoria, perfil } = atrativo;
+export async function createAtrativo(atrativo: AtracaoForm & { fotosURL: string[] }) {
+  const { atracaoTuristica, contato, endereco, horarioFuncionamento, municipio, categoria, perfil, fotosURL } = atrativo;
 
-  const categoriaExists = await categoriaServiceFactory().findById(categoria.id);
+  const categoriaExists = await categoriaServiceFactory().findById(Number(categoria));
 
   if (!categoriaExists) {
     throw new Error("Categoria não existe");
   }
 
-  if (!municipio.id) {
-    throw new Error("Município não possui ID");
+  const municipioExists = await municipioServiceFactory().findById(String(municipio));
+
+  if (!municipioExists) {
+    throw new Error("Município não existe");
   }
-  const municipioExists = await municipioServiceFactory().findById(String(municipio.id));
+
+  if (perfil) {
+
+    const perfilExists = await perfilClienteServiceFactory().findAll();
+
+    const perfilIds = perfilExists.map((p: PerfilCliente) => String(p.id));
+    const notFound = perfil.filter((id: string) => !perfilIds.includes(id));
+
+    if (notFound.length > 0) {
+      throw new Error(`Perfis não encontrados: ${notFound.join(", ")}`);
+    }
+
+  }
 
   const contatoCreated = await contatoServiceFactory().create(contato);
 
@@ -38,7 +54,8 @@ export async function createAtrativo(atrativo: AtracaoForm) {
     idMunicipio: municipioExists.id,
     idEndereco: enderecoCreated.id,
     idContato: Number(contatoCreated.id),
-  });
+    perfis: perfil,
+  }, fotosURL);
 
   await horarioFuncionamentoServiceFactory().create({
     ...horarioFuncionamento,

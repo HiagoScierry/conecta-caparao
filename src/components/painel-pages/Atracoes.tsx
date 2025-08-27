@@ -8,7 +8,9 @@ import { PlusCircle, Eye, Edit, Trash2 } from "lucide-react";
 import { AttractionModal } from "@/components/modals/AttractionModal";
 import { DeleteConfirmModal } from "@/components/modals/DeleteConfirmModal";
 import { useToast } from "@/hooks/use-toast";
-import { useGetAllAtrativos } from "@/hooks/http/useAtrativos";
+import { useCreateAtrativo, useGetAllAtrativos, useUpdateAtrativo } from "@/hooks/http/useAtrativos";
+import { AtracaoForm } from "@/forms/atracaoForm";
+import { useUpload } from "@/hooks/http/useUpload";
 
 export default function Atracoes() {
   const {toast} = useToast();
@@ -22,6 +24,12 @@ export default function Atracoes() {
   const {
     data: atracoes = [],
   } = useGetAllAtrativos();
+
+  const { mutateAsync: uploadImage } = useUpload();
+
+  const { mutateAsync: createAtrativo } = useCreateAtrativo();
+  const { mutateAsync: updateAtrativo } = useUpdateAtrativo();
+
 
   const handleOpenModal = (mode: 'create' | 'edit' | 'view', attraction?: any) => {
     setModalMode(mode);
@@ -45,6 +53,36 @@ export default function Atracoes() {
     }
   };
 
+  const handleSave = async (atracaoData: AtracaoForm, fotoUrl: File[]) => {
+      const uploadedUrls = await Promise.all(
+        fotoUrl.map(async (file) => {
+          const url = await uploadImage(file);
+          return url;
+        })
+      );
+
+      if (modalMode === 'create') {
+        createAtrativo({
+          ...atracaoData,
+          fotosURL: uploadedUrls,
+        });
+        toast({
+          title: "Atração criada",
+          description: `A atração "${atracaoData.atracaoTuristica.nome}" foi criada com sucesso.`,
+        });
+      } else if (modalMode === 'edit') {
+        await updateAtrativo({
+          ...atracaoData,
+          fotosURL: uploadedUrls,
+        });
+        toast({
+          title: "Atração atualizada",
+          description: `A atração "${atracaoData.atracaoTuristica.nome}" foi atualizada com sucesso.`,
+        });
+      }
+      setIsModalOpen(false);
+    };
+
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
@@ -54,7 +92,7 @@ export default function Atracoes() {
             Gerencie as atrações turísticas cadastradas no sistema.
           </p>
         </div>
-        <Button 
+        <Button
           className="bg-tourism-primary"
           onClick={() => handleOpenModal('create')}
         >
@@ -90,23 +128,23 @@ export default function Atracoes() {
                     </Badge>
                   </TableCell>
                   <TableCell className="text-right space-x-2">
-                    <Button 
-                      variant="ghost" 
+                    <Button
+                      variant="ghost"
                       size="sm"
                       onClick={() => handleOpenModal('view', atracao)}
                     >
                       <Eye className="h-4 w-4" />
                     </Button>
-                    <Button 
-                      variant="ghost" 
+                    <Button
+                      variant="ghost"
                       size="sm"
                       onClick={() => handleOpenModal('edit', atracao)}
                     >
                       <Edit className="h-4 w-4" />
                     </Button>
-                    <Button 
-                      variant="ghost" 
-                      size="sm" 
+                    <Button
+                      variant="ghost"
+                      size="sm"
                       className="text-destructive"
                       onClick={() => handleOpenDeleteModal(atracao)}
                     >
@@ -125,6 +163,7 @@ export default function Atracoes() {
         onClose={() => setIsModalOpen(false)}
         mode={modalMode}
         initialData={selectedAttraction}
+        onSave={handleSave}
       />
 
       <DeleteConfirmModal

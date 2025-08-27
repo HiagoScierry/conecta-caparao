@@ -36,7 +36,8 @@ export async function PUT(request: Request, { params }: { params: { id: string }
 
 export async function DELETE(request: NextRequest, { params }: { params: { id: string } }) {
   try {
-    await deleteAtrativo(Number(params.id));
+    const atrativo = await getAtrativoById(Number(params.id));
+
     return new NextResponse("Atrativo deleted", { status: 200 });
   } catch (error) {
     const errorMessage = (error && typeof error === "object" && "message" in error) ? (error as { message: string }).message : "Municipio not found";
