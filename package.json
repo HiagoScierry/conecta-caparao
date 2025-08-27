@@ -10,7 +10,8 @@
     "lint": "next lint",
     "lint:fix": "next lint --fix --ext .js,.jsx .ts,.tsx",
     "test": "jest",
-    "seed": "tsx prisma/seed.ts"
+    "seed": "tsx prisma/seed.ts",
+    "migrate": "prisma migrate dev"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.9.0",

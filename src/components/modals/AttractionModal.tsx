@@ -65,8 +65,6 @@ const getFormValues = (data: AtracaoTuristicaFull | null | undefined): AtracaoFo
       logradouro: data.endereco?.rua ?? "",
       numero: data.endereco?.numero ?? "",
       bairro: data.endereco?.bairro ?? "",
-      cidade: data.endereco?.cidade ?? "",
-      estado: data.endereco?.estado ?? "",
       cep: data.endereco?.cep ?? "",
     },
     contato: {
@@ -408,39 +406,6 @@ export function AttractionModal({
                       )}
                     </FormItem>
 
-                    <FormItem className="flex flex-col gap-1">
-                      <FormLabel className="text-sm font-medium">Cidade</FormLabel>
-                      <FormControl>
-                        <input
-                          type="text"
-                          {...form.register("endereco.cidade")}
-                          disabled={isViewMode}
-                          className="border rounded-md p-2 w-full"
-                        />
-                      </FormControl>
-                      {form.formState.errors.endereco?.cidade && (
-                        <span className="text-red-500 text-xs">
-                          {form.formState.errors.endereco.cidade.message}
-                        </span>
-                      )}
-                    </FormItem>
-
-                    <FormItem className="flex flex-col gap-1">
-                      <FormLabel className="text-sm font-medium">Estado</FormLabel>
-                      <FormControl>
-                        <input
-                          type="text"
-                          {...form.register("endereco.estado")}
-                          disabled={isViewMode}
-                          className="border rounded-md p-2 w-full"
-                        />
-                      </FormControl>
-                      {form.formState.errors.endereco?.estado && (
-                        <span className="text-red-500 text-xs">
-                          {form.formState.errors.endereco.estado.message}
-                        </span>
-                      )}
-                    </FormItem>
 
                     <FormItem className="flex flex-col gap-1">
                       <FormLabel className="text-sm font-medium">CEP</FormLabel>

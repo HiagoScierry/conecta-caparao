@@ -63,6 +63,8 @@ model Municipio {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now())
+
+  ServicoTuristico ServicoTuristico[]
 }
 
 model HorarioDeFuncionamento {
@@ -105,12 +107,10 @@ model Endereco {
   rua       String
   numero    String
   bairro    String
-  cidade    String
-  estado    String
   cep       String
 
-  atracoesTuristicas AtracaoTuristica[]
   eventos            Evento[]
+  atracoesTuristicas AtracaoTuristica[]
   servicosTuristicos ServicoTuristico[]
 
   createdAt DateTime @default(now())
@@ -204,9 +204,11 @@ model ServicoTuristico {
   idEndereco Int
   idFoto     Int
   idContato  Int
+  idMunicipio Int
 
   horarios   HorarioDeFuncionamento[]
 
+  municipio  Municipio @relation(fields: [idMunicipio], references: [id])
   endereco   Endereco @relation(fields: [idEndereco], references: [id])
   foto       Foto     @relation(fields: [idFoto], references: [id])
   contato    Contato  @relation(fields: [idContato], references: [id])
