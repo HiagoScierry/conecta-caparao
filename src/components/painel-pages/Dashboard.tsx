@@ -1,17 +1,14 @@
 "use client";
 import { StatCard } from "@/components/dashboard/StatCard";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { useDash } from "@/hooks/http/useDash";
 import { MapPin, Compass, Calendar, Newspaper, Store, Users } from "lucide-react";
 
 export default function Dashboard() {
   // Dados fictícios para demonstração
-  const stats = {
-    municipios: 32,
-    atracoes: 157,
-    eventos: 24,
-    noticias: 86,
-    servicos: 123
-  };
+  const {
+    data: stats,
+  } = useDash();
 
   return (
     <div className="space-y-6">
@@ -25,33 +22,33 @@ export default function Dashboard() {
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-5">
         <StatCard 
           title="Municípios"
-          value={stats.municipios}
+          value={stats?.municipios | 0}
           icon={<MapPin className="h-4 w-4" />}
           className="bg-tourism-light border-tourism-primary/20"
         />
         <StatCard 
           title="Atrações"
-          value={stats.atracoes}
+          value={stats?.atracoes | 0}
           icon={<Compass className="h-4 w-4" />}
         />
         <StatCard 
           title="Eventos"
-          value={stats.eventos}
+          value={stats?.eventos | 0}
           icon={<Calendar className="h-4 w-4" />}
         />
         <StatCard 
           title="Notícias"
-          value={stats.noticias}
+          value={stats?.noticias | 0}
           icon={<Newspaper className="h-4 w-4" />}
         />
         <StatCard 
           title="Serviços Turísticos"
-          value={stats.servicos}
+          value={stats?.servicos | 0}
           icon={<Store className="h-4 w-4" />}
         />
       </div>
 
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+      {/* <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
         <Card className="col-span-2">
           <CardHeader>
             <CardTitle>Atrações Turísticas por Município</CardTitle>
@@ -148,7 +145,7 @@ export default function Dashboard() {
             </div>
           </CardContent>
         </Card>
-      </div>
+      </div> */}
     </div>
   );
 }

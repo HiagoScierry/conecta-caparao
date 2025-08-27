@@ -27,7 +27,7 @@ export default function Page() {
       { name: "eventos", Component: Eventos },
       { name: "noticias", Component: Noticias },
       { name: "servicos", Component: Servicos },
-      { name: "configuracoes", Component: Configuracoes },
+      // { name: "configuracoes", Component: Configuracoes },
     ],
     []
   );
