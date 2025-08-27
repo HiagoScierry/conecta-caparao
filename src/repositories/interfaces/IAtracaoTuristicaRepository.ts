@@ -23,6 +23,6 @@ export interface IAtracaoTuristicaRepository {
   findAll(): Promise<AtracaoTuristicaFull[]>;
   findById(id: number): Promise<AtracaoTuristicaFull | null>;
   create(data: AtracaoTuristicaWithRelations, fotos: string[]): Promise<AtracaoTuristica>;
-  update(id: number, data: AtracaoTuristicaWithRelations, fotos: string[]): Promise<AtracaoTuristica>;
+  update(id: number, data: AtracaoTuristicaWithRelations, perfisParaRemover: string[], fotos: string[]): Promise<AtracaoTuristica>;
   delete(id: number): Promise<void>;
 }

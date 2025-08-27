@@ -1,9 +1,14 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { deleteAtrativo, getAtrativoById } from "@/controllers/atrativoController";
+import { createAtrativo, deleteAtrativo, getAtrativoById, updateAtrativo } from "@/controllers/atrativoController";
+import { AtracaoForm } from "@/forms/atracaoForm";
+import { atracaoTuristicaSchema } from "@/schemas/atracaoTuristicaSchema";
+import { contatoSchema } from "@/schemas/contatoSchema";
+import { enderecoSchema } from "@/schemas/enderecoSchema";
+import { horarioFuncionamentoSchema } from "@/schemas/horarioFuncionamentoSchema";
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 
-export async function GET(request: NextRequest,{ params }: { params: { id: string } }) {
+export async function GET(request: NextRequest, { params }: { params: { id: string } }) {
   try {
     const atrativo = await getAtrativoById(Number(params.id));
     return NextResponse.json(atrativo, { status: 200 });
@@ -15,9 +20,37 @@ export async function GET(request: NextRequest,{ params }: { params: { id: strin
 export async function PUT(request: Request, { params }: { params: { id: string } }) {
   try {
     const atrativo = await getAtrativoById(Number(params.id));
+
     if (!atrativo) {
       return new NextResponse("Atrativo not found", { status: 404 });
     }
+
+    const {
+      atracaoTuristica,
+      contato,
+      endereco,
+      categoria,
+      horarioFuncionamento,
+      fotosURL,
+      municipio,
+      perfil
+    }: AtracaoForm & { fotosURL: string[] } = await request.json();
+
+    atracaoTuristicaSchema.parse(atracaoTuristica);
+    contatoSchema.parse(contato);
+    enderecoSchema.parse(endereco);
+    horarioFuncionamentoSchema.parse(horarioFuncionamento);
+
+    await updateAtrativo(Number(params.id), {
+      atracaoTuristica,
+      contato,
+      endereco,
+      categoria,
+      horarioFuncionamento,
+      municipio,
+      perfil
+    }, fotosURL);
+
 
   } catch (error) {
     if (error instanceof z.ZodError) {

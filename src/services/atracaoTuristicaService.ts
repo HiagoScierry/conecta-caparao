@@ -19,8 +19,8 @@ export class AtracaoTuristicaService {
     return this.atracaoTuristicaRepository.create(data, fotos);
   }
 
-  async update(id: number, data: AtracaoTuristicaWithRelations, fotos: string[]) {
-    return this.atracaoTuristicaRepository.update(id, data, fotos);
+  async update(id: number, data: AtracaoTuristicaWithRelations, perfisParaRemover: string[], fotos: string[]) {
+    return this.atracaoTuristicaRepository.update(id, data, perfisParaRemover, fotos);
   }
 
   async delete(id: number) {

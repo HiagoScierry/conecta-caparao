@@ -52,7 +52,7 @@ export class AtracaoTuristicaPrismaRepository implements IAtracaoTuristicaReposi
       },
     });
   }
-  async update(id: number, data: AtracaoTuristicaWithRelations): Promise<AtracaoTuristica> {
+  async update(id: number, data: AtracaoTuristicaWithRelations, perfisParaRemover: string[], fotos: string[]): Promise<AtracaoTuristica> {
     return connection.atracaoTuristica.update({
       where: { id },
       data: {
@@ -64,6 +64,13 @@ export class AtracaoTuristicaPrismaRepository implements IAtracaoTuristicaReposi
         idMunicipio: data.idMunicipio,
         idEndereco: data.idEndereco,
         idContato: data.idContato,
+        perfis: {
+          disconnect: perfisParaRemover.map(id => ({ id: Number(id) })) || [],
+          connect: data.perfis?.map(id => ({ id: Number(id) })) || [],
+        },
+        fotos: {
+          create: fotos.map(url => ({ url })),
+        },
       },
     });
   }

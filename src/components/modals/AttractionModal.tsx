@@ -8,11 +8,10 @@ import {
   Dialog,
   DialogContent,
   DialogDescription,
-  DialogFooter,
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Form, FormControl, FormField, FormItem, FormLabel } from "@/components/ui/form";
+import { Form, FormControl, FormItem, FormLabel } from "@/components/ui/form";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { ImageUpload } from "@/components/ImageUpload";
 
@@ -23,7 +22,6 @@ import { usePerfis } from "@/hooks/http/usePerfis";
 import { useCategorias } from "@/hooks/http/useCategoria";
 import { useDeleteUpload } from "@/hooks/http/useUpload";
 
-// Interface das Props (sem alterações)
 interface AttractionModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -32,7 +30,6 @@ interface AttractionModalProps {
   onSave: (attractionData: AtracaoForm & { fotos: File[] }) => void;
 }
 
-// Valores padrão para o formulário em modo de criação (sem alterações)
 const defaultFormValues: AtracaoForm = {
   atracaoTuristica: { nome: "", descricao: "", mapaUrl: "" },
   horarioFuncionamento: { diaDaSemana: [], horaAbertura: "", horaFechamento: "" },
@@ -43,46 +40,46 @@ const defaultFormValues: AtracaoForm = {
   perfil: [],
 };
 
-// **NOVO: Função auxiliar para transformar initialData no formato do formulário**
-// Isso centraliza a lógica de mapeamento e torna o código mais limpo.
 const getFormValues = (data: AtracaoTuristicaFull | null | undefined): AtracaoForm => {
-  if (!data) {
-    return defaultFormValues;
-  }
+  if (!data) return defaultFormValues;
 
-  // Mapeia os dados recebidos para a estrutura esperada pelo formulário.
+  const primeiroHorario = data.horarios?.[0]?.horario ?? "";
+  const [abertura, fechamento] = primeiroHorario.includes("-")
+    ? primeiroHorario.split("-").map((s) => s.trim())
+    : ["", ""];
+
   return {
     atracaoTuristica: {
-      nome: data.nome ?? defaultFormValues.atracaoTuristica.nome,
-      descricao: data.descricao ?? defaultFormValues.atracaoTuristica.descricao,
-      mapaUrl: data.mapaUrl ?? defaultFormValues.atracaoTuristica.mapaUrl,
+      id: data.id ?? "",
+      nome: data.nome ?? "",
+      descricao: data.descricao ?? "",
+      mapaUrl: data.mapaUrl ?? "",
     },
     horarioFuncionamento: {
-      diaDaSemana: data.horarios.map(h => h.dia) ?? defaultFormValues.horarioFuncionamento.diaDaSemana,
-      horaAbertura: data.horarios[0].horario.split("-")[0].trim() ?? defaultFormValues.horarioFuncionamento.horaAbertura,
-      horaFechamento: data.horarios[0].horario.split("-")[1].trim() ?? defaultFormValues.horarioFuncionamento.horaFechamento,
+      diaDaSemana: data.horarios?.map((h) => h.dia) ?? [],
+      horaAbertura: abertura ?? "",
+      horaFechamento: fechamento ?? "",
     },
-    endereco:{
-      logradouro: data.endereco?.rua ?? defaultFormValues.endereco.logradouro,
-      numero: data.endereco?.numero ?? defaultFormValues.endereco.numero,
-      bairro: data.endereco?.bairro ?? defaultFormValues.endereco.bairro,
-      cidade: data.endereco?.cidade ?? defaultFormValues.endereco.cidade,
-      estado: data.endereco?.estado ?? defaultFormValues.endereco.estado,
-      cep: data.endereco?.cep ?? defaultFormValues.endereco.cep,
+    endereco: {
+      logradouro: data.endereco?.rua ?? "",
+      numero: data.endereco?.numero ?? "",
+      bairro: data.endereco?.bairro ?? "",
+      cidade: data.endereco?.cidade ?? "",
+      estado: data.endereco?.estado ?? "",
+      cep: data.endereco?.cep ?? "",
     },
     contato: {
-      email: data.contato?.email ?? defaultFormValues.contato.email,
-      telefone: data.contato?.telefone ?? defaultFormValues.contato.telefone,
-      celular: data.contato?.celular ?? defaultFormValues.contato.celular,
-      whatsapp: data.contato?.whatsapp ?? defaultFormValues.contato.whatsapp,
-      instagram: data.contato?.instagram ?? defaultFormValues.contato.instagram,
+      email: data.contato?.email ?? "",
+      telefone: data.contato?.telefone ?? "",
+      celular: data.contato?.celular ?? "",
+      whatsapp: data.contato?.whatsapp ?? "",
+      instagram: data.contato?.instagram ?? "",
     },
-    municipio: data.municipio?.id.toString() ?? "",
-    categoria: data.categoria?.id ?? "",
-    perfil: data.perfis.map(p => p.id.toString()) ?? [],
+    municipio: data.municipio?.id?.toString() ?? "",
+    categoria: data.categoria?.id ?? 0,
+    perfil: data.perfis?.map((p) => p.id.toString()) ?? [],
   };
 };
-
 
 export function AttractionModal({
   isOpen,
@@ -111,7 +108,6 @@ export function AttractionModal({
   const handleDeleteFoto = async (fotoId: string) => {
     try {
       await deleteFoto(fotoId);
-      // Lógica para atualizar a UI após deletar a foto
     } catch (error) {
       console.error("Erro ao deletar a foto:", error);
     }
@@ -125,6 +121,7 @@ export function AttractionModal({
     onSave({ ...data, fotos: selectedImages });
     onClose(); // Idealmente, fechar o modal apenas se o onSave for bem-sucedido.
   };
+
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-7xl max-h-[90vh]">
@@ -145,25 +142,21 @@ export function AttractionModal({
           </DialogDescription>
         </DialogHeader>
 
-        <ScrollArea className="h-[60vh]">
-          <Form {...form}>
-            <form id="attraction-form" onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col h-full">
+        <Form {...form}>
+          {/* IMPORTANTE: o botão de submit fica dentro do <form> */}
+          <form id="attraction-form" onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col h-full">
+            <ScrollArea className="h-[60vh]">
               <div className="space-y-6 py-4">
-
-                {/* Bloco: Imagem */}
+                {/* Imagem */}
                 <section className="border rounded-lg p-6 space-y-6">
                   <FormItem>
-                    <FormLabel className="text-base font-medium">
-                      Imagem
-                    </FormLabel>
+                    <FormLabel className="text-base font-medium">Imagem</FormLabel>
                     <FormControl>
-                     <ImageUpload
-                        initialFotos={
-                          initialData?.fotos?.map((foto) => ({
-                            id: foto.id.toString(),
-                            url: foto.url,
-                          }))
-                        }
+                      <ImageUpload
+                        initialFotos={initialData?.fotos?.map((foto) => ({
+                          id: foto.id.toString(),
+                          url: foto.url,
+                        }))}
                         onRemoveFoto={handleDeleteFoto}
                         onImagesSelect={handleImageSelect}
                         disabled={isViewMode}
@@ -172,14 +165,12 @@ export function AttractionModal({
                   </FormItem>
                 </section>
 
-                {/* Bloco: Dados da Atração */}
+                {/* Dados da Atração */}
                 <section className="border rounded-lg p-6 space-y-6">
                   <h3 className="text-lg font-semibold">Dados da Atração</h3>
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-6">
                     <FormItem className="flex flex-col gap-1">
-                      <FormLabel className="text-sm font-medium">
-                        Nome
-                      </FormLabel>
+                      <FormLabel className="text-sm font-medium">Nome</FormLabel>
                       <FormControl>
                         <input
                           type="text"
@@ -196,9 +187,7 @@ export function AttractionModal({
                     </FormItem>
 
                     <FormItem className="flex flex-col gap-1">
-                      <FormLabel className="text-sm font-medium">
-                        Mapa URL
-                      </FormLabel>
+                      <FormLabel className="text-sm font-medium">Mapa URL</FormLabel>
                       <FormControl>
                         <input
                           type="url"
@@ -215,12 +204,9 @@ export function AttractionModal({
                     </FormItem>
                   </div>
 
-                  {/* Textarea ocupa linha propria */}
                   <div>
                     <FormItem className="flex flex-col gap-1">
-                      <FormLabel className="text-sm font-medium">
-                        Descrição
-                      </FormLabel>
+                      <FormLabel className="text-sm font-medium">Descrição</FormLabel>
                       <FormControl>
                         <textarea
                           {...form.register("atracaoTuristica.descricao", { required: true })}
@@ -237,16 +223,13 @@ export function AttractionModal({
                   </div>
                 </section>
 
-                {/* Bloco: Horario de Funcionamento */}
+                {/* Horário de Funcionamento */}
                 <section className="border rounded-lg p-6 space-y-6">
                   <h3 className="text-lg font-semibold">Horário de Funcionamento</h3>
 
-                  { /* Checkbox para dias da semana ocupando linha propria*/}
                   <div>
                     <FormItem className="flex flex-col gap-1">
-                      <FormLabel className="text-sm font-medium">
-                        Dias de Funcionamento
-                      </FormLabel>
+                      <FormLabel className="text-sm font-medium">Dias de Funcionamento</FormLabel>
                       <FormControl>
                         <div className="flex flex-wrap gap-4">
                           {["SEGUNDA", "TERCA", "QUARTA", "QUINTA", "SEXTA", "SABADO", "DOMINGO"].map((dia) => (
@@ -272,9 +255,7 @@ export function AttractionModal({
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-6">
                     <FormItem className="flex flex-col gap-1">
-                      <FormLabel className="text-sm font-medium">
-                        Horário de Abertura
-                      </FormLabel>
+                      <FormLabel className="text-sm font-medium">Horário de Abertura</FormLabel>
                       <FormControl>
                         <input
                           type="time"
@@ -286,9 +267,7 @@ export function AttractionModal({
                     </FormItem>
 
                     <FormItem className="flex flex-col gap-1">
-                      <FormLabel className="text-sm font-medium">
-                        Horário de Fechamento
-                      </FormLabel>
+                      <FormLabel className="text-sm font-medium">Horário de Fechamento</FormLabel>
                       <FormControl>
                         <input
                           type="time"
@@ -301,13 +280,11 @@ export function AttractionModal({
                   </div>
                 </section>
 
-                {/* Bloco: Municipios */}
+                {/* Municípios */}
                 <section className="border rounded-lg p-6 space-y-6">
-                  <h3 className="text-lg font-semibold">Municipios</h3>
+                  <h3 className="text-lg font-semibold">Municípios</h3>
                   <FormItem className="flex flex-col gap-1">
-                    <FormLabel className="text-sm font-medium">
-                      Selecione o Municipio
-                    </FormLabel>
+                    <FormLabel className="text-sm font-medium">Selecione o Município</FormLabel>
                     <FormControl>
                       <select
                         {...form.register("municipio", { required: true })}
@@ -325,51 +302,44 @@ export function AttractionModal({
                   </FormItem>
                 </section>
 
-                {/* Bloco: Categoria */}
+                {/* Categoria */}
                 <section className="border rounded-lg p-6 space-y-6">
                   <h3 className="text-lg font-semibold">Categoria</h3>
                   <FormItem className="flex flex-col gap-1">
-                    <FormLabel className="text-sm font-medium">
-                      Selecione as Categoria
-                    </FormLabel>
+                    <FormLabel className="text-sm font-medium">Selecione a Categoria</FormLabel>
                     <FormControl>
-                        <div className="grid grid-cols-4">
-                          {categorias?.map((categoria: Categoria) => (
-                            <label key={categoria.id} className="flex items-center gap-1">
-                              <input
-                                type="radio"
-                                value={categoria.id}
-                                checked={form.getValues("categoria")?.toString() === categoria.id.toString()}
-                                {...form.register("categoria")}
-                                disabled={isViewMode}
-                              />
-                              {categoria.nome.charAt(0) + categoria.nome.slice(1).toLowerCase()}
-                            </label>
-                          ))}
-                        </div>
+                      <div className="grid grid-cols-4">
+                        {categorias?.map((categoria: Categoria) => (
+                          <label key={categoria.id} className="flex items-center gap-1">
+                            <input
+                              type="radio"
+                              value={categoria.id}
+                              {...form.register("categoria", {
+                                required: true,
+                                setValueAs: (v) => Number(v),
+                              })}
+                              disabled={isViewMode}
+                            />
+                            {categoria.nome.charAt(0) + categoria.nome.slice(1).toLowerCase()}
+                          </label>
+                        ))}
+                      </div>
                     </FormControl>
-                      {form.formState.errors.categoria?.nome && (
-                        <span className="text-red-500 text-xs">
-                          {form.formState.errors.categoria.nome.message}
-                        </span>
-                      )}
                   </FormItem>
                 </section>
 
-                {/* Bloco: Perfil */}
+                {/* Perfil */}
                 <section className="border rounded-lg p-6 space-y-6">
                   <h3 className="text-lg font-semibold">Perfil</h3>
                   <FormItem className="flex flex-col gap-1">
-                    <FormLabel className="text-sm font-medium">
-                      Selecione o Perfil
-                    </FormLabel>
+                    <FormLabel className="text-sm font-medium">Selecione o Perfil</FormLabel>
                     <FormControl>
                       <div className="grid grid-cols-4">
                         {perfisCliente?.map((perfil: PerfilCliente) => (
                           <label key={perfil.id} className="flex items-center gap-1">
                             <input
                               type="checkbox"
-                              value={perfil.id}
+                              value={perfil.id.toString()}
                               {...form.register("perfil")}
                               disabled={isViewMode}
                             />
@@ -378,22 +348,15 @@ export function AttractionModal({
                         ))}
                       </div>
                     </FormControl>
-                        {form.formState.errors.perfil?.tipo && (
-                          <span className="text-red-500 text-xs">
-                            {form.formState.errors.perfil.tipo.message}
-                          </span>
-                        )}
                   </FormItem>
                 </section>
 
-                {/* Bloco: Dados de Endereço */}
+                {/* Endereço */}
                 <section className="border rounded-lg p-6 space-y-6">
                   <h3 className="text-lg font-semibold">Dados de Endereço</h3>
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                     <FormItem className="flex flex-col gap-1">
-                      <FormLabel className="text-sm font-medium">
-                        Logradouro
-                      </FormLabel>
+                      <FormLabel className="text-sm font-medium">Logradouro</FormLabel>
                       <FormControl>
                         <input
                           type="text"
@@ -410,9 +373,7 @@ export function AttractionModal({
                     </FormItem>
 
                     <FormItem className="flex flex-col gap-1">
-                      <FormLabel className="text-sm font-medium">
-                        Número
-                      </FormLabel>
+                      <FormLabel className="text-sm font-medium">Número</FormLabel>
                       <FormControl>
                         <input
                           type="text"
@@ -429,9 +390,7 @@ export function AttractionModal({
                     </FormItem>
 
                     <FormItem className="flex flex-col gap-1">
-                      <FormLabel className="text-sm font-medium">
-                        Bairro
-                      </FormLabel>
+                      <FormLabel className="text-sm font-medium">Bairro</FormLabel>
                       <FormControl>
                         <input
                           type="text"
@@ -448,9 +407,7 @@ export function AttractionModal({
                     </FormItem>
 
                     <FormItem className="flex flex-col gap-1">
-                      <FormLabel className="text-sm font-medium">
-                        Cidade
-                      </FormLabel>
+                      <FormLabel className="text-sm font-medium">Cidade</FormLabel>
                       <FormControl>
                         <input
                           type="text"
@@ -467,9 +424,7 @@ export function AttractionModal({
                     </FormItem>
 
                     <FormItem className="flex flex-col gap-1">
-                      <FormLabel className="text-sm font-medium">
-                        Estado
-                      </FormLabel>
+                      <FormLabel className="text-sm font-medium">Estado</FormLabel>
                       <FormControl>
                         <input
                           type="text"
@@ -486,9 +441,7 @@ export function AttractionModal({
                     </FormItem>
 
                     <FormItem className="flex flex-col gap-1">
-                      <FormLabel className="text-sm font-medium">
-                        CEP
-                      </FormLabel>
+                      <FormLabel className="text-sm font-medium">CEP</FormLabel>
                       <FormControl>
                         <input
                           type="text"
@@ -506,14 +459,12 @@ export function AttractionModal({
                   </div>
                 </section>
 
-                {/* Bloco: Dados de Contato */}
+                {/* Contato */}
                 <section className="border rounded-lg p-6 space-y-6">
                   <h3 className="text-lg font-semibold">Dados de Contato</h3>
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                     <FormItem className="flex flex-col gap-1">
-                      <FormLabel className="text-sm font-medium">
-                        Email
-                      </FormLabel>
+                      <FormLabel className="text-sm font-medium">Email</FormLabel>
                       <FormControl>
                         <input
                           type="email"
@@ -530,9 +481,7 @@ export function AttractionModal({
                     </FormItem>
 
                     <FormItem className="flex flex-col gap-1">
-                      <FormLabel className="text-sm font-medium">
-                        Telefone
-                      </FormLabel>
+                      <FormLabel className="text-sm font-medium">Telefone</FormLabel>
                       <FormControl>
                         <input
                           type="text"
@@ -544,9 +493,7 @@ export function AttractionModal({
                     </FormItem>
 
                     <FormItem className="flex flex-col gap-1">
-                      <FormLabel className="text-sm font-medium">
-                        Celular
-                      </FormLabel>
+                      <FormLabel className="text-sm font-medium">Celular</FormLabel>
                       <FormControl>
                         <input
                           type="text"
@@ -563,9 +510,7 @@ export function AttractionModal({
                     </FormItem>
 
                     <FormItem className="flex flex-col gap-1">
-                      <FormLabel className="text-sm font-medium">
-                        WhatsApp
-                      </FormLabel>
+                      <FormLabel className="text-sm font-medium">WhatsApp</FormLabel>
                       <FormControl>
                         <input
                           type="text"
@@ -577,9 +522,7 @@ export function AttractionModal({
                     </FormItem>
 
                     <FormItem className="flex flex-col gap-1">
-                      <FormLabel className="text-sm font-medium">
-                        Instagram
-                      </FormLabel>
+                      <FormLabel className="text-sm font-medium">Instagram</FormLabel>
                       <FormControl>
                         <input
                           type="text"
@@ -592,24 +535,21 @@ export function AttractionModal({
                   </div>
                 </section>
               </div>
-            </form>
-          </Form>
-        </ScrollArea>
+            </ScrollArea>
 
-        <DialogFooter>
-          {!isViewMode && (
-            <Button
-              type="submit"
-              form="attraction-form"
-              className="bg-tourism-primary"
-            >
-              {mode === "create" ? "Criar" : "Salvar"}
-            </Button>
-          )}
-          <Button variant="outline" onClick={onClose}>
-            {isViewMode ? "Fechar" : "Cancelar"}
-          </Button>
-        </DialogFooter>
+            {/* Footer DENTRO do form para garantir submit */}
+            <div className="mt-4 flex items-center justify-end gap-2">
+              {!isViewMode && (
+                <Button type="submit" className="bg-tourism-primary">
+                  {mode === "create" ? "Criar" : "Salvar"}
+                </Button>
+              )}
+              <Button type="button" variant="outline" onClick={onClose}>
+                {isViewMode ? "Fechar" : "Cancelar"}
+              </Button>
+            </div>
+          </form>
+        </Form>
       </DialogContent>
     </Dialog>
   );
