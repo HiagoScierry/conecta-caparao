@@ -16,14 +16,14 @@ export function DefaultHeader({ titulo, imagemUrl, linkHref, linkText, linkStyle
   const altText = `Imagem para a publicação: ${titulo}`;
 
   return (
-    <Card className="w-3/4 h-fit overflow-hidden rounded-lg border-2 border-tourism-verde-escuro shadow-lg bg-white">
+    <Card className="w-full md:w-3/4 mx-4 h-fit overflow-hidden border-2 border-tourism-verde-escuro shadow-lg bg-white">
       {/* Imagem */}
-      <div className="relative w-full h-48">
+      <div className="relative w-full h-48 md:h-96">
         <Image
           src={imagemUrl}
           alt={altText}
           fill
-          className="object-cover rounded-t-lg"
+          className="object-cover"
         />
       </div>
 

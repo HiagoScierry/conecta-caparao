@@ -38,7 +38,14 @@ export default function PaginaMunicipios({
         corSubtitulo={"text-tourism-azul"}
       />
       <GaleriaDeImagens imagemUrls={municipio.imagemUrls} />
-      <Atrativos />
+
+      <div className="w-full bg-tourism-branco py-12">
+        <div className="container mx-auto flex flex-col items-center">
+          <h2 className="text-4xl font-bold pb-12 md:text-5xl">Atrativos</h2>
+          <Atrativos />
+        </div>
+      </div>
+
       <Informacoes />
     </LayoutPublic>
   );
