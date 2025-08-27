@@ -22,9 +22,7 @@ export class EnderecoPrismaRepository implements IEnderecoRepository {
         cep: endereco.cep,
         rua: endereco.logradouro,
         numero: endereco.numero,
-        bairro: endereco.bairro,
-        cidade: endereco.cidade,
-        estado: endereco.estado,
+        bairro: endereco.bairro
       },
     });
   }
@@ -37,8 +35,6 @@ export class EnderecoPrismaRepository implements IEnderecoRepository {
         rua: endereco.logradouro,
         numero: endereco.numero,
         bairro: endereco.bairro,
-        cidade: endereco.cidade,
-        estado: endereco.estado,
       },
     });
   }

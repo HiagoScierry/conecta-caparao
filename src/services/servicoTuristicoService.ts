@@ -15,12 +15,12 @@ export class ServicoTuristicoService {
     return this.repository.findAll();
   }
 
-  async create(data: ServicoTuristicoWithRelations) {
-    return this.repository.create(data);
+  async create(data: ServicoTuristicoWithRelations, fotoURL: string) {
+    return this.repository.create(data, fotoURL);
   }
 
-  async update(id: number, data: ServicoTuristicoWithRelations) {
-    return this.repository.update(id, data);
+  async update(id: number, data: ServicoTuristicoWithRelations, fotoURL: string) {
+    return this.repository.update(id, data, fotoURL);
   }
 
   async delete(id: number) {

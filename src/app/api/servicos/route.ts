@@ -5,7 +5,7 @@ import { contatoSchema } from "@/schemas/contatoSchema";
 import { enderecoSchema } from "@/schemas/enderecoSchema";
 import { horarioFuncionamentoSchema } from "@/schemas/horarioFuncionamentoSchema";
 import { servicoTuristicoSchema } from "@/schemas/servicoTuristicoSchema";
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 
 export async function GET() {
@@ -13,15 +13,16 @@ export async function GET() {
   return NextResponse.json(servicos);
 }
 
-export async function POST(request: Request) {
+export async function POST(request: NextRequest) {
   try {
     const {
       servico,
       contato,
       endereco,
-      fotosURL,
       municipio,
-    }: ServicoForm & { fotosURL: string[] } = await request.json();
+      horarioFuncionamento,
+      fotoURL,
+    }: ServicoForm & { fotoURL?: string } = await request.json();
 
     servicoTuristicoSchema.parse(servico);
     contatoSchema.parse(contato);
@@ -31,8 +32,9 @@ export async function POST(request: Request) {
       servico,
       contato,
       endereco,
-      fotosURL,
       municipio,
+      horarioFuncionamento,
+      fotoURL,
     });
 
 

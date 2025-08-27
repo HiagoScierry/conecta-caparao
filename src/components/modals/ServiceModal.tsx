@@ -115,6 +115,7 @@ export function ServiceModal({
                   </FormLabel>
                   <FormControl>
                     <ImageUpload
+                      multiple={false}
                       onImageSelect={handleImageSelect}
                       disabled={isViewMode}
                     />

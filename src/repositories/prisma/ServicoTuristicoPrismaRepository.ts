@@ -19,12 +19,47 @@ export class ServicoTuristicoPrismaRepository implements IServicoTuristicoReposi
     return connection.servicoTuristico.findMany();
   }
 
-  async create(data: ServicoTuristicoWithRelations): Promise<ServicoTuristico> {
-    return connection.servicoTuristico.create({ data });
+  async create(data: ServicoTuristicoWithRelations, fotosURL?: string): Promise<ServicoTuristico> {
+    let idFoto: number | null = null;
+
+    if (fotosURL) {
+      const foto = await connection.foto.create({
+        data: {
+          url: fotosURL,
+        }
+      });
+      idFoto = foto.id;
+    }
+
+    const servicoTuristico = await connection.servicoTuristico.create({
+      data: {
+        nome: data.nome,
+        descricao: data?.descricao || "",
+        site: data?.site || "",
+        idContato: data.idContato,
+        idEndereco: data.idEndereco,
+        idMunicipio: data.idMunicipio,
+        idFoto: idFoto,
+        }
+    });
+
+    return servicoTuristico;
   }
 
-  async update(id: number, data: ServicoTuristicoWithRelations): Promise<ServicoTuristico> {
-    return connection.servicoTuristico.update({ where: { id }, data });
+  async update(id: number, data: ServicoTuristicoWithRelations, fotosURL?: string): Promise<ServicoTuristico> {
+    // Remove 'id' if present to avoid Prisma type error
+    const { id: _id, ...dataWithoutId } = data;
+    return connection.servicoTuristico.update({
+      where: { id },
+      data: {
+        ...dataWithoutId,
+        foto: {
+          create: {
+            url: fotosURL ?? "",
+          }
+        },
+      }
+    });
   }
 
   async delete(id: number): Promise<void> {

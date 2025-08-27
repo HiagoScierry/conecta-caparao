@@ -5,10 +5,11 @@ import Image from "next/image";
 
 interface ImageUploadProps {
   initialFotos?: { id: string; url: string }[];
-  onRemoveFoto?: (fotoId: string) => Promise<void>; // Mudança: agora é uma Promise
+  onRemoveFoto?: (fotoId: string) => Promise<void>;
   onImagesSelect?: (files: File[]) => void;
   disabled?: boolean;
   maxImages?: number;
+  multiple?: boolean; // Permitir múltiplas imagens
 }
 
 export function ImageUpload({
@@ -17,10 +18,15 @@ export function ImageUpload({
   onRemoveFoto,
   disabled,
   maxImages = 5,
+  multiple = true,
 }: ImageUploadProps) {
   const [previews, setPreviews] = useState<string[]>([]);
   const [files, setFiles] = useState<File[]>([]);
-  const [currentInitialFotos, setCurrentInitialFotos] = useState(initialFotos); // Novo estado para as fotos iniciais
+  const [currentInitialFotos, setCurrentInitialFotos] = useState(initialFotos);
+
+  // Ajuste do limite quando multiple = false
+  const effectiveMaxImages = multiple ? maxImages : 1;
+  const totalImages = currentInitialFotos.length + files.length;
 
   const allImages = [
     ...currentInitialFotos.map((foto) => ({ type: "initial", ...foto })),
@@ -32,43 +38,46 @@ export function ImageUpload({
 
     const selectedFiles = Array.from(e.target.files);
 
-    const totalFiles = currentInitialFotos.length + files.length + selectedFiles.length;
-    if (totalFiles > maxImages) {
-      alert(`Você pode enviar no máximo ${maxImages} imagens.`);
+    if (!multiple && selectedFiles.length > 1) {
+      alert("Somente uma imagem pode ser enviada.");
+    }
+
+    const filesToAdd = multiple ? selectedFiles : selectedFiles.slice(0, 1);
+    const newTotal = totalImages + filesToAdd.length;
+
+    if (totalImages >= effectiveMaxImages) {
+      alert(`Você já atingiu o limite de ${effectiveMaxImages} imagem${effectiveMaxImages > 1 ? "s" : ""}.`);
+      e.target.value = "";
       return;
     }
 
-    selectedFiles.forEach((file) => {
+    if (newTotal > effectiveMaxImages) {
+      alert(`Você pode enviar no máximo ${effectiveMaxImages} imagem${effectiveMaxImages > 1 ? "s" : ""}.`);
+      e.target.value = "";
+      return;
+    }
+
+    filesToAdd.forEach((file) => {
       const reader = new FileReader();
-      reader.onloadend = () => {
-        setPreviews((prev) => [...prev, reader.result as string]);
-      };
+      reader.onloadend = () => setPreviews((prev) => [...prev, reader.result as string]);
       reader.readAsDataURL(file);
     });
 
-    setFiles((prev) => [...prev, ...selectedFiles]);
-    onImagesSelect?.([...files, ...selectedFiles]);
+    setFiles((prev) => [...prev, ...filesToAdd]);
+    onImagesSelect?.([...files, ...filesToAdd]);
 
     e.target.value = "";
   };
 
   const handleRemoveImage = async (index: number) => {
     if (index < currentInitialFotos.length) {
-      // É uma imagem inicial
       const fotoParaRemover = currentInitialFotos[index];
-        await onRemoveFoto?.(fotoParaRemover.id);
-        // Se a remoção for bem-sucedida, atualize o estado local
-        const newInitialFotos = currentInitialFotos.filter(
-          (foto) => foto.id !== fotoParaRemover.id
-        );
-        setCurrentInitialFotos(newInitialFotos);
+      await onRemoveFoto?.(fotoParaRemover.id);
+      setCurrentInitialFotos((prev) => prev.filter((f) => f.id !== fotoParaRemover.id));
     } else {
-      // É um preview
       const previewIndex = index - currentInitialFotos.length;
-      const newPreviews = previews.filter((_, i) => i !== previewIndex);
+      setPreviews((prev) => prev.filter((_, i) => i !== previewIndex));
       const newFiles = files.filter((_, i) => i !== previewIndex);
-
-      setPreviews(newPreviews);
       setFiles(newFiles);
       onImagesSelect?.(newFiles);
     }
@@ -80,12 +89,16 @@ export function ImageUpload({
         <Button
           type="button"
           variant="outline"
-          disabled={disabled || currentInitialFotos.length + files.length >= maxImages}
+          disabled={disabled || totalImages >= effectiveMaxImages}
           onClick={() => document.getElementById("imageInput")?.click()}
           className="w-full"
         >
           <LucideImage className="mr-2 h-4 w-4" />
-          Selecionar Imagem
+          {totalImages >= effectiveMaxImages
+            ? "Limite de imagens atingido"
+            : multiple
+            ? "Selecionar Imagens"
+            : "Selecionar Imagem"}
         </Button>
         <input
           id="imageInput"
@@ -93,8 +106,8 @@ export function ImageUpload({
           accept="image/*"
           className="hidden"
           onChange={handleFileChange}
-          multiple
-          disabled={disabled || currentInitialFotos.length + files.length >= maxImages}
+          multiple={multiple}
+          disabled={disabled || totalImages >= effectiveMaxImages}
         />
       </div>
 

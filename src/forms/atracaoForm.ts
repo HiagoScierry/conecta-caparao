@@ -2,9 +2,6 @@ import { contatoSchema } from "@/schemas/contatoSchema";
 import { enderecoSchema } from "@/schemas/enderecoSchema";
 import { atracaoTuristicaSchema } from "@/schemas/atracaoTuristicaSchema";
 import { horarioFuncionamentoSchema } from "@/schemas/horarioFuncionamentoSchema";
-import { categoriaSchema } from "@/schemas/categoriaSchema";
-import { municipioSchema } from "@/schemas/municipioSchema";
-import { perfilSchema } from "@/schemas/perfilSchema";
 import { z } from "zod";
 
 
