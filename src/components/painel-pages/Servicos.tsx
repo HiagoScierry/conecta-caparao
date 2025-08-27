@@ -30,9 +30,11 @@ export default function Servicos() {
   const [modalMode, setModalMode] = useState<"create" | "edit" | "view">(
     "create"
   );
-  const [selectedService, setSelectedService] = useState<ServicoTuristicoFull | null>(null);
+  const [selectedService, setSelectedService] =
+    useState<ServicoTuristicoFull | null>(null);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-  const [serviceToDelete, setServiceToDelete] = useState<ServicoTuristicoFull | null>(null);
+  const [serviceToDelete, setServiceToDelete] =
+    useState<ServicoTuristicoFull | null>(null);
 
   const { data: servicos } = useGetAllServicos();
 
@@ -42,7 +44,10 @@ export default function Servicos() {
   const { mutateAsync: updateServico } = useUpdateServico();
   const { mutateAsync: deleteServico } = useDeleteServico();
 
-  const handleOpenModal = (mode: "create" | "edit" | "view", service?: ServicoTuristicoFull | null) => {
+  const handleOpenModal = (
+    mode: "create" | "edit" | "view",
+    service?: ServicoTuristicoFull | null
+  ) => {
     setModalMode(mode);
     setSelectedService(service || null);
     setIsModalOpen(true);
@@ -64,37 +69,37 @@ export default function Servicos() {
     }
   };
 
-  const handleSaveService = async (serviceData: ServicoForm & { fotos: File[]}) => {
+  const handleSaveService = async (
+    serviceData: ServicoForm & { fotos: File[] }
+  ) => {
     try {
       const uploadedUrls = await Promise.all(
-      (serviceData.fotos || []).map(async (file) => {
-        const url = await uploadFiles(file);
-        return url;
-      })
-    );
+        (serviceData.fotos || []).map(async (file) => {
+          const url = await uploadFiles(file);
+          return url;
+        })
+      );
 
-    if (modalMode === "create") {
-      await createServico({
-        ...serviceData,
-        fotoUrl: uploadedUrls[0] || "",
-      });
-      toast({
-        title: "Serviço criado",
-        description: `O serviço "${serviceData?.servico.nome}" foi criado com sucesso.`,
-      });
-    }
-    // } else if (modalMode === "edit") {
-    //   // await updateServico({
-    //   //   ...serviceData,
-    //   //   id: selectedService.id,
-    //   //   fotosURL: selectedService[0],
-    //   // });
-    //   toast({
-    //     title: "Serviço atualizado",
-    //     description: `O serviço "${serviceData.nome}" foi atualizado com sucesso.`,
-    //   });
-    // }
-    setIsModalOpen(false);
+      if (modalMode === "create") {
+        await createServico({
+          ...serviceData,
+          fotoUrl: uploadedUrls[0] || "",
+        });
+        toast({
+          title: "Serviço criado",
+          description: `O serviço "${serviceData?.servico.nome}" foi criado com sucesso.`,
+        });
+      } else if (modalMode === "edit") {
+        await updateServico({
+          ...serviceData,
+          fotoUrl: uploadedUrls[0] || ""
+        });
+        toast({
+          title: "Serviço atualizado",
+          description: `O serviço "${serviceData.servico.nome}" foi atualizado com sucesso.`,
+        });
+      }
+      setIsModalOpen(false);
     } catch (error) {
       toast({
         title: "Erro",
@@ -141,7 +146,7 @@ export default function Servicos() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {servicos?.map((servico) => (
+              {servicos?.map((servico: ServicoTuristicoFull) => (
                 <TableRow key={servico.id}>
                   <TableCell className="font-medium">{servico.id}</TableCell>
                   <TableCell>{servico.nome}</TableCell>

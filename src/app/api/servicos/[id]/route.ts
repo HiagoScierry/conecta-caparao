@@ -1,11 +1,13 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
-import { deleteServico, getServicoById } from "@/controllers/servicoController";
-import { atracaoTuristicaSchema } from "@/schemas/atracaoTuristicaSchema";
+import { deleteServico, getServicoById, updateServico } from "@/controllers/servicoController";
+import { ServicoForm } from "@/forms/servicoForm";
+import { contatoSchema } from "@/schemas/contatoSchema";
+import { enderecoSchema } from "@/schemas/enderecoSchema";
+import { servicoTuristicoSchema } from "@/schemas/servicoTuristicoSchema";
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 
-// ✅ GET atrativo por ID
 export async function GET(
   request: NextRequest,
   context: { params: Promise<{ id: string }> }
@@ -25,7 +27,6 @@ export async function GET(
   }
 }
 
-// ✅ Atualizar atrativo
 export async function PUT(
   request: NextRequest,
   context: { params: Promise<{ id: string }> }
@@ -33,40 +34,32 @@ export async function PUT(
   try {
     const { id } = await context.params;
 
-    const atrativo = await getAtrativoById(Number(id));
+    const atrativo = await getServicoById(Number(id));
     if (!atrativo) {
       return new NextResponse("Atrativo not found", { status: 404 });
     }
 
     const {
-      atracaoTuristica,
+      servico,
       contato,
       endereco,
-      categoria,
-      horarioFuncionamento,
-      fotosURL,
       municipio,
-      perfil,
-    }: AtracaoForm & { fotosURL: string[] } = await request.json();
+      horarioFuncionamento,
+      fotoUrl,
+    }: ServicoForm & { fotoUrl?: string } = await request.json();
 
-    // validações
-    atracaoTuristicaSchema.parse(atracaoTuristica);
+    servicoTuristicoSchema.parse(servico);
     contatoSchema.parse(contato);
     enderecoSchema.parse(endereco);
-    horarioFuncionamentoSchema.parse(horarioFuncionamento);
 
-    await updateAtrativo(
-      Number(id),
-      {
-        atracaoTuristica,
-        contato,
-        endereco,
-        categoria,
-        horarioFuncionamento,
-        municipio,
-        perfil,
-      },
-      fotosURL
+    await updateServico(Number(id), {
+      servico,
+      contato,
+      endereco,
+      municipio,
+      horarioFuncionamento,
+    },
+      fotoUrl,
     );
 
     return new NextResponse("Atrativo updated", { status: 200 });
@@ -84,7 +77,6 @@ export async function PUT(
   }
 }
 
-// ✅ Deletar atrativo
 export async function DELETE(
   request: NextRequest,
   context: { params: Promise<{ id: string }> }

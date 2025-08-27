@@ -43,7 +43,7 @@ export async function createServico(servicoData: ServicoForm & { fotoUrl?: strin
 
 }
 
-export async function updateAtrativo(id: number, servicoData: ServicoForm, fotosURL: string[]) {
+export async function updateServico(id: number, servicoData: ServicoForm, fotoUrl?: string) {
   const { servico, contato, endereco, municipio } = servicoData;
 
   const servicoExists = await servicoTuristicoServiceFactory().findById(id);
@@ -68,7 +68,7 @@ export async function updateAtrativo(id: number, servicoData: ServicoForm, fotos
     idMunicipio: municipioExists.id,
     idEndereco: enderecoUpdated.id,
     idContato: Number(contatoUpdated.id),
-  }, fotosURL);
+  }, fotoUrl);
 
   return servicoUpdated;
 }

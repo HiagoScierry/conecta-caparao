@@ -51,7 +51,7 @@ export function useUpdateServico() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async (updatedServico: ServicoForm & { fotosURL: string[] }) => {
+    mutationFn: async (updatedServico: ServicoForm & { fotoUrl: string }) => {
       const response = await fetch(`/api/servicos/${updatedServico.servico.id}`, {
         method: 'PUT',
         headers: {

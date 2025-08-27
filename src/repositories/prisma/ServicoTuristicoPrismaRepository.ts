@@ -66,19 +66,38 @@ export class ServicoTuristicoPrismaRepository implements IServicoTuristicoReposi
   }
 
   async update(id: number, data: ServicoTuristicoWithRelations, fotosURL?: string): Promise<ServicoTuristico> {
-    // Remove 'id' if present to avoid Prisma type error
-    const { id: _id, ...dataWithoutId } = data;
-    return connection.servicoTuristico.update({
+    const servicoTuristico = await this.findById(id);
+
+    let idFoto = servicoTuristico.idFoto;
+
+    if (fotosURL) {
+      if (idFoto) {
+        await connection.foto.update({
+          where: { id: idFoto },
+          data: { url: fotosURL },
+        });
+      } else {
+        const foto = await connection.foto.create({
+          data: { url: fotosURL },
+        });
+        idFoto = foto.id;
+      }
+    }
+
+    const updatedServicoTuristico = await connection.servicoTuristico.update({
       where: { id },
       data: {
-        ...dataWithoutId,
-        foto: {
-          create: {
-            url: fotosURL ?? "",
-          }
-        },
+        nome: data.nome,
+        descricao: data?.descricao || "",
+        site: data?.site || "",
+        idContato: data.idContato,
+        idEndereco: data.idEndereco,
+        idMunicipio: data.idMunicipio,
+        idFoto: idFoto,
       }
     });
+
+    return updatedServicoTuristico;
   }
 
   async delete(id: number): Promise<void> {

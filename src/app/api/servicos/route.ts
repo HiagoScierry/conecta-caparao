@@ -1,6 +1,5 @@
 import { createServico, getAll } from "@/controllers/servicoController";
 import { ServicoForm } from "@/forms/servicoForm";
-import { atracaoTuristicaSchema } from "@/schemas/atracaoTuristicaSchema";
 import { contatoSchema } from "@/schemas/contatoSchema";
 import { enderecoSchema } from "@/schemas/enderecoSchema";
 import { horarioFuncionamentoSchema } from "@/schemas/horarioFuncionamentoSchema";
@@ -27,6 +26,7 @@ export async function POST(request: NextRequest) {
     servicoTuristicoSchema.parse(servico);
     contatoSchema.parse(contato);
     enderecoSchema.parse(endereco);
+    horarioFuncionamentoSchema.parse(horarioFuncionamento);
 
     await createServico({
       servico,
