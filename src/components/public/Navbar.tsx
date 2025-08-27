@@ -19,11 +19,13 @@ export function Navbar() {
     { label: "Notícias", href: "/noticias" },
     { label: "Eventos", href: "/eventos" },
     { label: "Contato", href: "/contato" },
+    { label: "Painel", href: "/entrar" },
+
   ];
 
   return (
     <nav className="relative top-0 z-50">
-      <div className="flex items-center justify-between px-6 md:px-12 lg:px-24 py-4 bg-tourism-azul border-b">
+      <div className="flex items-center justify-between gap-2 px-6 md:px-12 lg:px-24 py-4 bg-tourism-azul border-b">
         {/* Logo */}
         <Link href="/">
           <Image
