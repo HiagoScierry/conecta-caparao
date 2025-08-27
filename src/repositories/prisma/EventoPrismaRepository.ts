@@ -9,6 +9,8 @@ export class EventoPrismaRepository implements IEventoRepository {
         id: id,
       },
       include: {
+        municipio: true,
+        endereco: true,
         fotos: {
           include: {
             foto: true,
@@ -29,10 +31,20 @@ export class EventoPrismaRepository implements IEventoRepository {
       orderBy: {
         createdAt: "desc",
       },
+      include: {
+        municipio: true,
+        endereco: true,
+        fotos: {
+          include: {
+            foto: true,
+          },
+        },
+
+      }
     });
   }
 
-  async create(evento: EventoWithRelations): Promise<Evento> {
+  async create(evento: EventoWithRelations, fotosUrl: string[]): Promise<Evento> {
     return await connection.evento.create({
       data: {
         nome: evento.nome,
@@ -41,13 +53,11 @@ export class EventoPrismaRepository implements IEventoRepository {
         idMunicipio: evento.idMunicipio,
         idEndereco: evento.idEndereco,
         fotos: {
-          create: evento.fotos?.map(foto => ({
-            capa: foto.capa,
+          create: fotosUrl?.map((foto, index) => ({
+            capa: index === 0,
             foto: {
               create: {
-                url: foto.url,
-                createdAt: new Date(),
-                updatedAt: new Date(),
+                url: foto,
               }
             }
           })) || [],
@@ -56,7 +66,7 @@ export class EventoPrismaRepository implements IEventoRepository {
     });
   }
 
-  async update(id: number, evento: EventoWithRelations): Promise<Evento> {
+  async update(id: number, evento: EventoWithRelations, fotosUrl: string[]): Promise<Evento> {
     return await connection.evento.update({
       where: {
         id: id,
@@ -69,13 +79,11 @@ export class EventoPrismaRepository implements IEventoRepository {
         idEndereco: evento.idEndereco,
         fotos: {
           deleteMany: {},
-          create: evento.fotos?.map(foto => ({
-            capa: foto.capa,
+          create: fotosUrl?.map((foto, index) => ({
+            capa: index === 0,
             foto: {
               create: {
-                url: foto.url,
-                createdAt: new Date(),
-                updatedAt: new Date(),
+                url: foto,
               }
             }
           })) || [],
@@ -85,11 +93,18 @@ export class EventoPrismaRepository implements IEventoRepository {
   }
 
   async delete(id: number): Promise<void> {
+    await connection.eventoFoto.deleteMany({
+      where: {
+        idEvento: id,
+      },
+    });
+
     await connection.evento.delete({
       where: {
         id: id,
       },
     });
+
   }
 
 }
