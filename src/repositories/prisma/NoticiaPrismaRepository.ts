@@ -15,13 +15,13 @@ export class NoticiaPrismaRepository implements INoticiaRepository {
       },
     });
 
-    return noticias.map((noticia: any) => ({
+    return noticias.map((noticia) => ({
       ...noticia,
-      fotos: noticia.fotos.map((f: any) => ({
+      fotos: noticia.fotos.map((f) => ({
         id: f.id,
         capa: f.capa,
-        noticiaId: f.idNoticia ?? f.noticiaId,
-        fotoId: f.idFoto ?? f.fotoId,
+        noticiaId: f.idNoticia,
+        fotoId: f.idFoto,
         foto: f.foto,
       })),
     }));
@@ -42,11 +42,11 @@ export class NoticiaPrismaRepository implements INoticiaRepository {
 
     return {
       ...noticia,
-      fotos: noticia.fotos.map((f: any) => ({
+      fotos: noticia.fotos.map((f) => ({
         id: f.id,
         capa: f.capa,
-        noticiaId: f.idNoticia ?? f.noticiaId,
-        fotoId: f.idFoto ?? f.fotoId,
+        noticiaId: f.idNoticia,
+        fotoId: f.idFoto,
         foto: f.foto,
       })),
     };
@@ -84,11 +84,11 @@ export class NoticiaPrismaRepository implements INoticiaRepository {
 
     return {
       ...noticia,
-      fotos: noticia.fotos.map((f: any) => ({
+      fotos: noticia.fotos.map((f) => ({
         id: f.id,
         capa: f.capa,
-        noticiaId: f.idNoticia ?? f.noticiaId,
-        fotoId: f.idFoto ?? f.fotoId,
+        noticiaId: f.idNoticia,
+        fotoId: f.idFoto,
         foto: f.foto,
       })),
     };

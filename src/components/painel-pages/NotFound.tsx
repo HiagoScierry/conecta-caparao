@@ -1,5 +1,5 @@
 "use client";
-import { use, useEffect } from "react";
+import { useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Compass } from "lucide-react";
 import { usePathname } from "next/navigation";

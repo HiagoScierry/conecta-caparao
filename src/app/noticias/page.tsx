@@ -27,16 +27,16 @@ export default function PaginaNoticias() {
         <>
           <div className="w-full mx-auto flex justify-center items-center my-8">
             <DefaultHeader
-              titulo={noticias[0]?.titulo || "Nenhum evento encontrado"}
-              imagemUrl={noticias[0].fotos[0]?.foto.url}
-              linkHref={`/eventos/${noticias[0]?.id}`}
+              titulo={noticias?.[0]?.titulo || "Nenhum evento encontrado"}
+              imagemUrl={noticias?.[0]?.fotos[0]?.foto.url ?? ""}
+              linkHref={`/eventos/${noticias?.[0]?.id}`}
               linkText="Ver todos os eventos"
               linkStyle="text"
             />
           </div>
           <div className="container mx-auto px-4 md:px-16 mb-8">
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-              {noticias?.length > 0 &&
+              {(Array.isArray(noticias) && noticias.length > 0) &&
                 noticias.map((noticia: NoticiaFull) => (
                   <DefaultCard
                     key={noticia.id}

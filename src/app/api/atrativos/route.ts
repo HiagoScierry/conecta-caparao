@@ -1,5 +1,5 @@
 import { createAtrativo, getAll } from "@/controllers/atrativoController";
-import { AtracaoForm, atracaoTuristicaForm } from "@/forms/atracaoForm";
+import { AtracaoForm } from "@/forms/atracaoForm";
 import { atracaoTuristicaSchema } from "@/schemas/atracaoTuristicaSchema";
 import { contatoSchema } from "@/schemas/contatoSchema";
 import { enderecoSchema } from "@/schemas/enderecoSchema";

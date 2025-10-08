@@ -8,10 +8,14 @@ import { useEvento, useGetEventoById } from "@/hooks/http/useEvento";
 import { Progress } from "@radix-ui/react-progress";
 import { EventoFull } from "@/repositories/interfaces/IEventoRepository";
 
+type Props = {
+  params: Promise<{ id: string }>;
+}
 
-export default function PaginaEvento(params: { params: { id: string } }) {
-  const {data: eventos} = useEvento();
-  const { data: evento, isLoading } = useGetEventoById(Number(params.params.id));
+export default function PaginaEvento({ params }: Props) {
+  const { id } = params as unknown as { id: string };
+  const {data: eventos} =  useEvento();
+  const { data: evento, isLoading } =  useGetEventoById(Number(id));
 
   return (
     <LayoutPublic>

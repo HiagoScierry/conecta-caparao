@@ -30,10 +30,7 @@ const defaultValue = {
   noticia: {
     titulo: "",
     texto: "",
-    data: new Date(),
-    autor: "",
-    createdAt: new Date(),
-    updatedAt: new Date(),
+    data: new Date().toISOString().split("T")[0], // string in 'YYYY-MM-DD'
     fotos: [],
     id: undefined,
   },
@@ -127,7 +124,7 @@ export function NewsModal({
                   <FormControl>
                     <ImageUpload
                       initialFotos={initialData?.fotos?.map(f => ({
-                        id: f.id,
+                        id: String(f.id),
                         url: f.foto.url
                       })) || []}
                       onRemoveFoto={handleDeleteFoto}

@@ -6,7 +6,6 @@ import {
   Calendar, 
   Newspaper, 
   Store, 
-  Settings, 
   Menu ,
   LogOut
 } from "lucide-react";

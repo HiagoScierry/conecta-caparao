@@ -3,7 +3,6 @@
 import Head from "next/head";
 import { useEffect, useMemo } from "react";
 import Atracoes from "@/components/painel-pages/Atracoes";
-import Configuracoes from "@/components/painel-pages/Configuracoes";
 import Dashboard from "@/components/painel-pages/Dashboard";
 import Eventos from "@/components/painel-pages/Eventos";
 import Municipios from "@/components/painel-pages/Municipios";

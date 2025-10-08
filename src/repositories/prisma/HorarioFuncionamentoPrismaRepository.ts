@@ -47,7 +47,7 @@ export class HorarioFuncionamentoPrismaRepository implements IHorarioDeFuncionam
 
     const dataToUpdate = {
       horario: `${horaAbertura} - ${horaFechamento}`,
-      dia: diaDaSemana,
+      dia: diaDaSemana[0], // Use the first day or adjust logic as needed
     };
 
     return connection.horarioDeFuncionamento.update({

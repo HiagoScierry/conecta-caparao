@@ -1,5 +1,5 @@
 import { MunicipioDTO } from "@/dto/municipioDTO";
-import { IMunicipioRepository } from "@/repositories/interfaces/IMunicipioRepository";
+import { IMunicipioRepository, MunicipioFull } from "@/repositories/interfaces/IMunicipioRepository";
 import { Contato, Foto, Municipio } from "@prisma/client";
 
 export class MunicipioService {
@@ -18,7 +18,7 @@ export class MunicipioService {
   async findById(id: string): Promise<Municipio & { contato: Contato; fotos: Foto[] }> {
     return this.municipioRepository.findById(id);
   }
-  async findAll(): Promise<Municipio & { contato: Contato; fotos: Foto[] }[]> {
+  async findAll(): Promise<MunicipioFull[]> {
     return this.municipioRepository.findAll();
   }
 

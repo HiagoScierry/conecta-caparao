@@ -20,7 +20,7 @@ export class HorarioFuncionamentoService {
     return this.horarioFuncionamentoRepository.findById(id);
   }
 
-  async create(data: HorarioDeFuncionamentoDTO): Promise<HorarioDeFuncionamento> {
+  async create(data: HorarioDeFuncionamentoDTO): Promise<HorarioDeFuncionamento[]> {
     return this.horarioFuncionamentoRepository.create(data);
   }
 

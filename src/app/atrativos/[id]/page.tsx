@@ -3,10 +3,9 @@ import { DescriptionSection } from "@/components/public/DescriptionSection";
 import { faker } from "@faker-js/faker";
 import { Informacoes } from "@/components/public/Informacoes";
 import { Badge } from "@/components/ui/badge";
-import { HeroGaleria } from "@/components/public/HeroGaleria";
 import { GaleriaDeImagens } from "@/components/public/GaleriaDeImagens";
 
-export default function PageAtrativo({ params }: { params: { id: string } }) {
+export default function PageAtrativo() {
   return (
     <LayoutPublic>
       <GaleriaDeImagens
@@ -36,7 +35,14 @@ export default function PageAtrativo({ params }: { params: { id: string } }) {
           ))}
         </div>
       </div>
-      <Informacoes />
+      <Informacoes
+        contato={{
+          telefone: faker.phone.number(),
+          email: faker.internet.email(),
+          site: faker.internet.url(),
+        }}
+        mapa={faker.image.url()}
+      />
     </LayoutPublic>
   );
 }

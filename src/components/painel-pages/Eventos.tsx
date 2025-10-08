@@ -96,6 +96,7 @@ export default function Eventos() {
       }
       setIsModalOpen(false);
     } catch (error) {
+      console.error("Erro ao salvar evento:", error);
       toast({
         title: "Erro ao salvar evento",
         description: "Ocorreu um erro ao salvar o evento. Tente novamente.",

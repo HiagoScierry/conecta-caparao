@@ -1,4 +1,13 @@
-export function Informacoes({contato: {telefone, email, site }, mapa}: {contato: {telefone: string; email: string; site: string;}; mapa?: string}) {
+type Props = {
+  contato: {
+    telefone: string;
+    email: string;
+    site: string;
+  };
+  mapa?: string;
+};
+
+export function Informacoes({contato: {telefone, email, site }, mapa}: Props) {
   return (
     <div className="flex flex-col md:flex-row justify-between lg:gap-48 lg:px-20 gap-8 p-8 mt-8">
       <div className="order-1 md:order-1 flex-1 space-y-2 rounded-md">

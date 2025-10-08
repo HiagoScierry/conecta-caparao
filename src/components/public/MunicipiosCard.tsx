@@ -8,7 +8,7 @@ interface MunicipioCardProps {
   imagemUrls: string[] | null | undefined;
 }
 
-export function MunicipiosCard({ id, nome, imagemUrls }: MunicipioCardProps) {
+export function MunicipiosCard({ nome, imagemUrls }: MunicipioCardProps) {
   const altText = `Imagem do município de ${nome}`;
   const imgSrc = imagemUrls?.[0] || "/landscape.svg";
 

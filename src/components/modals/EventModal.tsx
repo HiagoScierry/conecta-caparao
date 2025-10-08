@@ -138,8 +138,8 @@ export function EventModal({
                   <FormControl>
                     <ImageUpload
                         initialFotos={initialData?.fotos?.map((foto) => ({
-                          id: foto.id.toString(),
-                          url: foto.url,
+                          id: foto.foto.url,
+                          url: foto.foto.url,
                         }))}
                         onRemoveFoto={handleDeleteFoto}
                         onImagesSelect={handleImageSelect}

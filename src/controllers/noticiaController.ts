@@ -16,10 +16,7 @@ export async function createNoticia(data: NoticiasForm, fotosUrl: string[]){
 export async function updateNoticia(id: number, data: NoticiasForm, fotosUrl: string[]){
   console.log(data);
 
-  return noticiaServiceFactory().update(id, {
-    ...data,
-    data: new Date(data.data)
-  }, fotosUrl);
+  return noticiaServiceFactory().update(id, data.noticia, fotosUrl);
 }
 
 export async function deleteNoticia(id: number){

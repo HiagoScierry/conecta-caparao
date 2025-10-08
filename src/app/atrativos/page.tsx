@@ -30,7 +30,7 @@ export default function PaginaAtrativos() {
               items={municipios?.map((municipio) => ({
                 label: municipio.nome,
                 value: municipio.id.toString(),
-              }))}
+              })) ?? []}
               onChange={(value) => console.log(value)}
               className="mb-6"
             />
@@ -40,7 +40,7 @@ export default function PaginaAtrativos() {
                 items={categorias?.map((categoria) => ({
                   label: categoria.nome,
                   value: categoria.id.toString(),
-                }))}
+                })) ?? []}
               onChange={(value) => console.log(value)}
               className="mb-6"
 
@@ -51,7 +51,7 @@ export default function PaginaAtrativos() {
                   items={perfils?.map((perfil) => ({
                     label: perfil.nome,
                     value: perfil.id.toString(),
-                  }))}
+                  })) ?? []}
               onChange={(value) => console.log(value)}
               className="mb-6"
 

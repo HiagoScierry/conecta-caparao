@@ -6,6 +6,7 @@ import { MunicipiosCard } from "@/components/public/MunicipiosCard";
 import { Button } from "@/components/ui/button"
 import { Atrativos } from "@/components/public/Atrativos";
 import { DefaultCard } from "@/components/public/DefaultCard"
+import Image from "next/image";
 
 export default function Home() {
   const Carrosel = {
@@ -23,10 +24,10 @@ export default function Home() {
   return (
     <LayoutPublic>
       <div className="w-full relative bg-gradient-to-t from-black/50 to-transparent">
-        <img
+        <Image
           src="/landscape.svg"
-          className="w-full h-[400px] md:h-[500px] lg:h-[600px] object-cover"
           alt="Foto da região do caparaó com um por do sol entre montanhas"
+          className="w-full h-[400px] md:h-[500px] lg:h-[600px] object-cover"
         />
 
         <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent"></div>
@@ -44,7 +45,7 @@ export default function Home() {
       </div>
 
       <div className="w-full relative bg-gradient-to-t from-black/50 to-transparent">
-        <img
+        <Image
           src="/landscape.svg"
           className="w-full h-[400px] md:h-[500px] lg:h-[600px] object-cover"
           alt="Foto da região do caparaó com um por do sol entre montanhas"

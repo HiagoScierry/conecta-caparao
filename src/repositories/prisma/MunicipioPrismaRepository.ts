@@ -29,11 +29,16 @@ export class MunicipioPrimaRepository implements IMunicipioRepository {
     return municipios;
   }
 
-  async create(municipioData: MunicipioDTO, contatoId: number, fotosUrl: string[]) {
-    // Remove 'id' from municipioData to avoid Prisma type error
+  async create(
+    data: MunicipioDTO,
+    contatoId: number,
+    fotosUrl: string[]
+  ): Promise<Municipio & { contato: Contato; fotos: Foto[] }> {
+    // Remove 'id' from data to avoid Prisma type error
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const { id, ...municipioDataWithoutId } = municipioData;
-    const municipio = await connection.municipio.create({
+    const { id: _, ...municipioDataWithoutId } = data;
+
+    const newMunicipio = await connection.municipio.create({
       data: {
         ...municipioDataWithoutId,
         contato: {
@@ -43,9 +48,13 @@ export class MunicipioPrimaRepository implements IMunicipioRepository {
           create: fotosUrl.map(url => ({ url })),
         },
       },
+      include: {
+        contato: true,
+        fotos: true,
+      },
     });
-    return municipio;
 
+    return newMunicipio;
   }
 
   async update(id: string, data: MunicipioDTO, fotosUrl?: string[]) {

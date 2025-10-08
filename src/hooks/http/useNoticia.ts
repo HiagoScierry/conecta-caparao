@@ -3,7 +3,7 @@ import { NoticiaFull } from "@/repositories/interfaces/INoticiaRepository";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 export function useGetNoticias() {
-  return useQuery({
+  return useQuery<NoticiaFull[], Error>({
     queryKey: ["noticias"],
     queryFn: async () => {
       const response = await fetch("/api/noticia");

@@ -1,4 +1,5 @@
-  import React from "react";
+  import Image from "next/image";
+import React from "react";
 
   interface HeroProps {
     nome?: string;
@@ -9,7 +10,7 @@
     return (
       <div className="relative overflow-hidden h-[400px] md:h-[500px] lg:h-[600px]">
         <div className="absolute inset-0">
-          <img
+          <Image
             src={imagemUrl || "/landscape.svg"}
             alt={`Imagem do município de ${nome}`}
             className="w-full h-[400px] md:h-[500px] lg:h-[600px] object-cover"

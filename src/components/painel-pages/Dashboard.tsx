@@ -1,8 +1,7 @@
 "use client";
 import { StatCard } from "@/components/dashboard/StatCard";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useDash } from "@/hooks/http/useDash";
-import { MapPin, Compass, Calendar, Newspaper, Store, Users } from "lucide-react";
+import { MapPin, Compass, Calendar, Newspaper, Store } from "lucide-react";
 
 export default function Dashboard() {
   // Dados fictícios para demonstração

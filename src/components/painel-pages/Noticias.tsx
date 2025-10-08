@@ -22,7 +22,6 @@ import {
 } from "@/hooks/http/useNoticia";
 import { NoticiasForm } from "@/forms/noticiasForm";
 import { useUpload } from "@/hooks/http/useUpload";
-import { updateNoticia } from "@/controllers/noticiaController";
 import { NoticiaFull } from "@/repositories/interfaces/INoticiaRepository";
 
 export default function Noticias() {
@@ -139,7 +138,6 @@ export default function Noticias() {
                 <TableHead>ID</TableHead>
                 <TableHead>Título</TableHead>
                 <TableHead>Data</TableHead>
-                <TableHead>Autor</TableHead>
                 <TableHead className="text-right">Ações</TableHead>
               </TableRow>
             </TableHeader>
@@ -148,8 +146,7 @@ export default function Noticias() {
                 <TableRow key={noticia.id}>
                   <TableCell className="font-medium">{noticia.id}</TableCell>
                   <TableCell>{noticia.titulo}</TableCell>
-                  <TableCell>{noticia.data}</TableCell>
-                  <TableCell>{noticia.autor}</TableCell>
+                  <TableCell>{noticia.data.getUTCDate()}</TableCell>
                   <TableCell className="text-right space-x-2">
                     <Button
                       variant="ghost"

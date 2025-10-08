@@ -6,7 +6,7 @@ export type MunicipioFull = Municipio & { contato: Contato; fotos: Foto[] };
 export interface IMunicipioRepository {
   findById(id: string): Promise<MunicipioFull>;
   findAll(): Promise<MunicipioFull[]>;
-  create(data: MunicipioDTO, contatoId:  number, fotosUrl: string[]): Promise<MunicipioFull>;
+  create(data: MunicipioDTO, contatoId:  number, fotosUrl: string[]): Promise<Municipio>;
   update(id: string, municipio: MunicipioDTO, fotosUrl: string[]): Promise<MunicipioFull>;
   delete(id: string): Promise<void>;
 }

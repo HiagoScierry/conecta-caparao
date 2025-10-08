@@ -1,7 +1,8 @@
+import { PerfilCliente } from "@prisma/client";
 import { useQuery } from "@tanstack/react-query";
 
 export function usePerfis() {
-  return useQuery({
+  return useQuery<PerfilCliente[], Error>({
     queryKey: ["perfis"],
     queryFn: async () => {
       const response = await fetch("/api/perfis");

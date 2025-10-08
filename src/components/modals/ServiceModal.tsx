@@ -104,7 +104,7 @@ export function ServiceModal({
   // Atualiza valores do formulário sempre que initialData mudar
   useEffect(() => {
     form.reset(getDefaultValues(initialData));
-  }, [initialData]);
+  }, [initialData, form]);
 
   const handleDeleteFoto = async (fotoId: string) => {
     try {
@@ -163,7 +163,7 @@ export function ServiceModal({
                     <FormControl>
                       <ImageUpload
                         initialFotos={[{
-                          id: initialData?.foto?.id ?? "",
+                          id: initialData?.foto?.id !== undefined ? String(initialData.foto.id) : "",
                           url: initialData?.foto?.url ?? "",
                         }]}
                         onRemoveFoto={handleDeleteFoto}
@@ -220,27 +220,61 @@ export function ServiceModal({
                 <section className="border rounded-lg p-6 space-y-6">
                   <h3 className="text-lg font-semibold">Contato</h3>
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {[
-                      "email",
-                      "celular",
-                      "telefone",
-                      "whatsapp",
-                      "instagram",
-                    ].map((field) => (
-                      <FormItem key={field}>
-                        <FormLabel>
-                          {field.charAt(0).toUpperCase() + field.slice(1)}
-                        </FormLabel>
-                        <FormControl>
-                          <input
-                            type={field === "email" ? "email" : "text"}
-                            {...form.register(`contato.${field}` as const)}
-                            disabled={isViewMode}
-                            className="border rounded-md p-2 w-full"
-                          />
-                        </FormControl>
-                      </FormItem>
-                    ))}
+                    <FormItem>
+                      <FormLabel>Email</FormLabel>
+                      <FormControl>
+                        <input
+                          type="email"
+                          {...form.register("contato.email")}
+                          disabled={isViewMode}
+                          className="border rounded-md p-2 w-full"
+                        />
+                      </FormControl>
+                    </FormItem>
+                    <FormItem>
+                      <FormLabel>Celular</FormLabel>
+                      <FormControl>
+                        <input
+                          type="text"
+                          {...form.register("contato.celular")}
+                          disabled={isViewMode}
+                          className="border rounded-md p-2 w-full"
+                        />
+                      </FormControl>
+                    </FormItem>
+                    <FormItem>
+                      <FormLabel>Telefone</FormLabel>
+                      <FormControl>
+                        <input
+                          type="text"
+                          {...form.register("contato.telefone")}
+                          disabled={isViewMode}
+                          className="border rounded-md p-2 w-full"
+                        />
+                      </FormControl>
+                    </FormItem>
+                    <FormItem>
+                      <FormLabel>Whatsapp</FormLabel>
+                      <FormControl>
+                        <input
+                          type="text"
+                          {...form.register("contato.whatsapp")}
+                          disabled={isViewMode}
+                          className="border rounded-md p-2 w-full"
+                        />
+                      </FormControl>
+                    </FormItem>
+                    <FormItem>
+                      <FormLabel>Instagram</FormLabel>
+                      <FormControl>
+                        <input
+                          type="text"
+                          {...form.register("contato.instagram")}
+                          disabled={isViewMode}
+                          className="border rounded-md p-2 w-full"
+                        />
+                      </FormControl>
+                    </FormItem>
                   </div>
                 </section>
 
@@ -338,21 +372,50 @@ export function ServiceModal({
                 <section className="border rounded-lg p-6 space-y-6">
                   <h3 className="text-lg font-semibold">Endereço</h3>
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {["cep", "logradouro", "numero", "bairro"].map((field) => (
-                      <FormItem key={field}>
-                        <FormLabel>
-                          {field.charAt(0).toUpperCase() + field.slice(1)}
-                        </FormLabel>
-                        <FormControl>
-                          <input
-                            type="text"
-                            {...form.register(`endereco.${field}` as const)}
-                            disabled={isViewMode}
-                            className="border rounded-md p-2 w-full"
-                          />
-                        </FormControl>
-                      </FormItem>
-                    ))}
+                    <FormItem>
+                      <FormLabel>Cep</FormLabel>
+                      <FormControl>
+                        <input
+                          type="text"
+                          {...form.register("endereco.cep")}
+                          disabled={isViewMode}
+                          className="border rounded-md p-2 w-full"
+                        />
+                      </FormControl>
+                    </FormItem>
+                    <FormItem>
+                      <FormLabel>Logradouro</FormLabel>
+                      <FormControl>
+                        <input
+                          type="text"
+                          {...form.register("endereco.logradouro")}
+                          disabled={isViewMode}
+                          className="border rounded-md p-2 w-full"
+                        />
+                      </FormControl>
+                    </FormItem>
+                    <FormItem>
+                      <FormLabel>Numero</FormLabel>
+                      <FormControl>
+                        <input
+                          type="text"
+                          {...form.register("endereco.numero")}
+                          disabled={isViewMode}
+                          className="border rounded-md p-2 w-full"
+                        />
+                      </FormControl>
+                    </FormItem>
+                    <FormItem>
+                      <FormLabel>Bairro</FormLabel>
+                      <FormControl>
+                        <input
+                          type="text"
+                          {...form.register("endereco.bairro")}
+                          disabled={isViewMode}
+                          className="border rounded-md p-2 w-full"
+                        />
+                      </FormControl>
+                    </FormItem>
                   </div>
                 </section>
               </div>

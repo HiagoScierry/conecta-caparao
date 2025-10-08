@@ -1,5 +1,4 @@
 import { connection } from "@/config/database/connection";
-import { municipioServiceFactory } from "@/factories/municipioServiceFactory";
 import { NextResponse } from "next/server";
 
 export async function GET() {

@@ -8,11 +8,12 @@ export class ContatoPrismaRepository implements IContatoRepository {
       data: {
         email: data.email,
         celular: data.celular,
-        telefone: data.telefone,
-        whatsapp: data.whatsapp,
-        instagram: data.instagram
+        telefone: data.telefone ?? "",
+        whatsapp: data.whatsapp ?? "",
+        instagram: data.instagram ?? ""
       }
     })
+
     return {
       ...newRegister,
       id: newRegister.id.toString()

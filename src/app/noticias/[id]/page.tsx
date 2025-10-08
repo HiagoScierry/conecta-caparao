@@ -8,11 +8,15 @@ import { useGetNoticiaById, useGetNoticias } from "@/hooks/http/useNoticia";
 import { Progress } from "@/components/ui/progress";
 import { NoticiaFull } from "@/repositories/interfaces/INoticiaRepository";
 
-// URLs de imagens de exemplo. Substitua por URLs reais do seu projeto.
+type Props = {
+  params: Promise<{ id: string }>;
+}
 
-export default function PaginaNoticia({ params }: { params: { id: string } }) {
+export default function PaginaNoticia({ params }: Props) {
+  const { id } = params as unknown as { id: string };
+
   const { data: noticias } = useGetNoticias();
-  const { data: noticia, isLoading } = useGetNoticiaById(Number(params.id));
+  const { data: noticia, isLoading } = useGetNoticiaById(Number(id));
 
   return (
     <LayoutPublic>

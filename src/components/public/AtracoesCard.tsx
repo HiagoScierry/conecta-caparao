@@ -9,7 +9,7 @@ interface AtracoesCardProps {
   imagemUrls: string[] | null | undefined;
 }
 
-export function AtracoesCard({ id, nome, cidade, imagemUrls }: AtracoesCardProps) {
+export function AtracoesCard({  nome, cidade, imagemUrls }: AtracoesCardProps) {
   const altText = `Imagem do atrativo ${nome}`;
   const imgSrc = imagemUrls?.[0] || "/landscape.svg";
 

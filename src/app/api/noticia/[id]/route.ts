@@ -1,5 +1,4 @@
 import { deleteNoticia, getNoticiaById, updateNoticia } from "@/controllers/noticiaController";
-import { eventoSchema } from "@/schemas/eventoSchema";
 import { noticiaSchema } from "@/schemas/noticiaSchema";
 import { NextRequest, NextResponse } from "next/server";
 

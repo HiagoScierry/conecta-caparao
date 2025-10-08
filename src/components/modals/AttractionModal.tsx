@@ -33,7 +33,7 @@ interface AttractionModalProps {
 const defaultFormValues: AtracaoForm = {
   atracaoTuristica: { nome: "", descricao: "", mapaUrl: "" },
   horarioFuncionamento: { diaDaSemana: [], horaAbertura: "", horaFechamento: "" },
-  endereco: { logradouro: "", numero: "", bairro: "", cidade: "", estado: "", cep: "" },
+  endereco: { logradouro: "", numero: "", bairro: "", cep: "" },
   contato: { email: "", telefone: "", celular: "", whatsapp: "", instagram: "" },
   municipio: "",
   categoria: 0,

@@ -8,10 +8,6 @@ import {
     Wrench,
 } from "lucide-react";
 
-interface AtrativosProps {
-    municipioSlug?: string;
-}
-
 export function Atrativos() {
     return (
         <div className="flex w-full flex-wrap items-start justify-center gap-8 md:gap-12">

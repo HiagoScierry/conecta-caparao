@@ -1,19 +1,22 @@
 "use client";
 import { LayoutPublic } from "@/components/public/Layout";
 import { Hero } from "@/components/public/Hero";
-import { DescriptionSection } from "@/components/public/DescriptionSection";
 import { GaleriaDeImagens } from "@/components/public/GaleriaDeImagens";
 import { Atrativos } from "@/components/public/Atrativos";
 import { Informacoes } from "@/components/public/Informacoes";
 import { useGetMunicipioById } from "@/hooks/http/useMunicipio";
 import { Progress } from "@/components/ui/progress";
 
+type Props = {
+  params: Promise<{ id: string }>;
+}
+
 export default function PaginaMunicipios({
   params,
-}: {
-  params: { id: string };
-}) {
-  const { data: municipio, isLoading } = useGetMunicipioById(params.id);
+}: Props) {
+  const { id } = params as unknown as { id: string };
+
+  const { data: municipio, isLoading } = useGetMunicipioById(id);
 
   return (
     <LayoutPublic>
@@ -38,11 +41,11 @@ export default function PaginaMunicipios({
             }
           />
 
-          <DescriptionSection
+          {/* <DescriptionSection
             descricao={municipio.descricao}
             // subtitulo={municipio.descricao}
             // corSubtitulo={"text-tourism-azul"}
-          />
+          /> */}
           <GaleriaDeImagens
             imagemUrls={municipio.fotos.map((foto) => foto.url)}
           />
@@ -60,7 +63,7 @@ export default function PaginaMunicipios({
             contato={{
               telefone: municipio.contato.telefone,
               email: municipio.contato.email,
-              site: municipio.contato.site,
+              site: "",
             }}
             mapa={municipio.mapaUrl ?? undefined}
           />
