@@ -12,6 +12,7 @@ export const atracaoTuristicaForm = z.object({
     horarioFuncionamento: horarioFuncionamentoSchema,
     municipio: z.string(),
     categoria: z.number(),
+    subCategoria: z.array(z.number()),
     perfil: z.array(z.string())
 })
 

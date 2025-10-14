@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Categoria, PerfilCliente } from "@prisma/client";
+import { Categoria, PerfilCliente, Subcategoria } from "@prisma/client";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -21,6 +21,7 @@ import { useGetAllMunicipios } from "@/hooks/http/useMunicipio";
 import { usePerfis } from "@/hooks/http/usePerfis";
 import { useCategorias } from "@/hooks/http/useCategoria";
 import { useDeleteUpload } from "@/hooks/http/useUpload";
+import { useSubcategorias } from "@/hooks/http/useSubCategoria";
 
 interface AttractionModalProps {
   isOpen: boolean;
@@ -98,6 +99,7 @@ export function AttractionModal({
 
   const { data: perfisCliente } = usePerfis();
   const { data: categorias } = useCategorias();
+  const { data: subCategorias } = useSubcategorias();
   const { data: municipios } = useGetAllMunicipios();
   const { mutateAsync: deleteFoto } = useDeleteUpload();
 
@@ -321,6 +323,32 @@ export function AttractionModal({
                               disabled={isViewMode}
                             />
                             {categoria.nome.charAt(0) + categoria.nome.slice(1).toLowerCase()}
+                          </label>
+                        ))}
+                      </div>
+                    </FormControl>
+                  </FormItem>
+                </section>
+
+                {/* SubCategoria */}
+                <section className="border rounded-lg p-6 space-y-6">
+                  <h3 className="text-lg font-semibold">SubCategoria</h3>
+                  <FormItem className="flex flex-col gap-1">
+                    <FormLabel className="text-sm font-medium">Selecione a SubCategoria</FormLabel>
+                    <FormControl>
+                      <div className="grid grid-cols-4">
+                        {subCategorias?.map((subCategoria: Subcategoria) => (
+                          <label key={subCategoria.id} className="flex items-center gap-1">
+                            <input
+                              type="checkbox"
+                              value={subCategoria.id}
+                              {...form.register("subCategoria", {
+                                required: true,
+                                setValueAs: (v) => Number(v),
+                              })}
+                              disabled={isViewMode}
+                            />
+                            {subCategoria.nome.charAt(0) + subCategoria.nome.slice(1).toLowerCase()}
                           </label>
                         ))}
                       </div>
