@@ -18,7 +18,15 @@ export class FotoPrismaRepository implements IFotoRepository {
   async createFoto(url: string): Promise<Foto> {
     const newRegister = await connection.foto.create({
       data: {
-        url
+        url,
+        galeria: {
+          create: {
+            capa: false,
+          }
+        }
+      },
+      include: {
+        galeria: true,
       }
     });
 
@@ -29,7 +37,11 @@ export class FotoPrismaRepository implements IFotoRepository {
     await connection.foto.delete({
       where: {
         id: +id
+      },
+      include: {
+        galeria: true,
       }
     });
+
   }
 }

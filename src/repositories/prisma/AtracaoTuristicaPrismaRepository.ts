@@ -39,15 +39,17 @@ export class AtracaoTuristicaPrismaRepository implements IAtracaoTuristicaReposi
         descricao: data?.descricao || "",
         mapaUrl: data?.mapaUrl || "",
         site: data?.site || "",
-        idCategoria: data.idCategoria,
         idMunicipio: data.idMunicipio,
         idEndereco: data.idEndereco,
         idContato: data.idContato,
         perfis: {
           connect: data.perfis?.map(id => ({ id: Number(id) })) || [],
         },
+        categorias: {
+          connect: { id: data.idCategoria },
+        },
         fotos: {
-          create: fotos.map(url => ({ url })),
+          connect: fotos.map(id => ({ id: Number(id) })),
         },
       },
     });
@@ -60,7 +62,9 @@ export class AtracaoTuristicaPrismaRepository implements IAtracaoTuristicaReposi
         descricao: data?.descricao || "",
         mapaUrl: data?.mapaUrl || "",
         site: data?.site || "",
-        idCategoria: data.idCategoria,
+        categorias: {
+          connect: { id: data.idCategoria },
+        },
         idMunicipio: data.idMunicipio,
         idEndereco: data.idEndereco,
         idContato: data.idContato,
@@ -69,8 +73,9 @@ export class AtracaoTuristicaPrismaRepository implements IAtracaoTuristicaReposi
           connect: data.perfis?.map(id => ({ id: Number(id) })) || [],
         },
         fotos: {
-          create: fotos.map(url => ({ url })),
-        },
+          connect: fotos.map(id => ({ id: Number(id) })),
+
+        }
       },
     });
   }
