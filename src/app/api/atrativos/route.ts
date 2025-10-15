@@ -22,7 +22,8 @@ export async function POST(request: Request) {
       horarioFuncionamento,
       fotosURL,
       municipio,
-      perfil
+      perfil,
+      subCategoria
     }: AtracaoForm & { fotosURL: string[] } = await request.json();
 
     atracaoTuristicaSchema.parse(atracaoTuristica);
@@ -36,9 +37,10 @@ export async function POST(request: Request) {
       endereco,
       categoria,
       horarioFuncionamento,
-      fotosURL,
       municipio,
-      perfil
+      perfil,
+      subCategoria,
+      fotosURL
     });
 
 

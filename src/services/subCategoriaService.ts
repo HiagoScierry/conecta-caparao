@@ -19,6 +19,10 @@ export class SubcategoriaService {
     return this.subCategoriaRepository.findAll();
   }
 
+  async findByIds(ids: string[]) {
+    return this.subCategoriaRepository.findByIds(ids);
+  }
+
   async update(id: number, nome: string) {
     return this.subCategoriaRepository.update(id, nome);
   }

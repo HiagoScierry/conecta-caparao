@@ -1,7 +1,7 @@
 import { AtracaoTuristica } from "@prisma/client";
 import { connection } from "@/config/database/connection";
-import { AtracaoTuristicaDTO } from "@/dto/atracaoTuristicaDTO";
 import { IAtracaoTuristicaRepository } from "../interfaces/IAtracaoTuristicaRepository";
+import { AtracaoForm } from "@/forms/atracaoForm";
 
 export class AtracaoTuristicaPrismaRepository implements IAtracaoTuristicaRepository {
   async findAll(): Promise<AtracaoTuristica[]> {
@@ -11,8 +11,14 @@ export class AtracaoTuristicaPrismaRepository implements IAtracaoTuristicaReposi
         endereco: true,
         municipio: true,
         horarios: true,
-        fotos: true,
+        fotos: {
+          include: {
+            foto: true,
+          },
+        },
         perfis: true,
+        categorias: true,
+        subcategorias: true,
       }
     });
   }
@@ -25,16 +31,24 @@ export class AtracaoTuristicaPrismaRepository implements IAtracaoTuristicaReposi
         endereco: true,
         municipio: true,
         horarios: true,
-        fotos: true,
+        fotos: {
+          include: {
+            foto: true,
+          },
+        },
         perfis: true,
+        categorias: true,
       }
     });
   }
 
   async create(
-    data: AtracaoTuristicaDTO & { idContato: number; idEndereco: number; idMunicipio: number },
+    data: AtracaoForm,
     fotosUrl: string[]
   ): Promise<AtracaoTuristica> {
+
+    console.log(data)
+
     const fotosExistentes = await connection.foto.findMany({
       where: {
         url: {
@@ -52,51 +66,69 @@ export class AtracaoTuristicaPrismaRepository implements IAtracaoTuristicaReposi
 
     return connection.atracaoTuristica.create({
       data: {
-        nome: data.nome,
-        descricao: data?.descricao || "",
-        mapaUrl: data?.mapaUrl || "",
-        site: data?.site || "",
-        contato: { connect: { id: data.idContato } },
-        endereco: { connect: { id: data.idEndereco } },
-        municipio: { connect: { id: data.idMunicipio } },
+        nome: data.atracaoTuristica.nome,
+        descricao: data.atracaoTuristica?.descricao || "",
+        mapaUrl: data.atracaoTuristica?.mapaUrl || "",
+        site: data.atracaoTuristica?.site || "",
+        idMunicipio: Number(data.municipio),
+        idEndereco: Number(data.endereco.id),
+        idContato: Number(data.contato.id),
+        categorias: {
+          connect: data.categoria ? { id: Number(data.categoria) } : undefined,
+        },
+        subcategorias: {
+          connect: data.subCategoria?.map(id => ({ id: Number(id) })) || [],
+        },
+        perfis: {
+          connect: data.perfil?.map(id => ({ id: Number(id) })) || [],
+        },
         fotos: {
           connect: galeriaIds.map(id => ({ id: Number(id) })) || [],
         },
       },
     });
+
   }
-  async update(
-    id: number, data: AtracaoTuristicaDTO & {
-      idContato: number;
-      idEndereco: number;
-      idMunicipio: number;
-      categorias?: (string | number)[];
-      subcategorias?: (string | number)[];
-      perfis?: (string | number)[];
-    }, perfisParaRemover: string[], fotos: string[]): Promise<AtracaoTuristica> {
+  async update(id: number, data: AtracaoForm, perfisParaRemover: string[], fotos: string[]): Promise<AtracaoTuristica> {
+     const fotosExistentes = await connection.foto.findMany({
+      where: {
+        url: {
+          in: fotos.map(url => String(url)),
+        },
+      },
+      include: {
+        galeria: true,
+      }
+    });
+
+    const galerias = fotosExistentes.map(foto => foto?.galeria ? foto.galeria : null).filter(galeria => galeria);
+
+    const galeriaIds = galerias.map(galeria => galeria?.id).filter(id => id) as number[];
+
+
     return connection.atracaoTuristica.update({
       where: { id },
       data: {
-        nome: data.nome,
-        descricao: data?.descricao || "",
-        mapaUrl: data?.mapaUrl || "",
-        site: data?.site || "",
-        idMunicipio: data.idMunicipio,
-        idEndereco: data.idEndereco,
-        idContato: data.idContato,
+        nome: data.atracaoTuristica.nome,
+        descricao: data.atracaoTuristica?.descricao || "",
+        mapaUrl: data.atracaoTuristica?.mapaUrl || "",
+        site: data.atracaoTuristica?.site || "",
+        idMunicipio: Number(data.municipio),
+        idEndereco: Number(data.endereco.id),
+        idContato: Number(data.contato.id),
         categorias: {
-          connect: data.categorias?.map((id: string | number) => ({ id: Number(id) })) || [],
+          set: data.categoria ? { id: Number(data.categoria) } : undefined,
         },
         subcategorias: {
-          connect: data.subcategorias?.map((id: string | number) => ({ id: Number(id) })) || [],
+          set: data.subCategoria?.map(id => ({ id: Number(id) })) || [],
         },
         perfis: {
-          disconnect: perfisParaRemover.map(id => ({ id: Number(id) })) || [],
-          connect: data.perfis?.map(id => ({ id: Number(id) })) || [],
+          connect: data.perfil?.map(id => ({ id: Number(id) })) || [],
+          disconnect: perfisParaRemover?.map(id => ({ id: Number(id) })) || [],
         },
         fotos: {
-          connect: fotos.map(id => ({ id: Number(id) })),
-        }
+          connect: galeriaIds.map(id => ({ id: Number(id) })) || [],
+        },
       },
     });
   }

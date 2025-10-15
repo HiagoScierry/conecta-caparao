@@ -15,6 +15,19 @@ export class SubCategoriaPrismaRepository implements ISubCategoriaRepository {
     });
   }
 
+  async findByIds(ids: string[]): Promise<Subcategoria[] | null> {
+    const subCategorias = await connection.subcategoria.findMany({
+      where: {
+        id: {
+          in: ids.map(id => Number(id.trim())),
+        },
+      },
+    });
+
+    return subCategorias.length > 0 ? subCategorias : null;
+
+  }
+
   async findAll(): Promise<Subcategoria[]> {
     return connection.subcategoria.findMany();
   }

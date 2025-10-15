@@ -6,8 +6,10 @@ import { enderecoServiceFactory } from "@/factories/enderecoServiceFactory";
 import { horarioFuncionamentoServiceFactory } from "@/factories/horarioFuncionamentoServiceFactory";
 import { municipioServiceFactory } from "@/factories/municipioServiceFactory";
 import { perfilClienteServiceFactory } from "@/factories/perfilClienteServiceFactory";
+import { SubCategoriaServiceFactory } from "@/factories/subCategoriaServiceFactory";
 import { AtracaoForm } from "@/forms/atracaoForm";
 import { PerfilCliente } from "@prisma/client";
+import { sub } from "date-fns";
 
 export async function getAtrativoById(id: number) {
   return atracaoTuristicaServiceFactory().findById(id);
@@ -18,12 +20,20 @@ export async function getAll() {
 }
 
 export async function createAtrativo(atrativo: AtracaoForm & { fotosURL: string[] }) {
-  const { atracaoTuristica, contato, endereco, horarioFuncionamento, municipio, categoria, perfil, fotosURL } = atrativo;
+  const { atracaoTuristica, contato, endereco, horarioFuncionamento, municipio, categoria, perfil, fotosURL, subCategoria } = atrativo;
 
   const categoriaExists = await categoriaServiceFactory().findById(Number(categoria));
 
   if (!categoriaExists) {
     throw new Error("Categoria não existe");
+  }
+
+  const subCategoriaExists = await SubCategoriaServiceFactory().findByIds(subCategoria.map(id => String(id)));
+
+  if (subCategoriaExists?.length !== subCategoria.length && subCategoriaExists) {
+    const subCategoriaIds = subCategoriaExists.map(sc => String(sc.id));
+    const notFound = subCategoria.filter(id => !subCategoriaIds.includes(String(id)));
+    throw new Error(`Subcategorias não encontradas: ${notFound.join(", ")}`);
   }
 
   const municipioExists = await municipioServiceFactory().findById(String(municipio));
@@ -33,7 +43,6 @@ export async function createAtrativo(atrativo: AtracaoForm & { fotosURL: string[
   }
 
   if (perfil) {
-
     const perfilExists = await perfilClienteServiceFactory().findAll();
 
     const perfilIds = perfilExists.map((p: PerfilCliente) => String(p.id));
@@ -42,20 +51,28 @@ export async function createAtrativo(atrativo: AtracaoForm & { fotosURL: string[
     if (notFound.length > 0) {
       throw new Error(`Perfis não encontrados: ${notFound.join(", ")}`);
     }
-
   }
 
   const contatoCreated = await contatoServiceFactory().create(contato);
 
   const enderecoCreated = await enderecoServiceFactory().create(endereco);
 
+  endereco.id = enderecoCreated.id;
+
   const atracaoCreated = await atracaoTuristicaServiceFactory().create({
-    ...atracaoTuristica,
-    idCategoria: categoriaExists.id,
-    idMunicipio: municipioExists.id,
-    idEndereco: enderecoCreated.id,
-    idContato: Number(contatoCreated.id),
-    perfis: perfil,
+    atracaoTuristica,
+    municipio: municipioExists.id,
+    endereco: {
+      ...endereco,
+      id: enderecoCreated.id
+    },
+    contato: {
+      ...contato,
+      id: Number(contatoCreated.id)
+    },
+    categoria: categoriaExists.id,
+    perfil,
+    subCategoria
   }, fotosURL);
 
   await horarioFuncionamentoServiceFactory().create({

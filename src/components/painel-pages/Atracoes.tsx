@@ -23,7 +23,7 @@ import {
 } from "@/hooks/http/useAtrativos";
 import { AtracaoForm } from "@/forms/atracaoForm";
 import { useUpload } from "@/hooks/http/useUpload";
-import { AtracaoTuristicaFull } from "@/repositories/interfaces/IAtracaoTuristicaRepository";
+import { AtracaoTuristica } from "@prisma/client";
 
 export default function Atracoes() {
   const { toast } = useToast();
@@ -33,10 +33,10 @@ export default function Atracoes() {
     "create"
   );
   const [selectedAttraction, setSelectedAttraction] =
-    useState<AtracaoTuristicaFull | null>(null);
+    useState<AtracaoTuristica | null>(null);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [attractionToDelete, setAttractionToDelete] =
-    useState<AtracaoTuristicaFull | null>(null);
+    useState<AtracaoTuristica | null>(null);
 
   const { data: atracoes = [] } = useGetAllAtrativos();
 
@@ -48,14 +48,14 @@ export default function Atracoes() {
 
   const handleOpenModal = (
     mode: "create" | "edit" | "view",
-    attraction?: AtracaoTuristicaFull | null
+    attraction?: AtracaoTuristica | null
   ) => {
     setModalMode(mode);
     setSelectedAttraction(attraction || null);
     setIsModalOpen(true);
   };
 
-  const handleOpenDeleteModal = (attraction: AtracaoTuristicaFull | null) => {
+  const handleOpenDeleteModal = (attraction: AtracaoTuristica | null) => {
     setAttractionToDelete(attraction);
     setIsDeleteModalOpen(true);
   };
@@ -149,7 +149,7 @@ export default function Atracoes() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {atracoes?.map((atracao: AtracaoTuristicaFull) => (
+              {atracoes?.map((atracao: AtracaoTuristica) => (
                 <TableRow key={atracao.id}>
                   <TableCell className="font-medium">{atracao.id}</TableCell>
                   <TableCell>{atracao.nome}</TableCell>
@@ -159,7 +159,7 @@ export default function Atracoes() {
                       variant="outline"
                       className="bg-tourism-light text-tourism-primary"
                     >
-                      {atracao.categoria.nome}
+                      {atracao.categorias?.map(categoria => categoria.nome).join(", ") ?? "N/A"}
                     </Badge>
                   </TableCell>
                   <TableCell className="text-right space-x-2">
