@@ -35,7 +35,7 @@ export function Login({ onLogin }: LoginFormProps) {
         title: "Login realizado com sucesso!",
         description: "Bem-vindo ao sistema de turismo.",
       });
-    } catch (error) {
+    } catch {
       toast({
         title: "Erro no login",
         description: "Email ou senha incorretos.",
