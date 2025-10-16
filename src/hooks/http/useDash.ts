@@ -1,8 +1,9 @@
 import { useQuery } from "@tanstack/react-query";
+import { QUERY_KEYS } from "./useQueryInvalidation";
 
 export function useDash() {
   return useQuery({
-    queryKey: ['dash'],
+    queryKey: QUERY_KEYS.DASHBOARD,
     queryFn: async () => {
       const response = await fetch('/api/dashboard');
       if (!response.ok) {

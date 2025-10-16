@@ -1,10 +1,11 @@
 import { EventoForm } from "@/forms/eventoForm";
 import { EventoFull } from "@/repositories/interfaces/IEventoRepository";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { QUERY_KEYS, useQueryInvalidation } from "./useQueryInvalidation";
 
 export function useEvento() {
   return useQuery<EventoFull[]>({
-    queryKey: ["eventos"],
+    queryKey: QUERY_KEYS.EVENTOS,
     queryFn: async () => {
       const response = await fetch("/api/eventos");
       if (!response.ok) {
@@ -17,7 +18,7 @@ export function useEvento() {
 
 export function useGetEventoById(id: number) {
   return useQuery<EventoFull>({
-    queryKey: ["evento", id],
+    queryKey: QUERY_KEYS.EVENTO(id),
     queryFn: async () => {
       const response = await fetch(`/api/eventos/${id}`);
       if (!response.ok) {
@@ -31,7 +32,7 @@ export function useGetEventoById(id: number) {
 
 
 export function useCreateEvento() {
-  const queryClient = useQueryClient();
+  const { invalidateEventos, invalidateDashboard } = useQueryInvalidation();
 
   return useMutation({
     mutationFn: async (data: EventoForm & { fotosUrl: string[]}) => {
@@ -48,14 +49,15 @@ export function useCreateEvento() {
       return response.json();
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["eventos"] });
+      invalidateEventos();
+      invalidateDashboard();
     }
   })
 }
 
 
 export function useUpdateEvento() {
-  const queryClient = useQueryClient();
+  const { invalidateEventos, invalidateDashboard, invalidateEvento } = useQueryInvalidation();
 
   return useMutation({
     mutationFn: async (data: EventoForm & { fotosUrl?: string[] }) => {
@@ -71,15 +73,20 @@ export function useUpdateEvento() {
       }
       return response.json();
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["eventos"] });
+    onSuccess: (_, variables) => {
+      invalidateEventos();
+      invalidateDashboard();
+      // Também invalida o evento específico que foi atualizado
+      if (variables.evento?.id) {
+        invalidateEvento(variables.evento.id);
+      }
     }
   })
 }
 
 
 export function useDeleteEvento() {
-  const queryClient = useQueryClient();
+  const { invalidateEventos, invalidateDashboard } = useQueryInvalidation();
 
   return useMutation({
     mutationFn: async (id: number) => {
@@ -92,7 +99,8 @@ export function useDeleteEvento() {
       return response.json();
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["eventos"] });
+      invalidateEventos();
+      invalidateDashboard();
     }
   })
 }

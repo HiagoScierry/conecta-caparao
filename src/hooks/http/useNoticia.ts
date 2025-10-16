@@ -1,10 +1,11 @@
 import { NoticiasForm } from "@/forms/noticiasForm";
 import { NoticiaFull } from "@/repositories/interfaces/INoticiaRepository";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { QUERY_KEYS, useQueryInvalidation } from "./useQueryInvalidation";
 
 export function useGetNoticias() {
   return useQuery<NoticiaFull[], Error>({
-    queryKey: ["noticias"],
+    queryKey: QUERY_KEYS.NOTICIAS,
     queryFn: async () => {
       const response = await fetch("/api/noticia");
       if (!response.ok) {
@@ -18,7 +19,7 @@ export function useGetNoticias() {
 
 export function useGetNoticiaById(id: number) {
   return useQuery<NoticiaFull>({
-    queryKey: ["noticia", id],
+    queryKey: QUERY_KEYS.NOTICIA(id),
     queryFn: async () => {
       const response = await fetch(`/api/noticia/${id}`);
       if (!response.ok) {
@@ -31,7 +32,7 @@ export function useGetNoticiaById(id: number) {
 }
 
 export function useCreateNoticia() {
-  const queryClient = useQueryClient();
+  const { invalidateNoticias, invalidateDashboard } = useQueryInvalidation();
 
   return useMutation({
     mutationFn: async (data: NoticiasForm & { fotosUrl: string[]}) => {
@@ -48,13 +49,14 @@ export function useCreateNoticia() {
       return response.json();
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["noticias"] });
+      invalidateNoticias();
+      invalidateDashboard();
     }
   })
 }
 
 export function useUpdateNoticia() {
-  const queryClient = useQueryClient();
+  const { invalidateNoticias, invalidateDashboard, invalidateNoticia } = useQueryInvalidation();
 
   return useMutation({
     mutationFn: async (data: NoticiasForm & {fotosUrl: string[] }) => {
@@ -70,14 +72,19 @@ export function useUpdateNoticia() {
       }
       return response.json();
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["noticias"] });
+    onSuccess: (_, variables) => {
+      invalidateNoticias();
+      invalidateDashboard();
+      // Também invalida a notícia específica que foi atualizada
+      if (variables.noticia.id) {
+        invalidateNoticia(variables.noticia.id);
+      }
     }
   })
 }
 
 export function useDeleteNoticia() {
-  const queryClient = useQueryClient();
+  const { invalidateNoticias, invalidateDashboard } = useQueryInvalidation();
 
   return useMutation({
     mutationFn: async (id: number) => {
@@ -90,7 +97,8 @@ export function useDeleteNoticia() {
       return response.json();
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["noticias"] });
+      invalidateNoticias();
+      invalidateDashboard();
     }
   })
 }
