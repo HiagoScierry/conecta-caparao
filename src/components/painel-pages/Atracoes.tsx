@@ -36,7 +36,7 @@ export default function Atracoes() {
     useState<AtracaoTuristicaFull | null>(null);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [attractionToDelete, setAttractionToDelete] =
-    useState<AtracaoTuristicaFull | null>(null);
+    useState<AtracaoTuristicaLoadedData | null>(null);
 
   const { data: atracoes = [] } = useGetAllAtrativos();
 
@@ -81,7 +81,7 @@ export default function Atracoes() {
     setIsModalOpen(true);
   };
 
-  const handleOpenDeleteModal = (attraction: AtracaoTuristicaFull | null) => {
+  const handleOpenDeleteModal = (attraction: AtracaoTuristicaLoadedData | null) => {
     setAttractionToDelete(attraction);
     setIsDeleteModalOpen(true);
   };
