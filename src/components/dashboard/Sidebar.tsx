@@ -6,6 +6,7 @@ import {
   Calendar, 
   Newspaper, 
   Store, 
+  Users,
   Menu ,
   LogOut
 } from "lucide-react";
@@ -53,6 +54,7 @@ export function Sidebar() {
     { icon: Calendar, label: "Eventos", href: "/painel/eventos" },
     { icon: Newspaper, label: "Notícias", href: "/painel/noticias" },
     { icon: Store, label: "Serviços", href: "/painel/servicos" },
+    ...(user?.admin ? [{ icon: Users, label: "Usuários", href: "/painel/usuarios" }] : []),
     // { icon: Settings, label: "Configurações", href: "/painel/configuracoes" },
   ];
 

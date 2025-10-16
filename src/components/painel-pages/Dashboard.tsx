@@ -53,7 +53,7 @@ export default function Dashboard() {
         />
       </div>
 
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+      <div className="grid gap-4 md:grid-cols-2">
         <Card className="col-span-2">
           <CardHeader>
             <CardTitle>Atrações Turísticas por Município</CardTitle>
@@ -85,8 +85,38 @@ export default function Dashboard() {
             )}
           </CardContent>
         </Card>
+      </div>
 
+      <div className="grid gap-4 md:grid-cols-2">
         <Card>
+          <CardHeader>
+            <CardTitle>Últimas Notícias</CardTitle>
+            <CardDescription>
+              Notícias publicadas recentemente
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              {ultimasNoticias && ultimasNoticias.length > 0 ? (
+                ultimasNoticias.map((noticia) => (
+                  <div key={noticia.id} className="border-b pb-3 last:border-0 last:pb-0">
+                    <h3 className="font-medium">{noticia.titulo}</h3>
+                    <p className="text-sm text-muted-foreground line-clamp-2">
+                      {noticia.resumo}
+                    </p>
+                    <p className="text-xs text-muted-foreground mt-1">
+                      {new Date(noticia.dataPublicacao).toLocaleDateString('pt-BR')}
+                    </p>
+                  </div>
+                ))
+              ) : (
+                <p className="text-muted-foreground text-sm">Nenhuma notícia encontrada</p>
+              )}
+            </div>
+          </CardContent>
+        </Card>
+
+               <Card>
           <CardHeader>
             <CardTitle>Próximos Eventos</CardTitle>
             <CardDescription>
@@ -115,36 +145,7 @@ export default function Dashboard() {
             </div>
           </CardContent>
         </Card>
-      </div>
 
-      <div className="grid gap-4 md:grid-cols-1">
-        <Card>
-          <CardHeader>
-            <CardTitle>Últimas Notícias</CardTitle>
-            <CardDescription>
-              Notícias publicadas recentemente
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              {ultimasNoticias && ultimasNoticias.length > 0 ? (
-                ultimasNoticias.map((noticia) => (
-                  <div key={noticia.id} className="border-b pb-3 last:border-0 last:pb-0">
-                    <h3 className="font-medium">{noticia.titulo}</h3>
-                    <p className="text-sm text-muted-foreground line-clamp-2">
-                      {noticia.resumo}
-                    </p>
-                    <p className="text-xs text-muted-foreground mt-1">
-                      {new Date(noticia.dataPublicacao).toLocaleDateString('pt-BR')}
-                    </p>
-                  </div>
-                ))
-              ) : (
-                <p className="text-muted-foreground text-sm">Nenhuma notícia encontrada</p>
-              )}
-            </div>
-          </CardContent>
-        </Card>
       </div>
     </div>
   );
