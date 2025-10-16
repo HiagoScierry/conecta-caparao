@@ -14,14 +14,23 @@ export class LocalUpload implements IUpload {
       throw new Error("No file provided");
     }
 
-    // Garante que o diretório de upload exista
-    fs.mkdirSync(this.uploadDir, { recursive: true });
+    try {
+      // Garante que o diretório de upload exista
+      if (!fs.existsSync(this.uploadDir)) {
+        fs.mkdirSync(this.uploadDir, { recursive: true });
+        console.log(`Diretório de upload criado: ${this.uploadDir}`);
+      }
 
-    const filePath = path.join(this.uploadDir, fileName);
+      const filePath = path.join(this.uploadDir, fileName);
 
-    await fs.promises.writeFile(filePath, file);
+      await fs.promises.writeFile(filePath, file);
+      console.log(`Arquivo salvo com sucesso: ${filePath}`);
 
-    return this.getFileUrl(fileName);
+      return this.getFileUrl(fileName);
+    } catch (error) {
+      console.error(`Erro ao salvar arquivo: ${error}`);
+      throw new Error(`Failed to save file: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    }
   }
 
   getFileUrl(fileName: string): string {

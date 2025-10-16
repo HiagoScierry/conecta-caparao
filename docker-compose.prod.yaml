@@ -19,6 +19,8 @@ services:
       - "traefik.http.routers.conecta-caparao.tls.certresolver=letsencrypt"
       - "traefik.http.services.conecta-caparao.loadbalancer.server.port=3000"
       - "traefik.docker.network=web"
+    volumes:
+      - uploads_data:/app/public/uploads
     networks:
       - web
       - app-network
@@ -90,6 +92,7 @@ services:
 
 volumes:
   mysql_data:
+  uploads_data:
 
 networks:
   web:

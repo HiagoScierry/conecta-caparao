@@ -30,8 +30,8 @@ RUN npm run build
 FROM base AS runner
 WORKDIR /app
 
-# Install curl and wget for health checks
-RUN apk add --no-cache curl wget
+# Install curl, wget and su-exec for health checks and user switching
+RUN apk add --no-cache curl wget su-exec
 
 # Create nextjs user
 RUN addgroup --system --gid 1001 nodejs
@@ -45,6 +45,9 @@ COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 # Copy Prisma
 COPY --from=builder /app/prisma ./prisma
 COPY --from=builder /app/node_modules/.prisma ./node_modules/.prisma
+
+# Create uploads directory and set permissions
+RUN mkdir -p ./public/uploads && chown -R nextjs:nodejs ./public/uploads
 
 # Switch to nextjs user
 USER nextjs

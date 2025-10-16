@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { faker } from "@faker-js/faker";
 import { LayoutPublic } from "@/components/public/Layout";
 import { GaleriaDeImagens } from "@/components/public/GaleriaDeImagens";
 import { MunicipiosCard } from "@/components/public/MunicipiosCard";

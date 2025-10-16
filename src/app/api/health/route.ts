@@ -1,5 +1,7 @@
 import { NextResponse } from 'next/server';
 import { PrismaClient } from '@prisma/client';
+import fs from 'fs';
+import path from 'path';
 
 const prisma = new PrismaClient();
 
@@ -8,12 +10,34 @@ export async function GET() {
     // Check database connection
     await prisma.$queryRaw`SELECT 1`;
     
+    // Check uploads directory
+    const uploadsDir = path.join(process.cwd(), 'public/uploads');
+    const uploadsAccessible = fs.existsSync(uploadsDir);
+    
+    // Check if we can write to uploads directory
+    let uploadsWritable = false;
+    if (uploadsAccessible) {
+      try {
+        const testFile = path.join(uploadsDir, '.test');
+        fs.writeFileSync(testFile, 'test');
+        fs.unlinkSync(testFile);
+        uploadsWritable = true;
+      } catch {
+        uploadsWritable = false;
+      }
+    }
+    
     return NextResponse.json(
       {
         status: 'ok',
         timestamp: new Date().toISOString(),
         uptime: process.uptime(),
-        database: 'connected'
+        database: 'connected',
+        uploads: {
+          accessible: uploadsAccessible,
+          writable: uploadsWritable,
+          path: uploadsDir
+        }
       },
       { status: 200 }
     );
