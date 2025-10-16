@@ -21,6 +21,7 @@ import {
 } from "@/components/ui/dialog";
 import { Form, FormControl, FormItem, FormLabel } from "@/components/ui/form";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { ImageUpload } from "@/components/ImageUpload";
 
 import { AtracaoForm, atracaoTuristicaForm } from "@/forms/atracaoForm";
@@ -582,29 +583,28 @@ export function AttractionModal({
                       Selecione a Categoria
                     </FormLabel>
                     <FormControl>
-                      <div className="grid grid-cols-4">
+                      <RadioGroup
+                        value={form.watch("categoria")?.toString()}
+                        onValueChange={(value) => form.setValue("categoria", parseInt(value))}
+                        disabled={isViewMode}
+                        className="grid grid-cols-4"
+                      >
                         {categorias?.map((categoria: Categoria) => (
-                          <label
-                            key={categoria.id}
-                            className="flex items-center gap-1"
-                          >
-                            <input
-                              type="radio"
-                              value={categoria.id}
-                              checked={
-                                form.getValues("categoria") === categoria.id
-                              }
-                              {...form.register("categoria", {
-                                required: true,
-                                valueAsNumber: true,
-                              })}
-                              disabled={isViewMode}
+                          <div key={categoria.id} className="flex items-center space-x-2">
+                            <RadioGroupItem 
+                              value={categoria.id.toString()} 
+                              id={`categoria-${categoria.id}`}
                             />
-                            {categoria.id + " " + categoria.nome.charAt(0) +
-                              categoria.nome.slice(1).toLowerCase()}
-                          </label>
+                            <label 
+                              htmlFor={`categoria-${categoria.id}`}
+                              className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                            >
+                              {categoria.id + " " + categoria.nome.charAt(0) +
+                                categoria.nome.slice(1).toLowerCase()}
+                            </label>
+                          </div>
                         ))}
-                      </div>
+                      </RadioGroup>
                     </FormControl>
                     <p className="text-red-500 text-xs mt-1">
                       {form.formState.errors.categoria?.message}
