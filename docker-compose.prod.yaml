@@ -89,3 +89,5 @@ services:
 networks:
   web:
     external: true
+  app-network:
+    driver: bridge
