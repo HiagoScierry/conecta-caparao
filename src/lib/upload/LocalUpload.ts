@@ -34,7 +34,7 @@ export class LocalUpload implements IUpload {
   }
 
   getFileUrl(fileName: string): string {
-    // Caminho público acessível via navegador
+    // Caminho para a rota API que serve os arquivos de upload
     return `/uploads/${fileName}`;
   }
 }
