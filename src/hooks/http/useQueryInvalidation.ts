@@ -21,6 +21,9 @@ export const QUERY_KEYS = {
   
   // Dashboard e outras queries
   DASHBOARD: ["dash"] as const,
+  DASHBOARD_ATRACOES_POR_MUNICIPIO: ["dashboard", "atracoes-por-municipio"] as const,
+  DASHBOARD_PROXIMOS_EVENTOS: ["dashboard", "proximos-eventos"] as const,
+  DASHBOARD_ULTIMAS_NOTICIAS: ["dashboard", "ultimas-noticias"] as const,
 } as const;
 
 // Hook para invalidações centralizadas

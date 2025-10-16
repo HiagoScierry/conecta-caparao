@@ -1,14 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { QUERY_KEYS } from "./useQueryInvalidation";
 
-export interface DashboardStats {
-  municipios: number;
-  atracoes: number;
-  eventos: number;
-  noticias: number;
-  servicos: number;
-}
-
 export interface AtracoesPorMunicipio {
   municipio: string;
   quantidade: number;
@@ -28,19 +20,11 @@ export interface UltimaNoticias {
   dataPublicacao: string;
 }
 
-export function useDash() {
-  return useQuery({
-    queryKey: QUERY_KEYS.DASHBOARD,
-    queryFn: async (): Promise<DashboardStats> => {
-      const response = await fetch('/api/dashboard');
-      if (!response.ok) {
-        throw new Error('Erro ao buscar dados do dashboard');
-      }
-      return response.json();
-    },
-    refetchIntervalInBackground: true,
-    refetchInterval: 1000 * 60 * 1, // 1 minuto
-  });
+export interface ServicoPopular {
+  id: number;
+  nome: string;
+  municipio: string;
+  visualizacoes: number;
 }
 
 export function useDashboardAtracoesPorMunicipio() {
@@ -80,6 +64,21 @@ export function useDashboardUltimasNoticias(limit: number = 5) {
       const response = await fetch(`/api/dashboard/ultimas-noticias?limit=${limit}`);
       if (!response.ok) {
         throw new Error('Erro ao buscar últimas notícias');
+      }
+      return response.json();
+    },
+    refetchIntervalInBackground: true,
+    refetchInterval: 1000 * 60 * 5, // 5 minutos
+  });
+}
+
+export function useDashboardServicosPopulares(limit: number = 5) {
+  return useQuery({
+    queryKey: [...QUERY_KEYS.DASHBOARD_SERVICOS_POPULARES, limit],
+    queryFn: async (): Promise<ServicoPopular[]> => {
+      const response = await fetch(`/api/dashboard/servicos-populares?limit=${limit}`);
+      if (!response.ok) {
+        throw new Error('Erro ao buscar serviços populares');
       }
       return response.json();
     },

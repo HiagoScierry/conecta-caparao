@@ -1,16 +1,15 @@
-import { connection } from "@/config/database/connection";
+import { getDashboardStats } from "@/controllers/dashboardController";
 import { NextResponse } from "next/server";
 
 export async function GET() {
-  const count = {
-    municipios: await connection.municipio.count(),
-    atracoes: await connection.atracaoTuristica.count(),
-    eventos: await connection.evento.count(),
-    noticias: await connection.noticia.count(),
-    servicos: await connection.servicoTuristico.count()
+  try {
+    const stats = await getDashboardStats();
+    return NextResponse.json(stats);
+  } catch (error) {
+    console.error('Erro ao buscar estatísticas do dashboard:', error);
+    return NextResponse.json(
+      { error: 'Erro interno do servidor' }, 
+      { status: 500 }
+    );
   }
-
-
-
-  return NextResponse.json(count);
 }
