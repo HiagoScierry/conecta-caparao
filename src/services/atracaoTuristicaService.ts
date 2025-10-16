@@ -1,4 +1,5 @@
-import { AtracaoForm, IAtracaoTuristicaRepository } from "@/repositories/interfaces/IAtracaoTuristicaRepository";
+import { IAtracaoTuristicaRepository } from "@/repositories/interfaces/IAtracaoTuristicaRepository";
+import { AtracaoForm } from "@/forms/atracaoForm";
 
 export class AtracaoTuristicaService {
   private atracaoTuristicaRepository: IAtracaoTuristicaRepository;

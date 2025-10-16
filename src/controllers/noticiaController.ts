@@ -9,14 +9,14 @@ export async function getNoticiaById(id: number){
   return noticiaServiceFactory().findById(id);
 }
 
-export async function createNoticia(data: NoticiasForm, fotosUrl: string[]){
-  return noticiaServiceFactory().create(data.noticia, fotosUrl);
+export async function createNoticia(data: NoticiasForm & { fotosUrl: string[] }){
+  return noticiaServiceFactory().create(data.noticia, data.fotosUrl);
 }
 
-export async function updateNoticia(id: number, data: NoticiasForm, fotosUrl: string[]){
+export async function updateNoticia(id: number, data: NoticiasForm & { fotosUrl: string[] }){
   console.log(data);
 
-  return noticiaServiceFactory().update(id, data.noticia, fotosUrl);
+  return noticiaServiceFactory().update(id, data.noticia, data.fotosUrl);
 }
 
 export async function deleteNoticia(id: number){

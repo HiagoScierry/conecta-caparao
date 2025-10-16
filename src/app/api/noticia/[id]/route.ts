@@ -28,18 +28,31 @@ export async function PUT(
 ) {
   try {
     const { id } = await context.params;
+    const requestData = await request.json();
+    console.log("Received update data:", requestData);
 
-    const {noticia, fotosUrl} = await request.json();
+    // Validar se os dados necessários estão presentes
+    if (!requestData.noticia) {
+      return NextResponse.json({ message: "Dados da notícia não fornecidos!" }, { status: 400 });
+    }
+
+    const { noticia, fotosUrl } = requestData;
 
     noticiaSchema.parse(noticia);
 
-    await updateNoticia(Number(id), noticia, fotosUrl);
+    await updateNoticia(Number(id), {
+      noticia: {
+        ...noticia,
+        data: new Date(noticia.data).toISOString().split('T')[0] // Manter como string no formato YYYY-MM-DD
+      },
+      fotosUrl
+    });
 
-    return NextResponse.json({ message: "Evento updated successfully!" }, { status: 201 });
+    return NextResponse.json({ message: "Notícia atualizada com sucesso!" }, { status: 200 });
   } catch (error) {
     console.log(error);
 
-    return NextResponse.json({ message: "Evento update failed!", error }, { status: 500 });
+    return NextResponse.json({ message: "Atualização da notícia falhou!", error }, { status: 500 });
   }
 }
 

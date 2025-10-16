@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { connection } from "@/config/database/connection";
-import { IMunicipioRepository } from "../interfaces/IMunicipioRepository";
+import { IMunicipioRepository, MunicipioFull } from "../interfaces/IMunicipioRepository";
 import { MunicipioDTO } from "@/dto/municipioDTO";
 import { Municipio } from "@prisma/client";
 
@@ -23,10 +23,14 @@ export class MunicipioPrimaRepository implements IMunicipioRepository {
       throw new Error("Municipio not found");
     }
 
-    return municipio;
+    // Mapear a estrutura para compatibilidade
+    return {
+      ...municipio,
+      fotos: municipio.fotos.map(galeria => galeria.foto)
+    };
   }
 
-  async findAll(): Promise<Array<Municipio>> {
+  async findAll(): Promise<MunicipioFull[]> {
     const municipios = await connection.municipio.findMany({
       include: {
         contato: true,
@@ -38,7 +42,11 @@ export class MunicipioPrimaRepository implements IMunicipioRepository {
       },
     });
 
-    return municipios;
+    // Mapear a estrutura para compatibilidade
+    return municipios.map(municipio => ({
+      ...municipio,
+      fotos: municipio.fotos.map(galeria => galeria.foto)
+    }));
   }
 
   async create(

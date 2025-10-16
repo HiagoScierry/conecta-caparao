@@ -1,6 +1,16 @@
-import { AtracaoTuristica} from "@prisma/client";
+import { AtracaoTuristica, Categoria, Contato, Endereco, HorarioDeFuncionamento, PerfilCliente, Subcategoria } from "@prisma/client";
 import { AtracaoForm } from "@/forms/atracaoForm";
 
+export type AtracaoTuristicaFull = AtracaoTuristica & {
+  horarioFuncionamento: HorarioDeFuncionamento[];
+  endereco: Endereco;
+  contato: Contato;
+  municipio: { id: number; nome: string };
+  categoria: Categoria;
+  subcategorias: Subcategoria[];
+  perfis: PerfilCliente[];
+  fotos: { id: number; url: string }[];
+};
 
 export interface IAtracaoTuristicaRepository {
   findAll(): Promise<AtracaoTuristica[]>;

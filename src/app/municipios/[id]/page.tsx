@@ -47,7 +47,7 @@ export default function PaginaMunicipios({
             // corSubtitulo={"text-tourism-azul"}
           /> */}
           <GaleriaDeImagens
-            imagemUrls={municipio.fotos.map((foto) => foto.url)}
+            imagemUrls={municipio.fotos.map((foto: {url: string}) => foto.url)}
           />
 
           <div className="w-full bg-tourism-branco py-12">

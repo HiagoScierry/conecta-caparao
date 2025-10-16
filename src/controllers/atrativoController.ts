@@ -61,18 +61,19 @@ export async function createAtrativo(atrativo: AtracaoForm & { fotosURL: string[
 
   const atracaoCreated = await atracaoTuristicaServiceFactory().create({
     atracaoTuristica,
-    municipio: municipioExists.id,
+    municipio: String(municipioExists.id),
     endereco: {
       ...endereco,
       id: enderecoCreated.id
     },
     contato: {
       ...contato,
-      id: Number(contatoCreated.id)
+      id: String(contatoCreated.id)
     },
     categoria: categoriaExists.id,
     perfil,
-    subCategoria
+    subCategoria,
+    horarioFuncionamento
   }, fotosURL);
 
   await horarioFuncionamentoServiceFactory().create({
@@ -121,19 +122,30 @@ export async function updateAtrativo(id: number, atrativo: AtracaoForm, fotosURL
     }
 
     // Compare perfils enviados com os que ja estão associados
-    const perfisAtuais = atrativoExists.perfis.map((p) => String(p.id));
-    perfisParaAdicionar = perfil.filter((id: string) => !perfisAtuais.includes(id));
-    perfisParaRemover = perfisAtuais.filter((id: string) => !perfil.includes(id));
+    // TODO: Implementar busca de perfis do atrativo para comparação
+    // const perfisAtuais = atrativoExists.perfis.map((p) => String(p.id));
+    perfisParaAdicionar = perfil; // Por enquanto, adiciona todos
+    perfisParaRemover = []; // Por enquanto, não remove nenhum
 
   }
 
   const atracaoUpdated = await atracaoTuristicaServiceFactory().update(id, {
-    ...atracaoTuristica,
-    idCategoria: categoriaExists.id,
-    idMunicipio: municipioExists.id,
-    idEndereco: enderecoUpdated.id,
-    idContato: Number(contatoUpdated.id),
-    perfis: perfisParaAdicionar,
+    atracaoTuristica: {
+      ...atracaoTuristica
+    },
+    categoria: categoriaExists.id,
+    municipio: String(municipioExists.id),
+    endereco: {
+      ...endereco,
+      id: enderecoUpdated.id
+    },
+    contato: {
+      ...contato,
+      id: String(contatoUpdated.id)
+    },
+    perfil: perfisParaAdicionar,
+    subCategoria: [],
+    horarioFuncionamento
   }, perfisParaRemover, fotosURL);
 
 

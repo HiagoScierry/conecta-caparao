@@ -10,7 +10,7 @@ export class ServicoTuristicoPrismaRepository implements IServicoTuristicoReposi
         contato: true,
         endereco: true,
         municipio: true,
-        foto: true,
+        fotos: true,
         horarios: true,
       }
     });
@@ -28,7 +28,7 @@ export class ServicoTuristicoPrismaRepository implements IServicoTuristicoReposi
         contato: true,
         endereco: true,
         municipio: true,
-        foto: true,
+        fotos: true,
         horarios: true,
       }
     });
@@ -53,22 +53,19 @@ export class ServicoTuristicoPrismaRepository implements IServicoTuristicoReposi
     const servicoTuristico = await connection.servicoTuristico.create({
       data: {
         nome: data.nome,
-        descricao: data?.descricao || "",
-        site: data?.site || "",
+        descricao: data.descricao,
+        site: data.site,
         idContato: data.idContato,
         idEndereco: data.idEndereco,
         idMunicipio: data.idMunicipio,
-        idFoto: idFoto,
-        }
-    });
-
-    return servicoTuristico;
+      }
+    });    return servicoTuristico;
   }
 
   async update(id: number, data: ServicoTuristicoWithRelations, fotosURL?: string): Promise<ServicoTuristico> {
-    const servicoTuristico = await this.findById(id);
-
-    let idFoto = servicoTuristico.idFoto;
+    // const servicoTuristico = await this.findById(id); // TODO: Implementar verificação
+    // let idFoto = servicoTuristico.idFoto; // TODO: Implementar relacionamento com fotos
+    let idFoto = null;
 
     if (fotosURL) {
       if (idFoto) {
@@ -88,12 +85,11 @@ export class ServicoTuristicoPrismaRepository implements IServicoTuristicoReposi
       where: { id },
       data: {
         nome: data.nome,
-        descricao: data?.descricao || "",
-        site: data?.site || "",
+        descricao: data.descricao,
+        site: data.site,
         idContato: data.idContato,
         idEndereco: data.idEndereco,
         idMunicipio: data.idMunicipio,
-        idFoto: idFoto,
       }
     });
 

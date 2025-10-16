@@ -20,7 +20,7 @@ export class NoticiaPrismaRepository implements INoticiaRepository {
       fotos: noticia.fotos.map((f) => ({
         id: f.id,
         capa: f.capa,
-        noticiaId: f.idNoticia,
+        noticiaId: f.noticiaId ?? 0,
         fotoId: f.idFoto,
         foto: f.foto,
       })),
@@ -45,7 +45,7 @@ export class NoticiaPrismaRepository implements INoticiaRepository {
       fotos: noticia.fotos.map((f) => ({
         id: f.id,
         capa: f.capa,
-        noticiaId: f.idNoticia,
+        noticiaId: f.noticiaId ?? 0,
         fotoId: f.idFoto,
         foto: f.foto,
       })),
@@ -55,11 +55,16 @@ export class NoticiaPrismaRepository implements INoticiaRepository {
   async create(data: NoticiaDTO, fotos: string[]): Promise<NoticiaFull> {
     console.log("Creating noticia with data:", data, "and fotos:", fotos);
 
+    // Validação dos dados
+    if (!data || !data.titulo || !data.texto || !data.data) {
+      throw new Error("Dados obrigatórios da notícia não fornecidos");
+    }
+
     const noticia = await connection.noticia.create({
       data: {
         titulo: data.titulo,
         texto: data.texto,
-        data: data.data,
+        data: new Date(data.data), // Converte string para Date
         fotos: {
           create: fotos.map((url, index) => ({
             capa: index === 0,
@@ -87,7 +92,7 @@ export class NoticiaPrismaRepository implements INoticiaRepository {
       fotos: noticia.fotos.map((f) => ({
         id: f.id,
         capa: f.capa,
-        noticiaId: f.idNoticia,
+        noticiaId: f.noticiaId ?? 0,
         fotoId: f.idFoto,
         foto: f.foto,
       })),
@@ -97,12 +102,17 @@ export class NoticiaPrismaRepository implements INoticiaRepository {
   async update(id: number, data: NoticiaDTO, fotosUrl: string[]): Promise<Noticia | null> {
     console.log("Updating noticia with ID:", id, "data:", data, "and fotosUrl:", fotosUrl);
 
+    // Validação dos dados
+    if (!data || !data.titulo || !data.texto || !data.data) {
+      throw new Error("Dados obrigatórios da notícia não fornecidos");
+    }
+
     const noticia = await connection.noticia.update({
       where: { id },
       data: {
         titulo: data.titulo,
         texto: data.texto,
-        data: data.data,
+        data: new Date(data.data), // Converte string para Date
         updatedAt: new Date(),
         fotos: {
           deleteMany: {},
@@ -128,8 +138,8 @@ export class NoticiaPrismaRepository implements INoticiaRepository {
 
 
   async delete(id: number): Promise<void> {
-    await connection.noticiaFoto.deleteMany({
-      where: { idNoticia: id },
+    await connection.galeriaFoto.deleteMany({
+      where: { noticiaId: id },
     });
 
     await connection.noticia.delete({
