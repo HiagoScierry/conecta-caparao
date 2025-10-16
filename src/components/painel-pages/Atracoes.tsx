@@ -70,7 +70,7 @@ export default function Atracoes() {
           contato: attraction.contato,
           municipio: attraction.municipio, // <-- Added this line
           horarioFuncionamento: attraction.horarios,
-          fotos: attraction.fotos ?? [],
+          fotos: attraction.fotos.map(f => f.foto),
           categoria: attraction.categorias[0],
           subcategorias: attraction.subcategorias,
           perfis: attraction.perfis

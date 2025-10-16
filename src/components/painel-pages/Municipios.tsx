@@ -21,7 +21,7 @@ export default function Municipios() {
   const [municipalityToDelete, setMunicipalityToDelete] = useState<Municipio | null>(null);
 
   const { data: municipios } = useGetAllMunicipios() as {
-    data: (Municipio & { contato: Contato; fotos: Foto[] })[] | undefined;
+    data: (Municipio & { contato: Contato; fotos: (GaleriaFoto & { foto: Foto })[] })[] | undefined;
   };
 
   const { mutateAsync: uploadImage } = useUpload();
@@ -148,7 +148,7 @@ export default function Municipios() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {municipios?.map((municipio: Municipio & { contato: Contato; fotos: Foto[] }) => (
+              {municipios?.map((municipio: Municipio & { contato: Contato; fotos: (GaleriaFoto & { foto: Foto })[] }) => (
                 <TableRow key={municipio.id}>
                   <TableCell className="font-medium">{municipio.id}</TableCell>
                   <TableCell>{municipio.nome}</TableCell>
