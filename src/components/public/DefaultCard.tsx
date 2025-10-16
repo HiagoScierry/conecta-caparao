@@ -13,7 +13,7 @@ export function DefaultCard({ titulo, imagemUrl, link }: DefaultCardProps) {
   const altText = `Imagem para a notícia: ${titulo}`;
 
   return (
-    <Card className="max-w-xs flex flex-col overflow-hidden rounded-lg border-2 border-tourism-verde shadow-md bg-white">
+    <Card className="w-full flex flex-col overflow-hidden rounded-lg border-2 border-tourism-verde shadow-md bg-white">
       <div className="relative w-full h-48">
       <Image
           src={imagemUrl}
