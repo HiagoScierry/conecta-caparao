@@ -30,15 +30,15 @@ import { useCategorias } from "@/hooks/http/useCategoria";
 import { useDeleteUpload } from "@/hooks/http/useUpload";
 import { useSubcategorias } from "@/hooks/http/useSubCategoria";
 
-type AtracaoTuristicaFull = AtracaoTuristica & {
-  horarioFuncionamento?: HorarioDeFuncionamento[];
-  endereco?: Endereco;
-  contato?: Contato;
-  municipio?: { id: number; nome: string };
-  categoria?: Categoria;
-  subcategorias?: Subcategoria[];
-  perfis?: PerfilCliente[];
-  fotos?: { id: number; url: string }[];
+export type AtracaoTuristicaFull = AtracaoTuristica & {
+  horarioFuncionamento: HorarioDeFuncionamento[];
+  endereco: Endereco;
+  contato: Contato;
+  municipio: { id: number; nome: string };
+  categoria: Categoria;
+  subcategorias: Subcategoria[];
+  perfis: PerfilCliente[];
+  fotos: { id: number; url: string }[];
 };
 
 interface AttractionModalProps {
@@ -108,7 +108,7 @@ const getFormValues = (
       instagram: data.contato?.instagram ?? "",
     },
     municipio: data.municipio?.id?.toString() ?? "",
-    categoria: data.categoria?.id ?? 0,
+    categoria: data.categoria.id ?? 0,
     subCategoria: data.subcategorias?.map((sc) => sc.id) ?? [],
     perfil: data.perfis?.map((p) => p.id.toString()) ?? [],
   };
@@ -137,6 +137,10 @@ export function AttractionModal({
 
   useEffect(() => {
     form.reset(getFormValues(initialData));
+
+    console.log("LOADED ATRACAO MODAL", initialData);
+    console.log(form.getValues('categoria'), initialData?.categoria.id);
+
   }, [initialData, form]);
 
   const handleDeleteFoto = async (fotoId: string) => {
@@ -587,18 +591,24 @@ export function AttractionModal({
                             <input
                               type="radio"
                               value={categoria.id}
+                              checked={
+                                form.getValues("categoria") === categoria.id
+                              }
                               {...form.register("categoria", {
                                 required: true,
+                                valueAsNumber: true,
                               })}
                               disabled={isViewMode}
                             />
-                            {categoria.nome.charAt(0) +
+                            {categoria.id + " " + categoria.nome.charAt(0) +
                               categoria.nome.slice(1).toLowerCase()}
                           </label>
                         ))}
                       </div>
                     </FormControl>
-                    <p className="text-red-500 text-xs mt-1">{form.formState.errors.categoria?.message}</p>
+                    <p className="text-red-500 text-xs mt-1">
+                      {form.formState.errors.categoria?.message}
+                    </p>
                   </FormItem>
                 </section>
 
@@ -618,6 +628,9 @@ export function AttractionModal({
                           >
                             <input
                               type="checkbox"
+                              checked={form
+                                .getValues("subCategoria")
+                                .includes(subCategoria.id)}
                               value={subCategoria.id}
                               {...form.register("subCategoria", {
                                 required: true,
@@ -630,7 +643,9 @@ export function AttractionModal({
                         ))}
                       </div>
                     </FormControl>
-                    <p className="text-red-500 text-xs mt-1">{form.formState.errors.subCategoria?.message}</p>
+                    <p className="text-red-500 text-xs mt-1">
+                      {form.formState.errors.subCategoria?.message}
+                    </p>
                   </FormItem>
                 </section>
 
@@ -650,6 +665,9 @@ export function AttractionModal({
                           >
                             <input
                               type="checkbox"
+                              checked={form
+                                .getValues("perfil")
+                                .includes(perfil.id.toString())}
                               value={perfil.id.toString()}
                               {...form.register("perfil")}
                               disabled={isViewMode}
