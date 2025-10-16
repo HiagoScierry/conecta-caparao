@@ -1,6 +1,6 @@
 import { uploadDir } from "@/lib/upload";
 import { NextRequest, NextResponse } from "next/server";
-
+import { fotoServiceFactory } from "@/factories/fotoServiceFactory";
 
 export async function POST(request: NextRequest) {
   const formData = await request.formData();
@@ -18,6 +18,10 @@ export async function POST(request: NextRequest) {
 
   try {
     const fileUrl = await uploadDir(buffer, newFileName);
+
+    const fotoService = fotoServiceFactory();
+
+    await fotoService.createFoto(fileUrl);
 
     return NextResponse.json({
       fileUrl,

@@ -3,14 +3,17 @@ import {
   Dialog,
   DialogContent,
   DialogDescription,
-  DialogFooter,
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Form, FormControl, FormItem, FormLabel } from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { EventoForm } from "@/forms/eventoForm";
+import { EventoForm, eventoForm } from "@/forms/eventoForm";
 import { ImageUpload } from "@/components/ImageUpload";
 import { useGetAllMunicipios } from "@/hooks/http/useMunicipio";
 import { useDeleteUpload } from "@/hooks/http/useUpload";
@@ -30,7 +33,7 @@ const defaultValue: EventoForm = {
   evento: {
     nome: "",
     descricao: "",
-    data: new Date(),
+    data: new Date().toISOString().split('T')[0],
   },
   endereco: {
     logradouro: "",
@@ -48,7 +51,7 @@ function getDefaultValue(data?: EventoFull): EventoForm {
       id: data?.id || 0,
       nome: data?.nome ?? "",
       descricao: data?.descricao ?? "",
-      data: data?.data ? new Date(data.data) : new Date(),
+      data: data?.data ? new Date(data.data).toISOString().split('T')[0] : new Date().toISOString().split('T')[0],
     },
     endereco: {
       logradouro: data?.endereco?.rua || "",
@@ -70,7 +73,8 @@ export function EventModal({
     const [selectedImages, setSelectedImages] = useState<File[]>([]);
 
 
-  const form = useForm({
+  const form = useForm<EventoForm>({
+    resolver: zodResolver(eventoForm),
     defaultValues: getDefaultValue(initialData as EventoFull) || defaultValue,
   });
 
@@ -93,11 +97,9 @@ export function EventModal({
   };
 
 
-  const handleSubmit = () => {
-    const formData = form.getValues();
-    onSave({
-      ...formData, fotos: selectedImages,
-    });
+  const onSubmit = (data: EventoForm) => {
+    onSave({ ...data, fotos: selectedImages });
+    onClose();
   };
 
   useEffect(() => {
@@ -126,9 +128,14 @@ export function EventModal({
           </DialogDescription>
         </DialogHeader>
 
-        <ScrollArea className="max-h-[60vh]">
-          <Form {...form}>
-            <div className="space-y-6 py-4">
+        <Form {...form}>
+          <form
+            id="event-form"
+            onSubmit={form.handleSubmit(onSubmit)}
+            className="flex flex-col h-full"
+          >
+            <ScrollArea className="h-[60vh]">
+              <div className="space-y-6 py-4">
               {/* Bloco: Imagem */}
               <section className="border rounded-lg p-6 space-y-6">
                 <FormItem>
@@ -159,11 +166,10 @@ export function EventModal({
                       Título
                     </FormLabel>
                     <FormControl>
-                      <input
-                        type="text"
+                      <Input
                         {...form.register("evento.nome", { required: true })}
                         disabled={isViewMode}
-                        className="border rounded-md p-2 w-full"
+                        placeholder="Nome do evento"
                       />
                     </FormControl>
                   </FormItem>
@@ -175,10 +181,11 @@ export function EventModal({
                       Descrição
                     </FormLabel>
                     <FormControl>
-                      <textarea
+                      <Textarea
                         {...form.register("evento.descricao")}
                         disabled={isViewMode}
-                        className="textarea w-full min-h-[100px] border rounded-md p-2"
+                        placeholder="Descrição do evento"
+                        className="min-h-[100px]"
                       />
                     </FormControl>
                   </FormItem>
@@ -192,11 +199,10 @@ export function EventModal({
                   <FormItem className="flex flex-col gap-1">
                     <FormLabel className="text-sm font-medium">Data</FormLabel>
                     <FormControl>
-                      <input
+                      <Input
                         type="date"
                         {...form.register("evento.data", { required: true })}
                         disabled={isViewMode}
-                        className="border rounded-md p-2 w-full"
                       />
                     </FormControl>
                   </FormItem>
@@ -211,18 +217,22 @@ export function EventModal({
                     Selecione o Municipio
                   </FormLabel>
                   <FormControl>
-                    <select
-                      {...form.register("municipio", { required: true })}
+                    <Select
+                      value={form.watch("municipio")?.toString()}
+                      onValueChange={(value) => form.setValue("municipio", value)}
                       disabled={isViewMode}
-                      className="border rounded-md p-2 w-full"
                     >
-                      <option value="">Selecione o município</option>
-                      {municipios?.map((municipio) => (
-                        <option key={municipio.id} value={municipio.id}>
-                          {municipio.nome}
-                        </option>
-                      ))}
-                    </select>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Selecione o município" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {municipios?.map((municipio) => (
+                          <SelectItem key={municipio.id} value={municipio.id.toString()}>
+                            {municipio.nome}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
                   </FormControl>
                 </FormItem>
               </section>
@@ -236,11 +246,10 @@ export function EventModal({
                       Logradouro
                     </FormLabel>
                     <FormControl>
-                      <input
-                        type="text"
+                      <Input
                         {...form.register("endereco.logradouro")}
                         disabled={isViewMode}
-                        className="border rounded-md p-2 w-full"
+                        placeholder="Logradouro"
                       />
                     </FormControl>
                     {form.formState.errors.endereco?.logradouro && (
@@ -255,11 +264,10 @@ export function EventModal({
                       Número
                     </FormLabel>
                     <FormControl>
-                      <input
-                        type="text"
+                      <Input
                         {...form.register("endereco.numero")}
                         disabled={isViewMode}
-                        className="border rounded-md p-2 w-full"
+                        placeholder="Número"
                       />
                     </FormControl>
                     {form.formState.errors.endereco?.numero && (
@@ -274,11 +282,10 @@ export function EventModal({
                       Bairro
                     </FormLabel>
                     <FormControl>
-                      <input
-                        type="text"
+                      <Input
                         {...form.register("endereco.bairro")}
                         disabled={isViewMode}
-                        className="border rounded-md p-2 w-full"
+                        placeholder="Bairro"
                       />
                     </FormControl>
                     {form.formState.errors.endereco?.bairro && (
@@ -291,11 +298,10 @@ export function EventModal({
                   <FormItem className="flex flex-col gap-1">
                     <FormLabel className="text-sm font-medium">CEP</FormLabel>
                     <FormControl>
-                      <input
-                        type="text"
+                      <Input
                         {...form.register("endereco.cep")}
                         disabled={isViewMode}
-                        className="border rounded-md p-2 w-full"
+                        placeholder="00000-000"
                       />
                     </FormControl>
                     {form.formState.errors.endereco?.cep && (
@@ -306,24 +312,22 @@ export function EventModal({
                   </FormItem>
                 </div>
               </section>
-            </div>
-          </Form>
-        </ScrollArea>
+              </div>
+            </ScrollArea>
 
-        <DialogFooter>
-          {!isViewMode && (
-            <Button
-              type="submit"
-              className="bg-tourism-primary"
-              onClick={handleSubmit}
-            >
-              {mode === "create" ? "Criar" : "Salvar"}
-            </Button>
-          )}
-          <Button variant="outline" onClick={onClose}>
-            {isViewMode ? "Fechar" : "Cancelar"}
-          </Button>
-        </DialogFooter>
+            {/* Footer DENTRO do form para garantir submit */}
+            <div className="mt-4 flex items-center justify-end gap-2">
+              {!isViewMode && (
+                <Button type="submit" className="bg-tourism-primary">
+                  {mode === "create" ? "Criar" : "Salvar"}
+                </Button>
+              )}
+              <Button type="button" variant="outline" onClick={onClose}>
+                {isViewMode ? "Fechar" : "Cancelar"}
+              </Button>
+            </div>
+          </form>
+        </Form>
       </DialogContent>
     </Dialog>
   );

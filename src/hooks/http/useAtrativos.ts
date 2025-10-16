@@ -1,9 +1,22 @@
 import { AtracaoForm } from "@/forms/atracaoForm";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { AtracaoTuristica, Categoria, Contato, Endereco, Foto, GaleriaFoto, HorarioDeFuncionamento, Municipio, PerfilCliente, Subcategoria } from "@prisma/client";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { QUERY_KEYS, useQueryInvalidation } from "./useQueryInvalidation";
+
+export type AtracaoTuristicaLoadedData = AtracaoTuristica & {
+  categorias: Categoria[];
+  subcategorias: Subcategoria[];
+  contato: Contato;
+  endereco: Endereco;
+  fotos: (GaleriaFoto & { foto: Foto; })[];
+  horarios: HorarioDeFuncionamento[];
+  municipio: Municipio;
+  perfis: PerfilCliente[];
+}
 
 export function useGetAllAtrativos() {
-  return useQuery({
-    queryKey: ['atrativos'],
+  return useQuery<AtracaoTuristicaLoadedData[], Error>({
+    queryKey: QUERY_KEYS.ATRATIVOS,
     queryFn: async () => {
       const response = await fetch('/api/atrativos');
 
@@ -17,7 +30,7 @@ export function useGetAllAtrativos() {
 }
 
 export function useCreateAtrativo(){
-  const queryClient = useQueryClient()
+  const { invalidateAtrativos, invalidateDashboard } = useQueryInvalidation();
 
   return useMutation({
     mutationFn: async (atracao: AtracaoForm & { fotosURL: string[] }) => {
@@ -30,15 +43,14 @@ export function useCreateAtrativo(){
       })
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey:['atrativos']
-      })
+      invalidateAtrativos();
+      invalidateDashboard();
     }
   })
 }
 
 export function useUpdateAtrativo(){
-  const queryClient = useQueryClient()
+  const { invalidateAtrativos, invalidateDashboard } = useQueryInvalidation();
 
   return useMutation({
     mutationFn: async (atracao: AtracaoForm & { fotosURL: string[] }) => {
@@ -51,15 +63,14 @@ export function useUpdateAtrativo(){
       })
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey:['atrativos']
-      })
+      invalidateAtrativos();
+      invalidateDashboard();
     }
   })
 }
 
 export function useDeleteAtrativo(){
-  const queryClient = useQueryClient()
+  const { invalidateAtrativos, invalidateDashboard } = useQueryInvalidation();
 
   return useMutation({
     mutationFn: async (id: number) => {
@@ -68,9 +79,8 @@ export function useDeleteAtrativo(){
       })
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey:['atrativos']
-      })
+      invalidateAtrativos();
+      invalidateDashboard();
     }
   })
 }

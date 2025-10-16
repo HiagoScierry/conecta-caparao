@@ -116,7 +116,7 @@ export default function Noticias() {
           <h2 className="text-3xl font-bold tracking-tight">Notícias</h2>
           <p className="text-muted-foreground">
             Gerencie as notícias do portal de turismo.
-          </p>\
+          </p>
         </div>
         <Button
           className="bg-tourism-primary"
@@ -146,7 +146,7 @@ export default function Noticias() {
                 <TableRow key={noticia.id}>
                   <TableCell className="font-medium">{noticia.id}</TableCell>
                   <TableCell>{noticia.titulo}</TableCell>
-                  <TableCell>{noticia.data.getUTCDate()}</TableCell>
+                  <TableCell>{new Date(noticia.data).toLocaleDateString('pt-BR')}</TableCell>
                   <TableCell className="text-right space-x-2">
                     <Button
                       variant="ghost"

@@ -1,12 +1,13 @@
 import { ContatoService } from '@/services/contatoService';
 import { IContatoRepository } from '@/repositories/interfaces/IContatoRepository';
+import { ContatoDTO } from '@/dto/contatoDTO';
 
 describe('ContatoService (com mocks)', () => {
   let contatoService: ContatoService;
   let contatoRepository: jest.Mocked<IContatoRepository>;
 
-  const fakeContato = {
-    id: 1,
+  const fakeContato: ContatoDTO = {
+    id: '1',
     email: 'test@mail.com',
     celular: '1234567890',
     telefone: '1234567890',
@@ -31,7 +32,7 @@ describe('ContatoService (com mocks)', () => {
     contatoRepository.findById.mockResolvedValue(fakeContato);
 
     const created = await contatoService.create(fakeContato);
-    const found = await contatoRepository.findById(created.id!);
+    const found = await contatoRepository.findById(1);
 
     expect(contatoRepository.create).toHaveBeenCalledWith(fakeContato);
     expect(created).toEqual(fakeContato);
@@ -48,7 +49,7 @@ describe('ContatoService (com mocks)', () => {
   });
 
   it('should update a contato', async () => {
-    const updatedContato = {
+    const updatedContato: ContatoDTO = {
       ...fakeContato,
       email: 'updated@mail.com',
     };
@@ -57,9 +58,9 @@ describe('ContatoService (com mocks)', () => {
     contatoRepository.findById.mockResolvedValue(fakeContato);
     contatoRepository.update.mockResolvedValue(updatedContato);
 
-    const result = await contatoService.update(updatedContato);
+    const result = await contatoService.update(1, updatedContato);
 
-    expect(contatoRepository.findById).toHaveBeenCalledWith(updatedContato.id);
+    expect(contatoRepository.findById).toHaveBeenCalledWith(1);
     expect(contatoRepository.update).toHaveBeenCalledWith(updatedContato);
     expect(result.email).toBe('updated@mail.com');
   });
@@ -68,9 +69,9 @@ describe('ContatoService (com mocks)', () => {
     contatoRepository.findById.mockResolvedValue(fakeContato); // Simula existência
     contatoRepository.delete.mockResolvedValue();
 
-    await contatoService.delete(fakeContato.id);
+    await contatoService.delete(1);
 
-    expect(contatoRepository.findById).toHaveBeenCalledWith(fakeContato.id);
-    expect(contatoRepository.delete).toHaveBeenCalledWith(fakeContato.id);
+    expect(contatoRepository.findById).toHaveBeenCalledWith(1);
+    expect(contatoRepository.delete).toHaveBeenCalledWith(1);
   });
 });

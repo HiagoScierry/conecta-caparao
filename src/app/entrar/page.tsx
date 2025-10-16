@@ -14,10 +14,12 @@ export default function Page() {
     }
   }, [isAuthenticated, route]);
 
-  const handleLogin = (credentials: { email: string; password: string }) => {
-    const success = login(credentials.email, credentials.password);
+  const handleLogin = async (credentials: { email: string; password: string }) => {
+    const success = await login(credentials.email, credentials.password);
     if (success) {
-      route.push('/');
+      route.push('/painel/dashboard');
+    } else {
+      throw new Error('Login falhou');
     }
   };
 

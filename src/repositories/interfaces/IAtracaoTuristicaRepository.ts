@@ -1,28 +1,21 @@
-import { AtracaoTuristicaDTO } from "@/dto/atracaoTuristicaDTO";
-import { AtracaoTuristica, Categoria, Contato, Endereco, Foto, HorarioDeFuncionamento, Municipio, PerfilCliente } from "@prisma/client";
-
-export type AtracaoTuristicaWithRelations = AtracaoTuristicaDTO & {
-  idCategoria: number;
-  idMunicipio: number;
-  idEndereco: number;
-  idContato: number;
-  perfis?: string[];
-}
+import { AtracaoTuristica, Categoria, Contato, Endereco, HorarioDeFuncionamento, PerfilCliente, Subcategoria } from "@prisma/client";
+import { AtracaoForm } from "@/forms/atracaoForm";
 
 export type AtracaoTuristicaFull = AtracaoTuristica & {
-  categoria: Categoria;
-  municipio: Municipio;
+  horarioFuncionamento: HorarioDeFuncionamento[];
   endereco: Endereco;
   contato: Contato;
-  horarios: HorarioDeFuncionamento[];
-  fotos: Foto[];
+  municipio: { id: number; nome: string };
+  categoria: Categoria;
+  subcategorias: Subcategoria[];
   perfis: PerfilCliente[];
-}
+  fotos: { id: number; url: string }[];
+};
 
 export interface IAtracaoTuristicaRepository {
-  findAll(): Promise<AtracaoTuristicaFull[]>;
-  findById(id: number): Promise<AtracaoTuristicaFull | null>;
-  create(data: AtracaoTuristicaWithRelations, fotos: string[]): Promise<AtracaoTuristica>;
-  update(id: number, data: AtracaoTuristicaWithRelations, perfisParaRemover: string[], fotos: string[]): Promise<AtracaoTuristica>;
+  findAll(): Promise<AtracaoTuristica[]>;
+  findById(id: number): Promise<AtracaoTuristica | null>;
+  create(data: AtracaoForm, fotosUrl: string[]): Promise<AtracaoTuristica>;
+  update(id: number, data: AtracaoForm, perfisParaRemover: string[], fotos: string[]): Promise<AtracaoTuristica>;
   delete(id: number): Promise<void>;
 }

@@ -25,6 +25,8 @@ export default function Home() {
     <LayoutPublic>
       <div className="w-full relative bg-gradient-to-t from-black/50 to-transparent">
         <Image
+          width={1920}
+          height={1080}
           src="/landscape.svg"
           alt="Foto da região do caparaó com um por do sol entre montanhas"
           className="w-full h-[400px] md:h-[500px] lg:h-[600px] object-cover"
@@ -46,6 +48,8 @@ export default function Home() {
 
       <div className="w-full relative bg-gradient-to-t from-black/50 to-transparent">
         <Image
+          width={1920}
+          height={1080}
           src="/landscape.svg"
           className="w-full h-[400px] md:h-[500px] lg:h-[600px] object-cover"
           alt="Foto da região do caparaó com um por do sol entre montanhas"

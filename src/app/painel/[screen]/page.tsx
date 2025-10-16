@@ -8,6 +8,7 @@ import Eventos from "@/components/painel-pages/Eventos";
 import Municipios from "@/components/painel-pages/Municipios";
 import NotFound from "@/components/painel-pages/NotFound";
 import Noticias from "@/components/painel-pages/Noticias";
+import Usuarios from "@/components/painel-pages/Usuarios";
 import Servicos from "@/components/painel-pages/Servicos";
 import { useParams } from "next/navigation";
 import { useAuth } from "@/hooks/auth-context";
@@ -26,6 +27,7 @@ export default function Page() {
       { name: "eventos", Component: Eventos },
       { name: "noticias", Component: Noticias },
       { name: "servicos", Component: Servicos },
+      { name: "usuarios", Component: Usuarios },
       // { name: "configuracoes", Component: Configuracoes },
     ],
     []

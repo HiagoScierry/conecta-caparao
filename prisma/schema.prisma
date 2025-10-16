@@ -34,56 +34,86 @@ model Contato {
 }
 
 model Foto {
-  id        Int              @id @default(autoincrement())
+  id        Int      @id @default(autoincrement())
   url       String
 
-  municipios         Municipio[]
-  atracoesTuristicas AtracaoTuristica[]
-  eventos            EventoFoto[]
-  noticias           NoticiaFoto[]
-  servicosTuristicos ServicoTuristico[]
+  galeria   GaleriaFoto? // AGORA: Singular e opcional
 
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now())
 }
 
-model Municipio {
-  id                  Int                @id @default(autoincrement())
-  nome                String
-  descricao           String?
-  site                String?
-  mapaUrl             String?
-  idContato           Int
+model GaleriaFoto {
+  id Int @id @default(autoincrement())
 
-  fotos               Foto[]
-  atracoesTuristicas  AtracaoTuristica[]
-  eventos             Evento[]
+  idFoto Int  @unique
+  foto   Foto @relation(fields: [idFoto], references: [id])
+  capa   Boolean @default(false)
 
-  contato             Contato            @relation(fields: [idContato], references: [id])
+  municipioId        Int?
+  atracaoTuristicaId Int?
+  eventoId           Int?
+  noticiaId          Int?
+  servicoTuristicoId Int?
+
+  municipio        Municipio?        @relation(fields: [municipioId], references: [id])
+  atracaoTuristica AtracaoTuristica? @relation(fields: [atracaoTuristicaId], references: [id])
+  evento           Evento?           @relation(fields: [eventoId], references: [id])
+  noticia          Noticia?          @relation(fields: [noticiaId], references: [id])
+  servicoTuristico ServicoTuristico? @relation(fields: [servicoTuristicoId], references: [id])
 
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now())
+}
 
-  ServicoTuristico ServicoTuristico[]
+
+model Municipio {
+  id        Int      @id @default(autoincrement())
+  nome      String
+  descricao String?
+  site      String?
+  mapaUrl String @db.VarChar(2048)
+
+  idContato Int
+
+  fotos GaleriaFoto[]
+
+  atracoesTuristicas AtracaoTuristica[]
+  eventos            Evento[]
+  servicosTuristicos ServicoTuristico[]
+
+  contato Contato @relation(fields: [idContato], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now())
 }
 
 model HorarioDeFuncionamento {
-  id                 Int                @id @default(autoincrement())
+  id                 Int      @id @default(autoincrement())
   dia                DiaSemana
   horario            String
 
   atracaoTuristicaId Int?
   servicoTuristicoId Int?
 
-  atracaoTuristica   AtracaoTuristica?  @relation(fields: [atracaoTuristicaId], references: [id])
-  servicoTuristico   ServicoTuristico?  @relation(fields: [servicoTuristicoId], references: [id])
+  atracaoTuristica AtracaoTuristica? @relation(fields: [atracaoTuristicaId], references: [id])
+  servicoTuristico ServicoTuristico? @relation(fields: [servicoTuristicoId], references: [id])
 
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now())
+}
+
+
+model PerfilCliente {
+  id                 Int                @id @default(autoincrement())
+  nome               String
+  atracoesTuristicas AtracaoTuristica[]
+  createdAt          DateTime           @default(now())
+  updatedAt          DateTime           @default(now())
 }
 
 model Categoria {
-  id        Int                @id @default(autoincrement())
+  id        Int      @id @default(autoincrement())
   nome      String
 
   atracoesTuristicas AtracaoTuristica[]
@@ -92,18 +122,42 @@ model Categoria {
   updatedAt DateTime @default(now())
 }
 
-model PerfilCliente {
-  id        Int                @id @default(autoincrement())
-  nome      String
+model Subcategoria {
+  id          Int      @id @default(autoincrement())
+  nome        String
 
   atracoesTuristicas AtracaoTuristica[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now())
+}
+model AtracaoTuristica {
+  id        Int      @id @default(autoincrement())
+  nome      String
+  descricao String?
+  mapaUrl   String?
+  site      String?
+  idContato     Int
+  idEndereco    Int
+  idMunicipio   Int
+
+  categorias Categoria[]
+  subcategorias Subcategoria[]
+
+  fotos         GaleriaFoto[]
+  horarios      HorarioDeFuncionamento[]
+  perfis        PerfilCliente[]
+
+  contato       Contato    @relation(fields: [idContato], references: [id])
+  endereco      Endereco   @relation(fields: [idEndereco], references: [id])
+  municipio     Municipio  @relation(fields: [idMunicipio], references: [id])
 
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now())
 }
 
 model Endereco {
-  id        Int                @id @default(autoincrement())
+  id        Int      @id @default(autoincrement())
   rua       String
   numero    String
   bairro    String
@@ -117,101 +171,63 @@ model Endereco {
   updatedAt DateTime @default(now())
 }
 
-model AtracaoTuristica {
-  id          Int                @id @default(autoincrement())
-  nome        String
-  descricao   String?
-  mapaUrl     String?
-  site        String?
-  idContato   Int
-  idEndereco  Int
-  idMunicipio Int
-  idCategoria Int
-
-  fotos       Foto[]
-  horarios    HorarioDeFuncionamento[]
-  perfis      PerfilCliente[]
-
-  contato     Contato    @relation(fields: [idContato], references: [id])
-  endereco    Endereco   @relation(fields: [idEndereco], references: [id])
-  categoria   Categoria  @relation(fields: [idCategoria], references: [id])
-  municipio   Municipio  @relation(fields: [idMunicipio], references: [id])
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @default(now())
-}
 
 model Evento {
-  id          Int       @id @default(autoincrement())
+  id          Int      @id @default(autoincrement())
   nome        String
   descricao   String?
   data        DateTime
   idMunicipio Int
   idEndereco  Int
 
-  fotos       EventoFoto[]
+  fotos GaleriaFoto[]
 
-  endereco    Endereco   @relation(fields: [idEndereco], references: [id])
-  municipio   Municipio  @relation(fields: [idMunicipio], references: [id])
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @default(now())
-}
-
-model EventoFoto {
-  id        Int    @id @default(autoincrement())
-  idEvento  Int
-  idFoto    Int
-  capa      Boolean
-
-  evento    Evento @relation(fields: [idEvento], references: [id])
-  foto      Foto   @relation(fields: [idFoto], references: [id])
+  endereco  Endereco  @relation(fields: [idEndereco], references: [id])
+  municipio Municipio @relation(fields: [idMunicipio], references: [id])
 
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now())
 }
 
 model Noticia {
-  id        Int    @id @default(autoincrement())
-  titulo    String
-  texto     String
-  data      DateTime
+  id     Int      @id @default(autoincrement())
+  titulo String
+  texto  String
+  data   DateTime
 
-  fotos     NoticiaFoto[]
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @default(now())
-}
-
-model NoticiaFoto {
-  id         Int     @id @default(autoincrement())
-  idNoticia  Int
-  idFoto     Int
-  capa       Boolean
-
-  noticia    Noticia @relation(fields: [idNoticia], references: [id])
-  foto       Foto    @relation(fields: [idFoto], references: [id])
+  fotos GaleriaFoto[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now())
 }
 
 model ServicoTuristico {
-  id         Int      @id @default(autoincrement())
-  nome       String
-  descricao  String?
-  site       String?
-  idEndereco Int
-  idFoto     Int?
-  idContato  Int
+  id          Int      @id @default(autoincrement())
+  nome        String
+  descricao   String?
+  site        String?
+  idEndereco  Int
+  idContato   Int
   idMunicipio Int
 
-  horarios   HorarioDeFuncionamento[]
+  fotos GaleriaFoto[]
 
-  municipio  Municipio @relation(fields: [idMunicipio], references: [id])
-  endereco   Endereco @relation(fields: [idEndereco], references: [id])
-  foto       Foto?    @relation(fields: [idFoto], references: [id])
-  contato    Contato  @relation(fields: [idContato], references: [id])
+  horarios HorarioDeFuncionamento[]
+
+  municipio Municipio @relation(fields: [idMunicipio], references: [id])
+  endereco  Endereco  @relation(fields: [idEndereco], references: [id])
+  contato   Contato   @relation(fields: [idContato], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now())
+}
+
+model Usuario {
+  id       Int    @id @default(autoincrement())
+  nome     String
+  email    String @unique
+  senha    String
+  admin    Boolean @default(false)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now())

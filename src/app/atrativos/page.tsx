@@ -9,7 +9,7 @@ import { useCategorias } from "@/hooks/http/useCategoria";
 import { usePerfis } from "@/hooks/http/usePerfis";
 import { useGetAllAtrativos } from "@/hooks/http/useAtrativos";
 import { useGetAllServicos } from "@/hooks/http/useServicos";
-import { AtracaoTuristicaFull } from "@/repositories/interfaces/IAtracaoTuristicaRepository";
+import { AtracaoTuristicaLoadedData } from "@/hooks/http/useAtrativos";
 import { ServicoTuristicoFull } from "@/repositories/interfaces/IServicoTuristicoRepository";
 
 export default function PaginaAtrativos() {
@@ -59,12 +59,12 @@ export default function PaginaAtrativos() {
           </div>
 
           <div className="w-full md:flex-1 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
-            {atracoes?.map((atracao: AtracaoTuristicaFull) => (
+            {atracoes?.map((atracao: AtracaoTuristicaLoadedData) => (
               <Link key={atracao.id} href={`/atrativos/${atracao.id}`} passHref>
                 <AtracoesCard
                   nome={atracao.nome}
                   cidade={atracao.municipio.nome}
-                  imagemUrls={atracao.fotos.map(foto => foto.url) || []}
+                  imagemUrls={atracao.fotos.map(foto => foto.foto.url) || []}
                   id={atracao.id}
                 />
               </Link>

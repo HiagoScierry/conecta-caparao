@@ -8,6 +8,8 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Form, FormControl, FormItem, FormLabel } from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import { useForm } from "react-hook-form";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { ImageUpload } from "@/components/ImageUpload";
@@ -151,33 +153,32 @@ export function MunicipalityModal({
                   <FormItem>
                     <FormLabel>Nome</FormLabel>
                     <FormControl>
-                      <input
-                        type="text"
+                      <Input
                         {...form.register("nome", { required: true })}
                         disabled={isViewMode}
-                        className="border rounded-md p-2 w-full"
+                        placeholder="Nome do município"
                       />
                     </FormControl>
                   </FormItem>
                   <FormItem>
                     <FormLabel>Site</FormLabel>
                     <FormControl>
-                      <input
-                        type="url"
+                      <Input
                         {...form.register("site")}
                         disabled={isViewMode}
-                        className="border rounded-md p-2 w-full"
+                        placeholder="Site do município"
+                        type="url"
                       />
                     </FormControl>
                   </FormItem>
                   <FormItem>
                     <FormLabel>Mapa URL</FormLabel>
                     <FormControl>
-                      <input
-                        type="url"
+                      <Input
                         {...form.register("mapaUrl")}
                         disabled={isViewMode}
-                        className="border rounded-md p-2 w-full"
+                        placeholder="URL do mapa"
+                        type="url"
                       />
                     </FormControl>
                   </FormItem>
@@ -187,10 +188,11 @@ export function MunicipalityModal({
                   <FormItem>
                     <FormLabel>Descrição</FormLabel>
                     <FormControl>
-                      <textarea
+                      <Textarea
                         {...form.register("descricao")}
                         disabled={isViewMode}
-                        className="textarea w-full min-h-[100px] border rounded-md p-2"
+                        placeholder="Descrição do município"
+                        className="min-h-[100px]"
                       />
                     </FormControl>
                   </FormItem>
@@ -206,55 +208,51 @@ export function MunicipalityModal({
                   <FormItem>
                     <FormLabel>Email</FormLabel>
                     <FormControl>
-                      <input
-                        type="email"
+                      <Input
                         {...form.register("contato.email", { required: true })}
                         disabled={isViewMode}
-                        className="border rounded-md p-2 w-full"
+                        placeholder="Email de contato"
+                        type="email"
                       />
                     </FormControl>
                   </FormItem>
                   <FormItem>
                     <FormLabel>Telefone</FormLabel>
                     <FormControl>
-                      <input
-                        type="text"
+                      <Input
                         {...form.register("contato.telefone")}
                         disabled={isViewMode}
-                        className="border rounded-md p-2 w-full"
+                        placeholder="(00) 0000-0000"
                       />
                     </FormControl>
                   </FormItem>
                   <FormItem>
                     <FormLabel>Celular</FormLabel>
                     <FormControl>
-                      <input
-                        type="text"
+                      <Input
                         {...form.register("contato.celular")}
                         disabled={isViewMode}
-                        className="border rounded-md p-2 w-full"
+                        placeholder="(00) 00000-0000"
                       />
                     </FormControl>
                   </FormItem>
                   <FormItem>
                     <FormLabel>WhatsApp</FormLabel>
                     <FormControl>
-                      <input
-                        type="text"
+                      <Input
                         {...form.register("contato.whatsapp")}
                         disabled={isViewMode}
-                        className="border rounded-md p-2 w-full"
+                        placeholder="(00) 00000-0000"
                       />
                     </FormControl>
                   </FormItem>
                   <FormItem>
                     <FormLabel>Instagram</FormLabel>
                     <FormControl>
-                      <input
-                        type="text"
+                      <Input
                         {...form.register("contato.instagram")}
                         disabled={isViewMode}
-                        className="border rounded-md p-2 w-full"
+                        placeholder="Instagram"
                       />
                     </FormControl>
                   </FormItem>

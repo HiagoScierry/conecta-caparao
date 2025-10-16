@@ -3,17 +3,17 @@ import {
   Dialog,
   DialogContent,
   DialogDescription,
-  DialogFooter,
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Form, FormControl, FormItem, FormLabel } from "@/components/ui/form";
 import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Textarea } from "@/components/ui/textarea";
 import { ImageUpload } from "@/components/ImageUpload";
-import { NoticiasForm } from "@/forms/noticiasForm";
+import { NoticiasForm, noticiasForm } from "@/forms/noticiasForm";
 import { useEffect, useState } from "react";
 import { NoticiaFull } from "@/repositories/interfaces/INoticiaRepository";
 import { useDeleteUpload } from "@/hooks/http/useUpload";
@@ -64,6 +64,7 @@ export function NewsModal({
   const [selectedImages, setSelectedImages] = useState<File[]>([]);
 
   const form = useForm<NoticiasForm>({
+    resolver: zodResolver(noticiasForm),
     defaultValues: getDefault(initialData) ?? defaultValue,
   });
 
@@ -84,9 +85,8 @@ export function NewsModal({
     setSelectedImages(files);
   };
 
-  const handleSubmit = () => {
-    const formData = form.getValues();
-    onSave({ ...formData, fotos: selectedImages });
+  const onSubmit = (data: NoticiasForm) => {
+    onSave({ ...data, fotos: selectedImages });
     onClose();
   };
 
@@ -112,9 +112,14 @@ export function NewsModal({
           </DialogDescription>
         </DialogHeader>
 
-        <ScrollArea className="h-[60vh]">
-          <Form {...form}>
-            <div className="space-y-6 py-4">
+        <Form {...form}>
+          <form
+            id="news-form"
+            onSubmit={form.handleSubmit(onSubmit)}
+            className="flex flex-col h-full"
+          >
+            <ScrollArea className="h-[60vh]">
+              <div className="space-y-6 py-4">
               {/* Bloco: Imagem */}
               <section className="border rounded-lg p-6 space-y-6">
                 <FormItem>
@@ -179,23 +184,21 @@ export function NewsModal({
                 </FormItem>
               </section>
             </div>
-          </Form>
-        </ScrollArea>
+            </ScrollArea>
 
-        <DialogFooter>
-          {!isViewMode && (
-            <Button
-              type="submit"
-              className="bg-tourism-primary"
-              onClick={handleSubmit}
-            >
-              {mode === "create" ? "Criar" : "Salvar"}
-            </Button>
-          )}
-          <Button variant="outline" onClick={onClose}>
-            {isViewMode ? "Fechar" : "Cancelar"}
-          </Button>
-        </DialogFooter>
+            {/* Footer DENTRO do form para garantir submit */}
+            <div className="mt-4 flex items-center justify-end gap-2">
+              {!isViewMode && (
+                <Button type="submit" className="bg-tourism-primary">
+                  {mode === "create" ? "Criar" : "Salvar"}
+                </Button>
+              )}
+              <Button type="button" variant="outline" onClick={onClose}>
+                {isViewMode ? "Fechar" : "Cancelar"}
+              </Button>
+            </div>
+          </form>
+        </Form>
       </DialogContent>
     </Dialog>
   );

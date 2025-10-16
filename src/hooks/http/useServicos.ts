@@ -1,9 +1,10 @@
 import { ServicoForm } from "@/forms/servicoForm";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { QUERY_KEYS, useQueryInvalidation } from "./useQueryInvalidation";
 
 export function useGetAllServicos() {
   return useQuery({
-    queryKey: ['servicos'],
+    queryKey: QUERY_KEYS.SERVICOS,
     queryFn: async () => {
       const response = await fetch('/api/servicos');
       if (!response.ok) {
@@ -16,7 +17,7 @@ export function useGetAllServicos() {
 
 export function useGetServicoById(id: number) {
   return useQuery({
-    queryKey: ['servico', id],
+    queryKey: QUERY_KEYS.SERVICO(id),
     queryFn: async () => {
       const response = await fetch(`/api/servicos/${id}`);
       if (!response.ok) {
@@ -29,7 +30,7 @@ export function useGetServicoById(id: number) {
 }
 
 export function useCreateServico() {
-  const queryClient = useQueryClient();
+  const { invalidateServicos, invalidateDashboard } = useQueryInvalidation();
 
   return useMutation({
     mutationFn: async (newServico: ServicoForm & { fotoUrl: string }) => {
@@ -42,13 +43,14 @@ export function useCreateServico() {
       });
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['servicos'] });
+      invalidateServicos();
+      invalidateDashboard();
     },
   })
 }
 
 export function useUpdateServico() {
-  const queryClient = useQueryClient();
+  const { invalidateServicos, invalidateDashboard, invalidateServico } = useQueryInvalidation();
 
   return useMutation({
     mutationFn: async (updatedServico: ServicoForm & { fotoUrl: string }) => {
@@ -64,14 +66,19 @@ export function useUpdateServico() {
       }
       return response.json();
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['servicos'] });
+    onSuccess: (_, variables) => {
+      invalidateServicos();
+      invalidateDashboard();
+      // Também invalida o serviço específico que foi atualizado
+      if (variables.servico.id) {
+        invalidateServico(variables.servico.id);
+      }
     },
   })
 }
 
 export function useDeleteServico() {
-  const queryClient = useQueryClient();
+  const { invalidateServicos, invalidateDashboard } = useQueryInvalidation();
 
   return useMutation({
     mutationFn: async (id: number) => {
@@ -84,7 +91,8 @@ export function useDeleteServico() {
       return response.json();
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['servicos'] });
+      invalidateServicos();
+      invalidateDashboard();
     },
   })
 }

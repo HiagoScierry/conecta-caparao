@@ -12,18 +12,18 @@ import {
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { PlusCircle, Eye, Edit, Trash2 } from "lucide-react";
-import { AttractionModal } from "@/components/modals/AttractionModal";
+import { AtracaoTuristicaFull, AttractionModal } from "@/components/modals/AttractionModal";
 import { DeleteConfirmModal } from "@/components/modals/DeleteConfirmModal";
 import { useToast } from "@/hooks/use-toast";
 import {
+  AtracaoTuristicaLoadedData,
   useCreateAtrativo,
   useDeleteAtrativo,
   useGetAllAtrativos,
   useUpdateAtrativo,
 } from "@/hooks/http/useAtrativos";
 import { AtracaoForm } from "@/forms/atracaoForm";
-import { useUpload } from "@/hooks/http/useUpload";
-import { AtracaoTuristicaFull } from "@/repositories/interfaces/IAtracaoTuristicaRepository";
+import { useUpload } from "@/hooks/http/useUpload"
 
 export default function Atracoes() {
   const { toast } = useToast();
@@ -36,7 +36,7 @@ export default function Atracoes() {
     useState<AtracaoTuristicaFull | null>(null);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [attractionToDelete, setAttractionToDelete] =
-    useState<AtracaoTuristicaFull | null>(null);
+    useState<AtracaoTuristicaLoadedData | null>(null);
 
   const { data: atracoes = [] } = useGetAllAtrativos();
 
@@ -48,14 +48,40 @@ export default function Atracoes() {
 
   const handleOpenModal = (
     mode: "create" | "edit" | "view",
-    attraction?: AtracaoTuristicaFull | null
+    attraction?: AtracaoTuristicaLoadedData | null
   ) => {
     setModalMode(mode);
-    setSelectedAttraction(attraction || null);
+
+    console.log("LOADED ATRACAO",attraction);
+
+    const atracaoFull: AtracaoTuristicaFull | null = attraction
+      ? {
+          id: attraction.id,
+          nome: attraction.nome,
+          descricao: attraction.descricao ?? null,
+          mapaUrl: attraction.mapaUrl ?? null,
+          site: attraction.site ?? null,
+          idContato: attraction.contato?.id ?? 0,
+          idEndereco: attraction.endereco?.id ?? 0,
+          idMunicipio: attraction.municipio?.id ?? 0,
+          createdAt: attraction.createdAt,
+          updatedAt: attraction.updatedAt,
+          endereco: attraction.endereco,
+          contato: attraction.contato,
+          municipio: attraction.municipio, // <-- Added this line
+          horarioFuncionamento: attraction.horarios,
+          fotos: attraction.fotos.map(f => f.foto),
+          categoria: attraction.categorias[0],
+          subcategorias: attraction.subcategorias,
+          perfis: attraction.perfis
+        }
+      : null;
+
+    setSelectedAttraction(atracaoFull);
     setIsModalOpen(true);
   };
 
-  const handleOpenDeleteModal = (attraction: AtracaoTuristicaFull | null) => {
+  const handleOpenDeleteModal = (attraction: AtracaoTuristicaLoadedData | null) => {
     setAttractionToDelete(attraction);
     setIsDeleteModalOpen(true);
   };
@@ -149,7 +175,7 @@ export default function Atracoes() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {atracoes?.map((atracao: AtracaoTuristicaFull) => (
+              {atracoes?.map((atracao: AtracaoTuristicaLoadedData) => (
                 <TableRow key={atracao.id}>
                   <TableCell className="font-medium">{atracao.id}</TableCell>
                   <TableCell>{atracao.nome}</TableCell>
@@ -159,7 +185,7 @@ export default function Atracoes() {
                       variant="outline"
                       className="bg-tourism-light text-tourism-primary"
                     >
-                      {atracao.categoria.nome}
+                      {atracao.categorias?.map(categoria => categoria.nome).join(", ") ?? "N/A"}
                     </Badge>
                   </TableCell>
                   <TableCell className="text-right space-x-2">

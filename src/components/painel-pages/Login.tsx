@@ -14,7 +14,7 @@ interface LoginFormData {
 }
 
 interface LoginFormProps {
-  onLogin: (credentials: LoginFormData) => void;
+  onLogin: (credentials: LoginFormData) => Promise<void>;
 }
 
 export function Login({ onLogin }: LoginFormProps) {
@@ -28,15 +28,14 @@ export function Login({ onLogin }: LoginFormProps) {
     },
   });
 
-  const handleSubmit = (data: LoginFormData) => {
-    // Validação simples para demonstração
-    if (data.email === 'admin@turismo.com' && data.password === 'admin123') {
+  const handleSubmit = async (data: LoginFormData) => {
+    try {
+      await onLogin(data);
       toast({
         title: "Login realizado com sucesso!",
         description: "Bem-vindo ao sistema de turismo.",
       });
-      onLogin(data);
-    } else {
+    } catch {
       toast({
         title: "Erro no login",
         description: "Email ou senha incorretos.",

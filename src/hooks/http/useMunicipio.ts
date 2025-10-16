@@ -1,13 +1,14 @@
 import { ContatoDTO } from "@/dto/contatoDTO";
 import { MunicipioDTO } from "@/dto/municipioDTO";
 import { MunicipioFull } from "@/repositories/interfaces/IMunicipioRepository";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useQuery, useMutation } from "@tanstack/react-query";
+import { QUERY_KEYS, useQueryInvalidation } from "./useQueryInvalidation";
 
 import { UseQueryResult } from "@tanstack/react-query";
 
 export function useGetAllMunicipios(): UseQueryResult<MunicipioFull[], Error> {
   return useQuery<MunicipioFull[], Error>({
-    queryKey: ['municipios'],
+    queryKey: QUERY_KEYS.MUNICIPIOS,
     queryFn: async () => {
       const response = await fetch('/api/municipio');
       if (!response.ok) {
@@ -20,7 +21,7 @@ export function useGetAllMunicipios(): UseQueryResult<MunicipioFull[], Error> {
 
 export function useGetMunicipioById(id: string) {
   return useQuery<MunicipioFull, Error>({
-    queryKey: ['municipio', id],
+    queryKey: QUERY_KEYS.MUNICIPIO(id),
     queryFn: async () => {
       const response = await fetch(`/api/municipio/${id}`);
       if (!response.ok) {
@@ -34,7 +35,7 @@ export function useGetMunicipioById(id: string) {
       
 
 export function useCreateMunicipio() {
-  const queryClient = useQueryClient();
+  const { invalidateRelated } = useQueryInvalidation();
 
   return useMutation({
     mutationFn: async ({
@@ -59,7 +60,8 @@ export function useCreateMunicipio() {
       return response.json();
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['municipios'] });
+      // Quando um município é criado, pode afetar múltiplas entidades
+      invalidateRelated.onMunicipioChange();
     },
     onError: (error) => {
       console.error('Error creating municipio:', error);
@@ -68,7 +70,7 @@ export function useCreateMunicipio() {
 }
 
 export function useUpdateMunicipio() {
-  const queryClient = useQueryClient();
+  const { invalidateRelated, invalidateMunicipio } = useQueryInvalidation();
 
   return useMutation({
     mutationFn: async ({
@@ -94,8 +96,11 @@ export function useUpdateMunicipio() {
       }
       return response.json();
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['municipios'] });
+    onSuccess: (_, variables) => {
+      // Quando um município é atualizado, pode afetar múltiplas entidades
+      invalidateRelated.onMunicipioChange();
+      // Também invalida o município específico
+      invalidateMunicipio(variables.id);
     },
     onError: (error) => {
       console.error('Error updating municipio:', error);
@@ -104,7 +109,7 @@ export function useUpdateMunicipio() {
 }
 
 export function useDeleteMunicipio() {
-  const queryClient = useQueryClient();
+  const { invalidateRelated } = useQueryInvalidation();
 
   return useMutation({
     mutationFn: async (id: string) => {
@@ -117,7 +122,8 @@ export function useDeleteMunicipio() {
       return response.json();
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['municipios'] });
+      // Quando um município é deletado, pode afetar múltiplas entidades
+      invalidateRelated.onMunicipioChange();
     },
     onError: (error) => {
       console.error('Error deleting municipio:', error);

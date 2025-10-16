@@ -83,6 +83,8 @@ export function ImageUpload({
     }
   };
 
+  console.log({ allImages, currentInitialFotos, previews, files });
+
   return (
     <div className="space-y-4">
       <div className="flex items-center gap-4">

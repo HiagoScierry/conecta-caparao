@@ -10,7 +10,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useCreateMunicipio, useDeleteMunicipio, useGetAllMunicipios, useUpdateMunicipio } from "@/hooks/http/useMunicipio";
 import { MunicipioForm } from "@/forms/municipioForm";
 import { useUpload } from "@/hooks/http/useUpload";
-import { Contato, Foto, Municipio } from "@prisma/client";
+import { Contato, Foto, GaleriaFoto, Municipio } from "@prisma/client";
 
 export default function Municipios() {
   const { toast } = useToast();
@@ -21,7 +21,7 @@ export default function Municipios() {
   const [municipalityToDelete, setMunicipalityToDelete] = useState<Municipio | null>(null);
 
   const { data: municipios } = useGetAllMunicipios() as {
-    data: (Municipio & { contato: Contato; fotos: Foto[] })[] | undefined;
+    data: (Municipio & { contato: Contato; fotos: (GaleriaFoto & { foto: Foto })[] })[] | undefined;
   };
 
   const { mutateAsync: uploadImage } = useUpload();
@@ -29,14 +29,44 @@ export default function Municipios() {
   const { mutateAsync: updateMunicipio } = useUpdateMunicipio();
   const { mutateAsync: deleteMunicipio } = useDeleteMunicipio();
 
-  const handleOpenModal = (mode: 'create' | 'edit' | 'view', municipality?: Municipio & { contato: Contato; fotos: Foto[] }) => {
+  const handleOpenModal = (
+    mode: 'create' | 'edit' | 'view',
+    municipality?: Municipio & { contato: Contato; fotos: (GaleriaFoto & { foto: Foto })[] }
+  ) => {
     setModalMode(mode);
-    console.log(municipality);
-    setSelectedMunicipality(municipality ?? null);
+
+    if (municipality) {
+      // Ensure fotos is an array of Foto, not GaleriaFoto
+      const fotos: Foto[] =
+        Array.isArray(municipality.fotos)
+          ? municipality.fotos.map((gf) =>
+              // If gf has a 'foto' property, use it, otherwise assume it's already Foto
+              'foto' in gf ? gf.foto : (gf as Foto)
+            )
+          : [];
+
+      // Ensure all required properties are present and not undefined
+      const selected: Municipio & { contato: Contato; fotos: Foto[] } = {
+        id: municipality.id,
+        nome: municipality.nome,
+        descricao: municipality.descricao ?? null,
+        site: municipality.site ?? null,
+        mapaUrl: municipality.mapaUrl,
+        idContato: municipality.idContato,
+        createdAt: municipality.createdAt,
+        updatedAt: municipality.updatedAt,
+        contato: municipality.contato,
+        fotos,
+      };
+
+      setSelectedMunicipality(selected);
+    } else {
+      setSelectedMunicipality(null);
+    }
     setIsModalOpen(true);
   };
 
-  const handleOpenDeleteModal = (municipality: Municipio & { contato: Contato; fotos: Foto[] }) => {
+  const handleOpenDeleteModal = (municipality: Municipio & { contato: Contato; fotos: (GaleriaFoto & {foto: Foto})[] }) => {
     setMunicipalityToDelete(municipality);
     setIsDeleteModalOpen(true);
   };
@@ -118,7 +148,7 @@ export default function Municipios() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {municipios?.map((municipio: Municipio & { contato: Contato; fotos: Foto[] }) => (
+              {municipios?.map((municipio: Municipio & { contato: Contato; fotos: (GaleriaFoto & { foto: Foto })[] }) => (
                 <TableRow key={municipio.id}>
                   <TableCell className="font-medium">{municipio.id}</TableCell>
                   <TableCell>{municipio.nome}</TableCell>

@@ -49,7 +49,7 @@ export class EventoPrismaRepository implements IEventoRepository {
       data: {
         nome: evento.nome,
         descricao: evento.descricao,
-        data: evento.data,
+        data: new Date(evento.data), // Converte string para Date
         idMunicipio: evento.idMunicipio,
         idEndereco: evento.idEndereco,
         fotos: {
@@ -74,7 +74,7 @@ export class EventoPrismaRepository implements IEventoRepository {
       data: {
         nome: evento.nome,
         descricao: evento.descricao,
-        data: evento.data,
+        data: new Date(evento.data), // Converte string para Date
         idMunicipio: evento.idMunicipio,
         idEndereco: evento.idEndereco,
         fotos: {
@@ -93,9 +93,9 @@ export class EventoPrismaRepository implements IEventoRepository {
   }
 
   async delete(id: number): Promise<void> {
-    await connection.eventoFoto.deleteMany({
+    await connection.galeriaFoto.deleteMany({
       where: {
-        idEvento: id,
+        eventoId: id,
       },
     });
 

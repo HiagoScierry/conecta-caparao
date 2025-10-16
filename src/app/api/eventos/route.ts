@@ -16,8 +16,10 @@ export async function POST(request: NextRequest) {
     await createEvento({
       evento: {
         ...evento,
-        data: new Date(evento.data)
-      }, municipio, endereco
+        data: evento.data // Mantém como string, o controller fará a conversão se necessário
+      }, 
+      municipio, 
+      endereco
     }, fotosUrl);
 
     return NextResponse.json({ message: "Evento created successfully!" }, { status: 201 });

@@ -15,15 +15,15 @@ export async function GET(
   try {
     const { id } = await context.params;
 
-    const atrativo = await getServicoById(Number(id));
-    if (!atrativo) {
-      return new NextResponse("Atrativo not found", { status: 404 });
+    const servico = await getServicoById(Number(id));
+    if (!servico) {
+      return new NextResponse("Serviço não encontrado", { status: 404 });
     }
 
-    return NextResponse.json(atrativo, { status: 200 });
+    return NextResponse.json(servico, { status: 200 });
   } catch (error) {
     console.error("GET error:", error);
-    return new NextResponse("Atrativo not found", { status: 404 });
+    return new NextResponse("Serviço não encontrado", { status: 404 });
   }
 }
 
@@ -34,13 +34,13 @@ export async function PUT(
   try {
     const { id } = await context.params;
 
-    const atrativo = await getServicoById(Number(id));
-    if (!atrativo) {
-      return new NextResponse("Atrativo not found", { status: 404 });
+    const servico = await getServicoById(Number(id));
+    if (!servico) {
+      return new NextResponse("Serviço não encontrado", { status: 404 });
     }
 
     const {
-      servico,
+      servico: servicoData,
       contato,
       endereco,
       municipio,
@@ -48,12 +48,12 @@ export async function PUT(
       fotoUrl,
     }: ServicoForm & { fotoUrl?: string } = await request.json();
 
-    servicoTuristicoSchema.parse(servico);
+    servicoTuristicoSchema.parse(servicoData);
     contatoSchema.parse(contato);
     enderecoSchema.parse(endereco);
 
     await updateServico(Number(id), {
-      servico,
+      servico: servicoData,
       contato,
       endereco,
       municipio,
@@ -62,7 +62,7 @@ export async function PUT(
       fotoUrl,
     );
 
-    return new NextResponse("Atrativo updated", { status: 200 });
+    return new NextResponse("Serviço atualizado com sucesso", { status: 200 });
   } catch (error) {
     if (error instanceof z.ZodError) {
       console.error("Validation failed!", error.errors);
@@ -85,13 +85,13 @@ export async function DELETE(
     const { id } = await context.params;
 
     await deleteServico(Number(id));
-    return new NextResponse("Serviço deleted", { status: 200 });
+    return new NextResponse("Serviço deletado com sucesso", { status: 200 });
   } catch (error) {
     console.error("DELETE error:", error);
     const errorMessage =
       error && typeof error === "object" && "message" in error
         ? (error as { message: string }).message
-        : "Atrativo not found";
+        : "Serviço não encontrado";
 
     return new NextResponse(errorMessage, { status: 500 });
   }

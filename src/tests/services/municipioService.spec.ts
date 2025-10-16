@@ -1,7 +1,7 @@
 import { MunicipioService } from '@/services/municipioService';
-import { IMunicipioRepository } from '@/repositories/interfaces/IMunicipioRepository';
+import { IMunicipioRepository, MunicipioFull } from '@/repositories/interfaces/IMunicipioRepository';
 import { MunicipioDTO } from '@/dto/municipioDTO';
-import { Municipio } from '@prisma/client';
+import { Municipio, Contato, Foto } from '@prisma/client';
 
 describe('MunicipioService', () => {
   let municipioService: MunicipioService;
@@ -18,8 +18,33 @@ describe('MunicipioService', () => {
     updatedAt: new Date(),
   };
 
+  const fakeContato: Contato = {
+    id: 1,
+    email: 'test@test.com',
+    celular: '1234567890',
+    telefone: '1234567890',
+    whatsapp: '1234567890',
+    instagram: '@test',
+    createdAt: new Date(),
+    updatedAt: new Date(),
+  };
+
+  const fakeFoto: Foto = {
+    id: 1,
+    url: 'http://example.com/foto.jpg',
+    createdAt: new Date(),
+    updatedAt: new Date(),
+  };
+
+  const fakeMunicipioFull: MunicipioFull = {
+    ...fakeMunicipio,
+    contato: fakeContato,
+    fotos: [fakeFoto],
+  };
+
   const dto: MunicipioDTO = {
     nome: 'Vitória',
+    descricao: 'Capital do Espírito Santo',
   };
 
   beforeEach(() => {
@@ -37,37 +62,37 @@ describe('MunicipioService', () => {
   it('should create a municipio', async () => {
     municipioRepository.create.mockResolvedValue(fakeMunicipio);
 
-    const result = await municipioService.create(dto, 123);
+    const result = await municipioService.create(dto, 123, []);
 
-    expect(municipioRepository.create).toHaveBeenCalledWith(dto, 123);
+    expect(municipioRepository.create).toHaveBeenCalledWith(dto, 123, []);
     expect(result).toEqual(fakeMunicipio);
   });
 
   it('should return municipio by id', async () => {
-    municipioRepository.findById.mockResolvedValue(fakeMunicipio);
+    municipioRepository.findById.mockResolvedValue(fakeMunicipioFull);
 
     const result = await municipioService.findById('1');
 
     expect(municipioRepository.findById).toHaveBeenCalledWith('1');
-    expect(result).toEqual(fakeMunicipio);
+    expect(result).toEqual(fakeMunicipioFull);
   });
 
   it('should return all municipios', async () => {
-    municipioRepository.findAll.mockResolvedValue([fakeMunicipio]);
+    municipioRepository.findAll.mockResolvedValue([fakeMunicipioFull]);
 
     const result = await municipioService.findAll();
 
     expect(municipioRepository.findAll).toHaveBeenCalled();
-    expect(result).toEqual([fakeMunicipio]);
+    expect(result).toEqual([fakeMunicipioFull]);
   });
 
   it('should update a municipio', async () => {
     const updatedMunicipio = { ...fakeMunicipio, nome: 'Vila Velha' };
     municipioRepository.update.mockResolvedValue(updatedMunicipio);
 
-    const result = await municipioService.update('1', { nome: 'Vila Velha' });
+    const result = await municipioService.update('1', { nome: 'Vila Velha', descricao: 'Cidade histórica' }, []);
 
-    expect(municipioRepository.update).toHaveBeenCalledWith('1', { nome: 'Vila Velha' });
+    expect(municipioRepository.update).toHaveBeenCalledWith('1', { nome: 'Vila Velha', descricao: 'Cidade histórica' }, []);
     expect(result).toEqual(updatedMunicipio);
   });
 
