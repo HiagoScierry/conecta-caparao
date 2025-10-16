@@ -10,7 +10,11 @@ export class ServicoTuristicoPrismaRepository implements IServicoTuristicoReposi
         contato: true,
         endereco: true,
         municipio: true,
-        fotos: true,
+        fotos: {
+          include: {
+            foto: true,
+          }
+        },
         horarios: true,
       }
     });
@@ -28,27 +32,18 @@ export class ServicoTuristicoPrismaRepository implements IServicoTuristicoReposi
         contato: true,
         endereco: true,
         municipio: true,
-        fotos: true,
+        fotos: {
+          include: {
+            foto: true,
+          }
+        },
         horarios: true,
       }
     });
   }
 
   async create(data: ServicoTuristicoWithRelations, fotosURL?: string): Promise<ServicoTuristico> {
-    let idFoto: number | null = null;
-
     console.log("Fotos URL recebidas:", fotosURL);
-
-    if (fotosURL) {
-      const foto = await connection.foto.create({
-        data: {
-          url: fotosURL,
-        }
-      });
-      idFoto = foto.id;
-    }
-
-    console.log("Foto ID criada:", idFoto);
 
     const servicoTuristico = await connection.servicoTuristico.create({
       data: {
@@ -59,25 +54,57 @@ export class ServicoTuristicoPrismaRepository implements IServicoTuristicoReposi
         idEndereco: data.idEndereco,
         idMunicipio: data.idMunicipio,
       }
-    });    return servicoTuristico;
+    });
+
+    // Criar foto associada ao serviço, se fornecida
+    if (fotosURL) {
+      const foto = await connection.foto.create({
+        data: {
+          url: fotosURL,
+        }
+      });
+      
+      await connection.galeriaFoto.create({
+        data: {
+          idFoto: foto.id,
+          servicoTuristicoId: servicoTuristico.id,
+          capa: true, // primeira foto como capa
+        }
+      });
+      
+      console.log("Foto criada e associada ao serviço:", servicoTuristico.id);
+    }
+
+    return servicoTuristico;
   }
 
   async update(id: number, data: ServicoTuristicoWithRelations, fotosURL?: string): Promise<ServicoTuristico> {
-    // const servicoTuristico = await this.findById(id); // TODO: Implementar verificação
-    // let idFoto = servicoTuristico.idFoto; // TODO: Implementar relacionamento com fotos
-    let idFoto = null;
-
     if (fotosURL) {
-      if (idFoto) {
+      // Buscar foto existente na galeria
+      const galeriaExistente = await connection.galeriaFoto.findFirst({
+        where: { servicoTuristicoId: id },
+        include: { foto: true }
+      });
+
+      if (galeriaExistente) {
+        // Atualizar URL da foto existente
         await connection.foto.update({
-          where: { id: idFoto },
+          where: { id: galeriaExistente.idFoto },
           data: { url: fotosURL },
         });
       } else {
+        // Criar nova foto se não existir
         const foto = await connection.foto.create({
           data: { url: fotosURL },
         });
-        idFoto = foto.id;
+        
+        await connection.galeriaFoto.create({
+          data: {
+            idFoto: foto.id,
+            servicoTuristicoId: id,
+            capa: true,
+          }
+        });
       }
     }
 

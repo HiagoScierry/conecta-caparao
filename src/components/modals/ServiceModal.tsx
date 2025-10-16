@@ -162,10 +162,10 @@ export function ServiceModal({
                     <FormLabel>Imagem</FormLabel>
                     <FormControl>
                       <ImageUpload
-                        initialFotos={[{
-                          id: initialData?.foto?.id !== undefined ? String(initialData.foto.id) : "",
-                          url: initialData?.foto?.url ?? "",
-                        }]}
+                        initialFotos={initialData?.fotos?.map(galeria => ({
+                          id: String(galeria.foto.id),
+                          url: galeria.foto.url,
+                        })) ?? []}
                         onRemoveFoto={handleDeleteFoto}
                         onImagesSelect={handleImageSelect}
                         disabled={isViewMode}
