@@ -11,7 +11,11 @@ export class MunicipioPrimaRepository implements IMunicipioRepository {
       where: { id: Number(id) },
       include: {
         contato: true,
-        fotos: true,
+        fotos: {
+          include: {
+            foto: true,
+          },
+        },
       },
     });
 
@@ -26,7 +30,11 @@ export class MunicipioPrimaRepository implements IMunicipioRepository {
     const municipios = await connection.municipio.findMany({
       include: {
         contato: true,
-        fotos: true,
+        fotos: {
+          include: {
+            foto: true,
+          },
+        },
       },
     });
 
