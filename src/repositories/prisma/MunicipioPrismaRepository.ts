@@ -146,6 +146,10 @@ export class MunicipioPrimaRepository implements IMunicipioRepository {
   async delete(id: string) {
     await connection.municipio.delete({
       where: { id: Number(id) },
+      include: {
+        contato: true,
+        fotos: true,
+      },
     });
   }
 }

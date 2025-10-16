@@ -39,9 +39,8 @@ export class FotoPrismaRepository implements IFotoRepository {
         id: +id
       },
       include: {
-        galeria: true,
+        galeria: true
       }
     });
-
   }
 }

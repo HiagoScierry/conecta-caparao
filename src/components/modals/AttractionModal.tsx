@@ -22,6 +22,10 @@ import {
 import { Form, FormControl, FormItem, FormLabel } from "@/components/ui/form";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { ImageUpload } from "@/components/ImageUpload";
 
 import { AtracaoForm, atracaoTuristicaForm } from "@/forms/atracaoForm";
@@ -220,13 +224,12 @@ export function AttractionModal({
                         Nome
                       </FormLabel>
                       <FormControl>
-                        <input
-                          type="text"
+                        <Input
                           {...form.register("atracaoTuristica.nome", {
                             required: true,
                           })}
                           disabled={isViewMode}
-                          className="border rounded-md p-2 w-full"
+                          placeholder="Nome da atração"
                         />
                       </FormControl>
                       {form.formState.errors.atracaoTuristica?.nome && (
@@ -241,13 +244,13 @@ export function AttractionModal({
                         Mapa URL
                       </FormLabel>
                       <FormControl>
-                        <input
-                          type="url"
+                        <Input
                           {...form.register("atracaoTuristica.mapaUrl", {
                             required: true,
                           })}
                           disabled={isViewMode}
-                          className="border rounded-md p-2 w-full"
+                          placeholder="URL do mapa"
+                          type="url"
                         />
                       </FormControl>
                       {form.formState.errors.atracaoTuristica?.mapaUrl && (
@@ -267,12 +270,13 @@ export function AttractionModal({
                         Descrição
                       </FormLabel>
                       <FormControl>
-                        <textarea
+                        <Textarea
                           {...form.register("atracaoTuristica.descricao", {
                             required: true,
                           })}
                           disabled={isViewMode}
-                          className="textarea w-full min-h-[100px] border rounded-md p-2"
+                          placeholder="Descrição da atração"
+                          className="min-h-[100px]"
                         />
                       </FormControl>
                       {form.formState.errors.atracaoTuristica?.descricao && (
@@ -296,13 +300,13 @@ export function AttractionModal({
                         Email
                       </FormLabel>
                       <FormControl>
-                        <input
-                          type="email"
+                        <Input
                           {...form.register("contato.email", {
                             required: true,
                           })}
                           disabled={isViewMode}
-                          className="border rounded-md p-2 w-full"
+                          placeholder="Email de contato"
+                          type="email"
                         />
                       </FormControl>
                       {form.formState.errors.contato?.email && (
@@ -317,13 +321,10 @@ export function AttractionModal({
                         Telefone
                       </FormLabel>
                       <FormControl>
-                        <input
-                          type="text"
-                          {...form.register("contato.telefone", {
-                            required: true,
-                          })}
+                        <Input
+                          {...form.register("contato.telefone")}
                           disabled={isViewMode}
-                          className="border rounded-md p-2 w-full"
+                          placeholder="(00) 0000-0000"
                         />
                       </FormControl>
                     </FormItem>
@@ -333,13 +334,10 @@ export function AttractionModal({
                         Celular
                       </FormLabel>
                       <FormControl>
-                        <input
-                          type="text"
-                          {...form.register("contato.celular", {
-                            required: true,
-                          })}
+                        <Input
+                          {...form.register("contato.celular")}
                           disabled={isViewMode}
-                          className="border rounded-md p-2 w-full"
+                          placeholder="(00) 00000-0000"
                         />
                       </FormControl>
                       {form.formState.errors.contato?.celular && (
@@ -354,13 +352,10 @@ export function AttractionModal({
                         WhatsApp
                       </FormLabel>
                       <FormControl>
-                        <input
-                          type="text"
-                          {...form.register("contato.whatsapp", {
-                            required: true,
-                          })}
+                        <Input
+                          {...form.register("contato.whatsapp")}
                           disabled={isViewMode}
-                          className="border rounded-md p-2 w-full"
+                          placeholder="(00) 00000-0000"
                         />
                       </FormControl>
                     </FormItem>
@@ -370,13 +365,12 @@ export function AttractionModal({
                         Instagram
                       </FormLabel>
                       <FormControl>
-                        <input
-                          type="text"
+                        <Input
                           {...form.register("contato.instagram", {
                             required: true,
                           })}
                           disabled={isViewMode}
-                          className="border rounded-md p-2 w-full"
+                          placeholder="Instagram"
                         />
                       </FormControl>
                     </FormItem>
@@ -391,18 +385,22 @@ export function AttractionModal({
                       Selecione o Município
                     </FormLabel>
                     <FormControl>
-                      <select
-                        {...form.register("municipio", { required: true })}
+                      <Select
+                        value={form.watch("municipio")?.toString()}
+                        onValueChange={(value) => form.setValue("municipio", value)}
                         disabled={isViewMode}
-                        className="border rounded-md p-2 w-full"
                       >
-                        <option value="">Selecione o município</option>
-                        {municipios?.map((municipio) => (
-                          <option key={municipio.id} value={municipio.id}>
-                            {municipio.nome}
-                          </option>
-                        ))}
-                      </select>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Selecione o município" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {municipios?.map((municipio) => (
+                            <SelectItem key={municipio.id} value={municipio.id.toString()}>
+                              {municipio.nome}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
                     </FormControl>
                   </FormItem>
                 </section>
@@ -416,11 +414,10 @@ export function AttractionModal({
                         Logradouro
                       </FormLabel>
                       <FormControl>
-                        <input
-                          type="text"
+                        <Input
                           {...form.register("endereco.logradouro")}
                           disabled={isViewMode}
-                          className="border rounded-md p-2 w-full"
+                          placeholder="Logradouro"
                         />
                       </FormControl>
                       {form.formState.errors.endereco?.logradouro && (
@@ -435,11 +432,10 @@ export function AttractionModal({
                         Número
                       </FormLabel>
                       <FormControl>
-                        <input
-                          type="text"
+                        <Input
                           {...form.register("endereco.numero")}
                           disabled={isViewMode}
-                          className="border rounded-md p-2 w-full"
+                          placeholder="Número"
                         />
                       </FormControl>
                       {form.formState.errors.endereco?.numero && (
@@ -454,11 +450,10 @@ export function AttractionModal({
                         Bairro
                       </FormLabel>
                       <FormControl>
-                        <input
-                          type="text"
+                        <Input
                           {...form.register("endereco.bairro")}
                           disabled={isViewMode}
-                          className="border rounded-md p-2 w-full"
+                          placeholder="Bairro"
                         />
                       </FormControl>
                       {form.formState.errors.endereco?.bairro && (
@@ -471,11 +466,10 @@ export function AttractionModal({
                     <FormItem className="flex flex-col gap-1">
                       <FormLabel className="text-sm font-medium">CEP</FormLabel>
                       <FormControl>
-                        <input
-                          type="text"
+                        <Input
                           {...form.register("endereco.cep")}
                           disabled={isViewMode}
-                          className="border rounded-md p-2 w-full"
+                          placeholder="00000-000"
                         />
                       </FormControl>
                       {form.formState.errors.endereco?.cep && (
@@ -500,29 +494,28 @@ export function AttractionModal({
                       </FormLabel>
                       <FormControl>
                         <div className="flex flex-wrap gap-4">
-                          {[
-                            "SEGUNDA",
-                            "TERCA",
-                            "QUARTA",
-                            "QUINTA",
-                            "SEXTA",
-                            "SABADO",
-                            "DOMINGO",
-                          ].map((dia) => (
-                            <label
-                              key={dia}
-                              className="flex items-center gap-1"
-                            >
-                              <input
-                                type="checkbox"
-                                value={dia}
-                                {...form.register(
-                                  "horarioFuncionamento.diaDaSemana"
-                                )}
+                          {(["SEGUNDA", "TERCA", "QUARTA", "QUINTA", "SEXTA", "SABADO", "DOMINGO"] as const).map((dia) => (
+                            <div key={dia} className="flex items-center space-x-2">
+                              <Checkbox
+                                id={`dia-${dia}`}
+                                checked={form.watch("horarioFuncionamento.diaDaSemana")?.includes(dia) || false}
+                                onCheckedChange={(checked) => {
+                                  const currentDays = form.getValues("horarioFuncionamento.diaDaSemana") || [];
+                                  if (checked) {
+                                    form.setValue("horarioFuncionamento.diaDaSemana", [...currentDays, dia]);
+                                  } else {
+                                    form.setValue("horarioFuncionamento.diaDaSemana", currentDays.filter(d => d !== dia));
+                                  }
+                                }}
                                 disabled={isViewMode}
                               />
-                              {dia.charAt(0) + dia.slice(1).toLowerCase()}
-                            </label>
+                              <label
+                                htmlFor={`dia-${dia}`}
+                                className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                              >
+                                {dia.charAt(0) + dia.slice(1).toLowerCase()}
+                              </label>
+                            </div>
                           ))}
                         </div>
                       </FormControl>
@@ -544,14 +537,13 @@ export function AttractionModal({
                         Horário de Abertura
                       </FormLabel>
                       <FormControl>
-                        <input
-                          type="time"
+                        <Input
                           {...form.register(
                             "horarioFuncionamento.horaAbertura",
                             { required: true }
                           )}
                           disabled={isViewMode}
-                          className="border rounded-md p-2 w-full"
+                          type="time"
                         />
                       </FormControl>
                     </FormItem>
@@ -561,14 +553,13 @@ export function AttractionModal({
                         Horário de Fechamento
                       </FormLabel>
                       <FormControl>
-                        <input
-                          type="time"
+                        <Input
                           {...form.register(
                             "horarioFuncionamento.horaFechamento",
                             { required: true }
                           )}
                           disabled={isViewMode}
-                          className="border rounded-md p-2 w-full"
+                          type="time"
                         />
                       </FormControl>
                     </FormItem>
@@ -622,24 +613,28 @@ export function AttractionModal({
                     <FormControl>
                       <div className="grid grid-cols-4">
                         {subCategorias?.map((subCategoria: Subcategoria) => (
-                          <label
-                            key={subCategoria.id}
-                            className="flex items-center gap-1"
-                          >
-                            <input
-                              type="checkbox"
-                              checked={form
-                                .getValues("subCategoria")
-                                .includes(subCategoria.id)}
-                              value={subCategoria.id}
-                              {...form.register("subCategoria", {
-                                required: true,
-                              })}
+                          <div key={subCategoria.id} className="flex items-center space-x-2">
+                            <Checkbox
+                              id={`subcategoria-${subCategoria.id}`}
+                              checked={form.watch("subCategoria")?.includes(subCategoria.id) || false}
+                              onCheckedChange={(checked) => {
+                                const currentSubCategorias = form.getValues("subCategoria") || [];
+                                if (checked) {
+                                  form.setValue("subCategoria", [...currentSubCategorias, subCategoria.id]);
+                                } else {
+                                  form.setValue("subCategoria", currentSubCategorias.filter(id => id !== subCategoria.id));
+                                }
+                              }}
                               disabled={isViewMode}
                             />
-                            {subCategoria.nome.charAt(0) +
-                              subCategoria.nome.slice(1).toLowerCase()}
-                          </label>
+                            <label
+                              htmlFor={`subcategoria-${subCategoria.id}`}
+                              className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                            >
+                              {subCategoria.nome.charAt(0) +
+                                subCategoria.nome.slice(1).toLowerCase()}
+                            </label>
+                          </div>
                         ))}
                       </div>
                     </FormControl>
@@ -659,21 +654,27 @@ export function AttractionModal({
                     <FormControl>
                       <div className="grid grid-cols-4">
                         {perfisCliente?.map((perfil: PerfilCliente) => (
-                          <label
-                            key={perfil.id}
-                            className="flex items-center gap-1"
-                          >
-                            <input
-                              type="checkbox"
-                              checked={form
-                                .getValues("perfil")
-                                .includes(perfil.id.toString())}
-                              value={perfil.id.toString()}
-                              {...form.register("perfil")}
+                          <div key={perfil.id} className="flex items-center space-x-2">
+                            <Checkbox
+                              id={`perfil-${perfil.id}`}
+                              checked={form.watch("perfil")?.includes(perfil.id.toString()) || false}
+                              onCheckedChange={(checked) => {
+                                const currentPerfis = form.getValues("perfil") || [];
+                                if (checked) {
+                                  form.setValue("perfil", [...currentPerfis, perfil.id.toString()]);
+                                } else {
+                                  form.setValue("perfil", currentPerfis.filter(id => id !== perfil.id.toString()));
+                                }
+                              }}
                               disabled={isViewMode}
                             />
-                            {perfil.nome}
-                          </label>
+                            <label
+                              htmlFor={`perfil-${perfil.id}`}
+                              className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                            >
+                              {perfil.nome}
+                            </label>
+                          </div>
                         ))}
                       </div>
                     </FormControl>
