@@ -71,18 +71,3 @@ export function useDashboardUltimasNoticias(limit: number = 5) {
     refetchInterval: 1000 * 60 * 5, // 5 minutos
   });
 }
-
-export function useDashboardServicosPopulares(limit: number = 5) {
-  return useQuery({
-    queryKey: [...QUERY_KEYS.DASHBOARD_SERVICOS_POPULARES, limit],
-    queryFn: async (): Promise<ServicoPopular[]> => {
-      const response = await fetch(`/api/dashboard/servicos-populares?limit=${limit}`);
-      if (!response.ok) {
-        throw new Error('Erro ao buscar serviços populares');
-      }
-      return response.json();
-    },
-    refetchIntervalInBackground: true,
-    refetchInterval: 1000 * 60 * 5, // 5 minutos
-  });
-}

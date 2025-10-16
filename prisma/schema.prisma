@@ -70,7 +70,7 @@ model GaleriaFoto {
 model Municipio {
   id        Int      @id @default(autoincrement())
   nome      String
-  descricao String?a
+  descricao String?
   site      String?
   mapaUrl String @db.VarChar(2048)
 
