@@ -70,7 +70,7 @@ jobs:
             
             # Stop existing containers
             echo "🛑 Stopping existing containers..."
-            docker-compose -f ${{ inputs.docker-compose-file }} down || true
+            docker compose -f ${{ inputs.docker-compose-file }} down || true
             
             # Clean up old images (optional)
             echo "🧹 Cleaning up unused Docker resources..."
@@ -78,17 +78,17 @@ jobs:
             
             # Pull/build and start new containers
             echo "🏗️ Building and starting new containers..."
-            docker-compose -f ${{ inputs.docker-compose-file }} pull || true
-            docker-compose -f ${{ inputs.docker-compose-file }} build --no-cache
-            docker-compose -f ${{ inputs.docker-compose-file }} up -d
-            
+            docker compose -f ${{ inputs.docker-compose-file }} pull || true
+            docker compose -f ${{ inputs.docker-compose-file }} build --no-cache
+            docker compose -f ${{ inputs.docker-compose-file }} up -d
+
             # Wait for services to be ready
             echo "⏳ Waiting for services to be ready..."
             sleep 30
             
             # Check if containers are running
             echo "🔍 Checking container status..."
-            docker-compose -f ${{ inputs.docker-compose-file }} ps
+            docker compose -f ${{ inputs.docker-compose-file }} ps
             
             # Check application health
             echo "❤️ Checking application health..."
