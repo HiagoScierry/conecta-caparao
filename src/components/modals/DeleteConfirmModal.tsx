@@ -36,10 +36,15 @@ export function DeleteConfirmModal({
     <AlertDialog open={isOpen} onOpenChange={onClose}>
       <AlertDialogContent>
         <AlertDialogHeader>
-          <AlertDialogTitle>{title}</AlertDialogTitle>
-          <AlertDialogDescription>
+          <AlertDialogTitle className="flex items-center gap-2">
+            <span className="text-xl">⚠️</span>
+            {title}
+          </AlertDialogTitle>
+          <AlertDialogDescription className="text-base">
             {description}
-            {itemName && <span className="font-semibold">{itemName}</span>}
+            {itemName && (
+                <span className="font-semibold text-destructive">{itemName}</span>
+            )}
             ? Esta ação não pode ser desfeita.
           </AlertDialogDescription>
         </AlertDialogHeader>
@@ -49,7 +54,7 @@ export function DeleteConfirmModal({
             onClick={handleConfirm}
             className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
           >
-            Excluir
+            🗑️ Excluir
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>

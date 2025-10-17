@@ -163,31 +163,52 @@ export function EventModal({
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                   <FormItem className="flex flex-col gap-1">
                     <FormLabel className="text-sm font-medium">
-                      Título
+                      Título *
                     </FormLabel>
                     <FormControl>
                       <Input
                         {...form.register("evento.nome", { required: true })}
                         disabled={isViewMode}
-                        placeholder="Nome do evento"
+                        placeholder="Digite o nome do evento"
+                        className={form.formState.errors.evento?.nome ? "border-red-500" : ""}
                       />
                     </FormControl>
+                    {form.formState.errors.evento?.nome ? (
+                      <span className="text-red-500 text-xs flex items-center gap-1">
+                        <span className="w-4 h-4 text-xs">⚠️</span>
+                        {form.formState.errors.evento.nome.message}
+                      </span>
+                    ) : (
+                      <span className="text-gray-500 text-xs">
+                        💡 Nome claro e atrativo para o evento
+                      </span>
+                    )}
                   </FormItem>
                 </div>
                 {/* Textarea ocupa linha propria*/}
                 <div>
                   <FormItem className="flex flex-col gap-1">
                     <FormLabel className="text-sm font-medium">
-                      Descrição
+                      Descrição *
                     </FormLabel>
                     <FormControl>
                       <Textarea
-                        {...form.register("evento.descricao")}
+                        {...form.register("evento.descricao", { required: true })}
                         disabled={isViewMode}
-                        placeholder="Descrição do evento"
-                        className="min-h-[100px]"
+                        placeholder="Descreva o evento de forma detalhada"
+                        className={`min-h-[100px] ${form.formState.errors.evento?.descricao ? "border-red-500" : ""}`}
                       />
                     </FormControl>
+                    {form.formState.errors.evento?.descricao ? (
+                      <span className="text-red-500 text-xs flex items-center gap-1">
+                        <span className="w-4 h-4 text-xs">⚠️</span>
+                        {form.formState.errors.evento.descricao.message}
+                      </span>
+                    ) : (
+                      <span className="text-gray-500 text-xs">
+                        💡 Inclua informações como programação, atrações e o que esperar do evento
+                      </span>
+                    )}
                   </FormItem>
                 </div>
               </section>
@@ -197,24 +218,35 @@ export function EventModal({
                 <h3 className="text-lg font-semibold">Data do Evento</h3>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                   <FormItem className="flex flex-col gap-1">
-                    <FormLabel className="text-sm font-medium">Data</FormLabel>
+                    <FormLabel className="text-sm font-medium">Data *</FormLabel>
                     <FormControl>
                       <Input
                         type="date"
                         {...form.register("evento.data", { required: true })}
                         disabled={isViewMode}
+                        className={form.formState.errors.evento?.data ? "border-red-500" : ""}
                       />
                     </FormControl>
+                    {form.formState.errors.evento?.data ? (
+                      <span className="text-red-500 text-xs flex items-center gap-1">
+                        <span className="w-4 h-4 text-xs">⚠️</span>
+                        {form.formState.errors.evento.data.message}
+                      </span>
+                    ) : (
+                      <span className="text-gray-500 text-xs">
+                        💡 Selecione a data em que o evento acontecerá
+                      </span>
+                    )}
                   </FormItem>
                 </div>
               </section>
 
               {/* Bloco: Municipios */}
               <section className="border rounded-lg p-6 space-y-6">
-                <h3 className="text-lg font-semibold">Municipio</h3>
+                <h3 className="text-lg font-semibold">Município</h3>
                 <FormItem className="flex flex-col gap-1">
                   <FormLabel className="text-sm font-medium">
-                    Selecione o Municipio
+                    Selecione o Município *
                   </FormLabel>
                   <FormControl>
                     <Select
@@ -222,8 +254,8 @@ export function EventModal({
                       onValueChange={(value) => form.setValue("municipio", value)}
                       disabled={isViewMode}
                     >
-                      <SelectTrigger>
-                        <SelectValue placeholder="Selecione o município" />
+                      <SelectTrigger className={form.formState.errors.municipio ? "border-red-500" : ""}>
+                        <SelectValue placeholder="Selecione o município onde o evento acontecerá" />
                       </SelectTrigger>
                       <SelectContent>
                         {municipios?.map((municipio) => (
@@ -234,6 +266,16 @@ export function EventModal({
                       </SelectContent>
                     </Select>
                   </FormControl>
+                  {form.formState.errors.municipio ? (
+                    <span className="text-red-500 text-xs flex items-center gap-1">
+                      <span className="w-4 h-4 text-xs">⚠️</span>
+                      {form.formState.errors.municipio.message}
+                    </span>
+                  ) : (
+                    <span className="text-gray-500 text-xs">
+                      💡 Escolha o município onde o evento será realizado
+                    </span>
+                  )}
                 </FormItem>
               </section>
 
@@ -243,70 +285,94 @@ export function EventModal({
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                   <FormItem className="flex flex-col gap-1">
                     <FormLabel className="text-sm font-medium">
-                      Logradouro
+                      Logradouro *
                     </FormLabel>
                     <FormControl>
                       <Input
-                        {...form.register("endereco.logradouro")}
+                        {...form.register("endereco.logradouro", { required: true })}
                         disabled={isViewMode}
-                        placeholder="Logradouro"
+                        placeholder="Rua, Avenida, Estrada..."
+                        className={form.formState.errors.endereco?.logradouro ? "border-red-500" : ""}
                       />
                     </FormControl>
-                    {form.formState.errors.endereco?.logradouro && (
-                      <span className="text-red-500 text-xs">
+                    {form.formState.errors.endereco?.logradouro ? (
+                      <span className="text-red-500 text-xs flex items-center gap-1">
+                        <span className="w-4 h-4 text-xs">⚠️</span>
                         {form.formState.errors.endereco.logradouro.message}
                       </span>
+                    ) : (
+                      <span className="text-gray-500 text-xs">
+                        💡 Nome completo da rua, avenida ou local
+                      </span>
                     )}
                   </FormItem>
 
                   <FormItem className="flex flex-col gap-1">
                     <FormLabel className="text-sm font-medium">
-                      Número
+                      Número *
                     </FormLabel>
                     <FormControl>
                       <Input
-                        {...form.register("endereco.numero")}
+                        {...form.register("endereco.numero", { required: true })}
                         disabled={isViewMode}
-                        placeholder="Número"
+                        placeholder="123 ou S/N"
+                        className={form.formState.errors.endereco?.numero ? "border-red-500" : ""}
                       />
                     </FormControl>
-                    {form.formState.errors.endereco?.numero && (
-                      <span className="text-red-500 text-xs">
+                    {form.formState.errors.endereco?.numero ? (
+                      <span className="text-red-500 text-xs flex items-center gap-1">
+                        <span className="w-4 h-4 text-xs">⚠️</span>
                         {form.formState.errors.endereco.numero.message}
                       </span>
-                    )}
-                  </FormItem>
-
-                  <FormItem className="flex flex-col gap-1">
-                    <FormLabel className="text-sm font-medium">
-                      Bairro
-                    </FormLabel>
-                    <FormControl>
-                      <Input
-                        {...form.register("endereco.bairro")}
-                        disabled={isViewMode}
-                        placeholder="Bairro"
-                      />
-                    </FormControl>
-                    {form.formState.errors.endereco?.bairro && (
-                      <span className="text-red-500 text-xs">
-                        {form.formState.errors.endereco.bairro.message}
+                    ) : (
+                      <span className="text-gray-500 text-xs">
+                        💡 Número do local ou S/N se não houver
                       </span>
                     )}
                   </FormItem>
 
                   <FormItem className="flex flex-col gap-1">
-                    <FormLabel className="text-sm font-medium">CEP</FormLabel>
+                    <FormLabel className="text-sm font-medium">
+                      Bairro *
+                    </FormLabel>
                     <FormControl>
                       <Input
-                        {...form.register("endereco.cep")}
+                        {...form.register("endereco.bairro", { required: true })}
                         disabled={isViewMode}
-                        placeholder="00000-000"
+                        placeholder="Nome do bairro"
+                        className={form.formState.errors.endereco?.bairro ? "border-red-500" : ""}
                       />
                     </FormControl>
-                    {form.formState.errors.endereco?.cep && (
-                      <span className="text-red-500 text-xs">
+                    {form.formState.errors.endereco?.bairro ? (
+                      <span className="text-red-500 text-xs flex items-center gap-1">
+                        <span className="w-4 h-4 text-xs">⚠️</span>
+                        {form.formState.errors.endereco.bairro.message}
+                      </span>
+                    ) : (
+                      <span className="text-gray-500 text-xs">
+                        💡 Nome do bairro ou região
+                      </span>
+                    )}
+                  </FormItem>
+
+                  <FormItem className="flex flex-col gap-1">
+                    <FormLabel className="text-sm font-medium">CEP *</FormLabel>
+                    <FormControl>
+                      <Input
+                        {...form.register("endereco.cep", { required: true })}
+                        disabled={isViewMode}
+                        placeholder="29000000"
+                        className={form.formState.errors.endereco?.cep ? "border-red-500" : ""}
+                      />
+                    </FormControl>
+                    {form.formState.errors.endereco?.cep ? (
+                      <span className="text-red-500 text-xs flex items-center gap-1">
+                        <span className="w-4 h-4 text-xs">⚠️</span>
                         {form.formState.errors.endereco.cep.message}
+                      </span>
+                    ) : (
+                      <span className="text-gray-500 text-xs">
+                        💡 Apenas números, 8 dígitos
                       </span>
                     )}
                   </FormItem>
