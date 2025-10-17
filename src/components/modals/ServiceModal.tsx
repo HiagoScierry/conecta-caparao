@@ -10,6 +10,10 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Form, FormControl, FormItem, FormLabel } from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { ImageUpload } from "@/components/ImageUpload";
 import { useGetAllMunicipios } from "@/hooks/http/useMunicipio";
@@ -180,39 +184,71 @@ export function ServiceModal({
                   <h3 className="text-lg font-semibold">Dados do Serviço</h3>
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                     <FormItem>
-                      <FormLabel>Nome</FormLabel>
+                      <FormLabel>Nome *</FormLabel>
                       <FormControl>
-                        <input
-                          type="text"
+                        <Input
                           {...form.register("servico.nome", { required: true })}
                           disabled={isViewMode}
-                          className="border rounded-md p-2 w-full"
+                          placeholder="Digite o nome do serviço"
+                          className={form.formState.errors.servico?.nome ? "border-red-500" : ""}
                         />
                       </FormControl>
+                      {form.formState.errors.servico?.nome ? (
+                        <span className="text-red-500 text-xs flex items-center gap-1">
+                          <span className="w-4 h-4 text-xs">⚠️</span>
+                          {form.formState.errors.servico.nome.message}
+                        </span>
+                      ) : (
+                        <span className="text-gray-500 text-xs">
+                          💡 Nome claro que identifique o serviço oferecido
+                        </span>
+                      )}
                     </FormItem>
 
                     <FormItem>
                       <FormLabel>Site</FormLabel>
                       <FormControl>
-                        <input
-                          type="text"
+                        <Input
+                          type="url"
                           {...form.register("servico.site")}
                           disabled={isViewMode}
-                          className="border rounded-md p-2 w-full"
+                          placeholder="https://www.seusite.com.br"
+                          className={form.formState.errors.servico?.site ? "border-red-500" : ""}
                         />
                       </FormControl>
+                      {form.formState.errors.servico?.site ? (
+                        <span className="text-red-500 text-xs flex items-center gap-1">
+                          <span className="w-4 h-4 text-xs">⚠️</span>
+                          {form.formState.errors.servico.site.message}
+                        </span>
+                      ) : (
+                        <span className="text-gray-500 text-xs">
+                          💡 Site oficial do serviço (opcional)
+                        </span>
+                      )}
                     </FormItem>
                   </div>
 
                   <FormItem>
-                    <FormLabel>Descrição</FormLabel>
+                    <FormLabel>Descrição *</FormLabel>
                     <FormControl>
-                      <textarea
-                        {...form.register("servico.descricao")}
+                      <Textarea
+                        {...form.register("servico.descricao", { required: true })}
                         disabled={isViewMode}
-                        className="textarea w-full min-h-[100px] border rounded-md p-2"
+                        placeholder="Descreva o serviço oferecido de forma detalhada"
+                        className={`min-h-[100px] ${form.formState.errors.servico?.descricao ? "border-red-500" : ""}`}
                       />
                     </FormControl>
+                    {form.formState.errors.servico?.descricao ? (
+                      <span className="text-red-500 text-xs flex items-center gap-1">
+                        <span className="w-4 h-4 text-xs">⚠️</span>
+                        {form.formState.errors.servico.descricao.message}
+                      </span>
+                    ) : (
+                      <span className="text-gray-500 text-xs">
+                        💡 Inclua detalhes sobre o serviço, diferenciais e o que está incluído
+                      </span>
+                    )}
                   </FormItem>
                 </section>
 
@@ -221,59 +257,110 @@ export function ServiceModal({
                   <h3 className="text-lg font-semibold">Contato</h3>
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                     <FormItem>
-                      <FormLabel>Email</FormLabel>
+                      <FormLabel>Email *</FormLabel>
                       <FormControl>
-                        <input
+                        <Input
                           type="email"
-                          {...form.register("contato.email")}
+                          {...form.register("contato.email", { required: true })}
                           disabled={isViewMode}
-                          className="border rounded-md p-2 w-full"
+                          placeholder="contato@servico.com"
+                          className={form.formState.errors.contato?.email ? "border-red-500" : ""}
                         />
                       </FormControl>
+                      {form.formState.errors.contato?.email ? (
+                        <span className="text-red-500 text-xs flex items-center gap-1">
+                          <span className="w-4 h-4 text-xs">⚠️</span>
+                          {form.formState.errors.contato.email.message}
+                        </span>
+                      ) : (
+                        <span className="text-gray-500 text-xs">
+                          💡 Email para contato com clientes
+                        </span>
+                      )}
                     </FormItem>
                     <FormItem>
-                      <FormLabel>Celular</FormLabel>
+                      <FormLabel>Celular *</FormLabel>
                       <FormControl>
-                        <input
-                          type="text"
-                          {...form.register("contato.celular")}
+                        <Input
+                          {...form.register("contato.celular", { required: true })}
                           disabled={isViewMode}
-                          className="border rounded-md p-2 w-full"
+                          placeholder="27999999999"
+                          className={form.formState.errors.contato?.celular ? "border-red-500" : ""}
                         />
                       </FormControl>
+                      {form.formState.errors.contato?.celular ? (
+                        <span className="text-red-500 text-xs flex items-center gap-1">
+                          <span className="w-4 h-4 text-xs">⚠️</span>
+                          {form.formState.errors.contato.celular.message}
+                        </span>
+                      ) : (
+                        <span className="text-gray-500 text-xs">
+                          💡 Apenas números (10-11 dígitos)
+                        </span>
+                      )}
                     </FormItem>
                     <FormItem>
                       <FormLabel>Telefone</FormLabel>
                       <FormControl>
-                        <input
-                          type="text"
+                        <Input
                           {...form.register("contato.telefone")}
                           disabled={isViewMode}
-                          className="border rounded-md p-2 w-full"
+                          placeholder="27999999999"
+                          className={form.formState.errors.contato?.telefone ? "border-red-500" : ""}
                         />
                       </FormControl>
+                      {form.formState.errors.contato?.telefone ? (
+                        <span className="text-red-500 text-xs flex items-center gap-1">
+                          <span className="w-4 h-4 text-xs">⚠️</span>
+                          {form.formState.errors.contato.telefone.message}
+                        </span>
+                      ) : (
+                        <span className="text-gray-500 text-xs">
+                          💡 Telefone fixo (opcional)
+                        </span>
+                      )}
                     </FormItem>
                     <FormItem>
-                      <FormLabel>Whatsapp</FormLabel>
+                      <FormLabel>WhatsApp</FormLabel>
                       <FormControl>
-                        <input
-                          type="text"
+                        <Input
                           {...form.register("contato.whatsapp")}
                           disabled={isViewMode}
-                          className="border rounded-md p-2 w-full"
+                          placeholder="27999999999"
+                          className={form.formState.errors.contato?.whatsapp ? "border-red-500" : ""}
                         />
                       </FormControl>
+                      {form.formState.errors.contato?.whatsapp ? (
+                        <span className="text-red-500 text-xs flex items-center gap-1">
+                          <span className="w-4 h-4 text-xs">⚠️</span>
+                          {form.formState.errors.contato.whatsapp.message}
+                        </span>
+                      ) : (
+                        <span className="text-gray-500 text-xs">
+                          💡 WhatsApp para atendimento rápido (opcional)
+                        </span>
+                      )}
                     </FormItem>
                     <FormItem>
                       <FormLabel>Instagram</FormLabel>
                       <FormControl>
-                        <input
-                          type="text"
+                        <Input
                           {...form.register("contato.instagram")}
                           disabled={isViewMode}
-                          className="border rounded-md p-2 w-full"
+                          placeholder="@usuario_instagram"
+                          className={form.formState.errors.contato?.instagram ? "border-red-500" : ""}
                         />
                       </FormControl>
+                      {form.formState.errors.contato?.instagram ? (
+                        <span className="text-red-500 text-xs flex items-center gap-1">
+                          <span className="w-4 h-4 text-xs">⚠️</span>
+                          {form.formState.errors.contato.instagram.message}
+                        </span>
+                      ) : (
+                        <span className="text-gray-500 text-xs">
+                          💡 Instagram do serviço (opcional)
+                        </span>
+                      )}
                     </FormItem>
                   </div>
                 </section>
@@ -285,86 +372,132 @@ export function ServiceModal({
                   </h3>
 
                   <FormItem>
-                    <FormLabel>Dias de Funcionamento</FormLabel>
+                    <FormLabel>Dias de Funcionamento *</FormLabel>
                     <FormControl>
                       <div className="flex flex-wrap gap-4">
-                        {[
-                          "SEGUNDA",
-                          "TERCA",
-                          "QUARTA",
-                          "QUINTA",
-                          "SEXTA",
-                          "SABADO",
-                          "DOMINGO",
-                        ].map((dia) => (
-                          <label key={dia} className="flex items-center gap-1">
-                            <input
-                              type="checkbox"
-                              value={dia}
-                              {...form.register(
-                                "horarioFuncionamento.diaDaSemana"
-                              )}
+                        {(["SEGUNDA", "TERCA", "QUARTA", "QUINTA", "SEXTA", "SABADO", "DOMINGO"] as const).map((dia) => (
+                          <div key={dia} className="flex items-center space-x-2">
+                            <Checkbox
+                              id={`dia-${dia}`}
+                              checked={form.watch("horarioFuncionamento.diaDaSemana")?.includes(dia) || false}
+                              onCheckedChange={(checked) => {
+                                const currentDays = form.getValues("horarioFuncionamento.diaDaSemana") || [];
+                                if (checked) {
+                                  form.setValue("horarioFuncionamento.diaDaSemana", [...currentDays, dia]);
+                                } else {
+                                  form.setValue("horarioFuncionamento.diaDaSemana", currentDays.filter(d => d !== dia));
+                                }
+                              }}
                               disabled={isViewMode}
                             />
-                            {dia.charAt(0) + dia.slice(1).toLowerCase()}
-                          </label>
+                            <label
+                              htmlFor={`dia-${dia}`}
+                              className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                            >
+                              {dia.charAt(0) + dia.slice(1).toLowerCase()}
+                            </label>
+                          </div>
                         ))}
                       </div>
                     </FormControl>
+                    {form.formState.errors.horarioFuncionamento?.diaDaSemana ? (
+                      <span className="text-red-500 text-xs flex items-center gap-1">
+                        <span className="w-4 h-4 text-xs">⚠️</span>
+                        {form.formState.errors.horarioFuncionamento.diaDaSemana.message}
+                      </span>
+                    ) : (
+                      <span className="text-gray-500 text-xs">
+                        💡 Selecione pelo menos um dia de funcionamento
+                      </span>
+                    )}
                   </FormItem>
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                     <FormItem>
-                      <FormLabel>Horário de Abertura</FormLabel>
+                      <FormLabel>Horário de Abertura *</FormLabel>
                       <FormControl>
-                        <input
+                        <Input
                           type="time"
                           {...form.register(
                             "horarioFuncionamento.horaAbertura",
                             { required: true }
                           )}
                           disabled={isViewMode}
-                          className="border rounded-md p-2 w-full"
+                          className={form.formState.errors.horarioFuncionamento?.horaAbertura ? "border-red-500" : ""}
                         />
                       </FormControl>
+                      {form.formState.errors.horarioFuncionamento?.horaAbertura ? (
+                        <span className="text-red-500 text-xs flex items-center gap-1">
+                          <span className="w-4 h-4 text-xs">⚠️</span>
+                          {form.formState.errors.horarioFuncionamento.horaAbertura.message}
+                        </span>
+                      ) : (
+                        <span className="text-gray-500 text-xs">
+                          💡 Horário em que o serviço inicia
+                        </span>
+                      )}
                     </FormItem>
 
                     <FormItem>
-                      <FormLabel>Horário de Fechamento</FormLabel>
+                      <FormLabel>Horário de Fechamento *</FormLabel>
                       <FormControl>
-                        <input
+                        <Input
                           type="time"
                           {...form.register(
                             "horarioFuncionamento.horaFechamento",
                             { required: true }
                           )}
                           disabled={isViewMode}
-                          className="border rounded-md p-2 w-full"
+                          className={form.formState.errors.horarioFuncionamento?.horaFechamento ? "border-red-500" : ""}
                         />
                       </FormControl>
+                      {form.formState.errors.horarioFuncionamento?.horaFechamento ? (
+                        <span className="text-red-500 text-xs flex items-center gap-1">
+                          <span className="w-4 h-4 text-xs">⚠️</span>
+                          {form.formState.errors.horarioFuncionamento.horaFechamento.message}
+                        </span>
+                      ) : (
+                        <span className="text-gray-500 text-xs">
+                          💡 Horário em que o serviço encerra
+                        </span>
+                      )}
                     </FormItem>
                   </div>
                 </section>
 
                 {/* Município */}
                 <section className="border rounded-lg p-6 space-y-6">
-                  <h3 className="text-lg font-semibold">Municípios</h3>
+                  <h3 className="text-lg font-semibold">Município</h3>
                   <FormItem>
-                    <FormLabel>Selecione o Município</FormLabel>
+                    <FormLabel>Selecione o Município *</FormLabel>
                     <FormControl>
-                      <select
-                        {...form.register("municipio", { required: true })}
+                      <Select
+                        value={form.watch("municipio")?.toString()}
+                        onValueChange={(value) => form.setValue("municipio", value)}
                         disabled={isViewMode}
-                        className="border rounded-md p-2 w-full"
                       >
-                        <option value="">Selecione o município</option>
-                        {municipios?.map((m) => (
-                          <option key={m.id} value={m.id}>
-                            {m.nome}
-                          </option>
-                        ))}
-                      </select>
+                        <SelectTrigger className={form.formState.errors.municipio ? "border-red-500" : ""}>
+                          <SelectValue placeholder="Selecione o município onde o serviço está localizado" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {municipios?.map((municipio) => (
+                            <SelectItem key={municipio.id} value={municipio.id.toString()}>
+                              {municipio.nome}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
                     </FormControl>
+                    {form.formState.errors.municipio ? (
+                      <span className="text-red-500 text-xs flex items-center gap-1">
+                        <span className="w-4 h-4 text-xs">⚠️</span>
+                        {form.formState.errors.municipio.message}
+                      </span>
+                    ) : (
+                      <span className="text-gray-500 text-xs">
+                        💡 Escolha o município onde o serviço é oferecido
+                      </span>
+                    )}
                   </FormItem>
                 </section>
 
@@ -373,48 +506,88 @@ export function ServiceModal({
                   <h3 className="text-lg font-semibold">Endereço</h3>
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                     <FormItem>
-                      <FormLabel>Cep</FormLabel>
+                      <FormLabel>CEP *</FormLabel>
                       <FormControl>
-                        <input
-                          type="text"
-                          {...form.register("endereco.cep")}
+                        <Input
+                          {...form.register("endereco.cep", { required: true })}
                           disabled={isViewMode}
-                          className="border rounded-md p-2 w-full"
+                          placeholder="29000000"
+                          className={form.formState.errors.endereco?.cep ? "border-red-500" : ""}
                         />
                       </FormControl>
+                      {form.formState.errors.endereco?.cep ? (
+                        <span className="text-red-500 text-xs flex items-center gap-1">
+                          <span className="w-4 h-4 text-xs">⚠️</span>
+                          {form.formState.errors.endereco.cep.message}
+                        </span>
+                      ) : (
+                        <span className="text-gray-500 text-xs">
+                          💡 Apenas números, 8 dígitos
+                        </span>
+                      )}
                     </FormItem>
                     <FormItem>
-                      <FormLabel>Logradouro</FormLabel>
+                      <FormLabel>Logradouro *</FormLabel>
                       <FormControl>
-                        <input
-                          type="text"
-                          {...form.register("endereco.logradouro")}
+                        <Input
+                          {...form.register("endereco.logradouro", { required: true })}
                           disabled={isViewMode}
-                          className="border rounded-md p-2 w-full"
+                          placeholder="Rua, Avenida, Estrada..."
+                          className={form.formState.errors.endereco?.logradouro ? "border-red-500" : ""}
                         />
                       </FormControl>
+                      {form.formState.errors.endereco?.logradouro ? (
+                        <span className="text-red-500 text-xs flex items-center gap-1">
+                          <span className="w-4 h-4 text-xs">⚠️</span>
+                          {form.formState.errors.endereco.logradouro.message}
+                        </span>
+                      ) : (
+                        <span className="text-gray-500 text-xs">
+                          💡 Nome completo da rua, avenida ou local
+                        </span>
+                      )}
                     </FormItem>
                     <FormItem>
-                      <FormLabel>Numero</FormLabel>
+                      <FormLabel>Número *</FormLabel>
                       <FormControl>
-                        <input
-                          type="text"
-                          {...form.register("endereco.numero")}
+                        <Input
+                          {...form.register("endereco.numero", { required: true })}
                           disabled={isViewMode}
-                          className="border rounded-md p-2 w-full"
+                          placeholder="123 ou S/N"
+                          className={form.formState.errors.endereco?.numero ? "border-red-500" : ""}
                         />
                       </FormControl>
+                      {form.formState.errors.endereco?.numero ? (
+                        <span className="text-red-500 text-xs flex items-center gap-1">
+                          <span className="w-4 h-4 text-xs">⚠️</span>
+                          {form.formState.errors.endereco.numero.message}
+                        </span>
+                      ) : (
+                        <span className="text-gray-500 text-xs">
+                          💡 Número do local ou S/N se não houver
+                        </span>
+                      )}
                     </FormItem>
                     <FormItem>
-                      <FormLabel>Bairro</FormLabel>
+                      <FormLabel>Bairro *</FormLabel>
                       <FormControl>
-                        <input
-                          type="text"
-                          {...form.register("endereco.bairro")}
+                        <Input
+                          {...form.register("endereco.bairro", { required: true })}
                           disabled={isViewMode}
-                          className="border rounded-md p-2 w-full"
+                          placeholder="Nome do bairro"
+                          className={form.formState.errors.endereco?.bairro ? "border-red-500" : ""}
                         />
                       </FormControl>
+                      {form.formState.errors.endereco?.bairro ? (
+                        <span className="text-red-500 text-xs flex items-center gap-1">
+                          <span className="w-4 h-4 text-xs">⚠️</span>
+                          {form.formState.errors.endereco.bairro.message}
+                        </span>
+                      ) : (
+                        <span className="text-gray-500 text-xs">
+                          💡 Nome do bairro ou região
+                        </span>
+                      )}
                     </FormItem>
                   </div>
                 </section>

@@ -144,43 +144,76 @@ export function NewsModal({
               <section className="border rounded-lg p-6 space-y-6">
                 <FormItem>
                   <FormLabel className="text-base font-medium">
-                    Título
+                    Título *
                   </FormLabel>
                   <FormControl>
                     <Input
                       {...form.register("noticia.titulo", { required: true })}
                       disabled={isViewMode}
-                      placeholder="Título da notícia"
+                      placeholder="Digite um título atrativo para a notícia"
+                      className={form.formState.errors.noticia?.titulo ? "border-red-500" : ""}
                     />
                   </FormControl>
+                  {form.formState.errors.noticia?.titulo ? (
+                    <span className="text-red-500 text-xs flex items-center gap-1">
+                      <span className="w-4 h-4 text-xs">⚠️</span>
+                      {form.formState.errors.noticia.titulo.message}
+                    </span>
+                  ) : (
+                    <span className="text-gray-500 text-xs">
+                      💡 Título claro e chamativo que desperte interesse
+                    </span>
+                  )}
                 </FormItem>
               </section>
 
               {/* Bloco: Texto */}
               <section className="border rounded-lg p-6 space-y-6">
                 <FormItem>
-                  <FormLabel className="text-base font-medium">Texto</FormLabel>
+                  <FormLabel className="text-base font-medium">Texto *</FormLabel>
                   <FormControl>
                     <Textarea
                       {...form.register("noticia.texto", { required: true })}
                       disabled={isViewMode}
-                      placeholder="Conteúdo da notícia"
+                      placeholder="Digite o conteúdo completo da notícia"
+                      className={`min-h-[150px] ${form.formState.errors.noticia?.texto ? "border-red-500" : ""}`}
                     />
                   </FormControl>
+                  {form.formState.errors.noticia?.texto ? (
+                    <span className="text-red-500 text-xs flex items-center gap-1">
+                      <span className="w-4 h-4 text-xs">⚠️</span>
+                      {form.formState.errors.noticia.texto.message}
+                    </span>
+                  ) : (
+                    <span className="text-gray-500 text-xs">
+                      💡 Texto completo e informativo sobre o acontecimento ou novidade
+                    </span>
+                  )}
                 </FormItem>
               </section>
 
               {/* Bloco: Data */}
               <section className="border rounded-lg p-6 space-y-6">
                 <FormItem>
-                  <FormLabel className="text-base font-medium">Data</FormLabel>
+                  <FormLabel className="text-base font-medium">Data *</FormLabel>
                   <FormControl>
                     <Input
                       type="date"
                       {...form.register("noticia.data", { required: true })}
                       disabled={isViewMode}
+                      className={form.formState.errors.noticia?.data ? "border-red-500" : ""}
                     />
                   </FormControl>
+                  {form.formState.errors.noticia?.data ? (
+                    <span className="text-red-500 text-xs flex items-center gap-1">
+                      <span className="w-4 h-4 text-xs">⚠️</span>
+                      {form.formState.errors.noticia.data.message}
+                    </span>
+                  ) : (
+                    <span className="text-gray-500 text-xs">
+                      💡 Data em que a notícia foi publicada ou quando o evento aconteceu
+                    </span>
+                  )}
                 </FormItem>
               </section>
             </div>
