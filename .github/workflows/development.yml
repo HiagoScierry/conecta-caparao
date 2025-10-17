@@ -8,7 +8,7 @@ on:
 
 jobs:
   ci:
-    name: on ${GITHUB_REF}
+    name: Development on "${GITHUB_REF}"
     uses: ./.github/workflows/base-ci.yml
     with:
       node-version: '18'
