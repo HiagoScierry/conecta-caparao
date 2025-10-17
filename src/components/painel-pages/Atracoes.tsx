@@ -107,7 +107,7 @@ export default function Atracoes() {
       );
 
       if (modalMode === "create") {
-        createAtrativo({
+        await createAtrativo({
           ...attractionData,
           fotosURL: uploadedUrls,
         });
@@ -133,7 +133,7 @@ export default function Atracoes() {
       console.error("Error saving attraction:", error);
       toast({
         title: "Erro ao salvar atração",
-        description: "Ocorreu um erro ao salvar a atração. Tente novamente.",
+        description: error instanceof Error ? error.message : "Ocorreu um erro inesperado. Verifique os dados e tente novamente.",
         variant: "destructive",
       });
     }

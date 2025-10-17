@@ -188,12 +188,36 @@ export function MunicipalityModal({
                   <FormItem>
                     <FormLabel>Descrição</FormLabel>
                     <FormControl>
-                      <Textarea
-                        {...form.register("descricao")}
-                        disabled={isViewMode}
-                        placeholder="Descrição do município"
-                        className="min-h-[100px]"
-                      />
+                      <div className="space-y-2">
+                        <Textarea
+                          {...form.register("descricao")}
+                          disabled={isViewMode}
+                          placeholder="Descrição do município"
+                          className="min-h-[100px]"
+                          maxLength={1000}
+                          onPaste={(e) => {
+                            const paste = e.clipboardData?.getData('text') || '';
+                            const currentValue = form.getValues("descricao") || "";
+                            const target = e.currentTarget;
+                            const selectionStart = target.selectionStart ?? currentValue.length;
+                            const selectionEnd = target.selectionEnd ?? currentValue.length;
+                            const before = currentValue.slice(0, selectionStart);
+                            const after = currentValue.slice(selectionEnd);
+                            const newValue = before + paste + after;
+                            if (newValue.length > 1000) {
+                              e.preventDefault();
+                              // Truncate so that the pasted text fits within the limit
+                              const allowedPasteLength = 1000 - (before.length + after.length);
+                              const truncatedPaste = paste.slice(0, Math.max(0, allowedPasteLength));
+                              const truncated = before + truncatedPaste + after;
+                              form.setValue("descricao", truncated);
+                            }
+                          }}
+                        />
+                        <div className="text-sm text-muted-foreground text-right">
+                          {(form.watch("descricao")?.length || 0)}/1000 caracteres
+                        </div>
+                      </div>
                     </FormControl>
                   </FormItem>
                 </div>

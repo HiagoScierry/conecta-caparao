@@ -54,7 +54,16 @@ export function useCreateMunicipio() {
         },
         body: JSON.stringify({ municipio, contato, fotosUrl }),
       });
+      
       if (!response.ok) {
+        const errorData = await response.json().catch(() => null);
+        if (response.status === 400 && errorData?.errors) {
+          // Erro de validação - reformatar para mensagem legível
+          const validationErrors = errorData.errors
+            .map((error: { path: string[]; message: string }) => `${error.path.join('.')}: ${error.message}`)
+            .join(', ');
+          throw new Error(`Dados inválidos: ${validationErrors}`);
+        }
         throw new Error('Erro ao criar município');
       }
       return response.json();

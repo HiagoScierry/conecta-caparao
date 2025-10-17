@@ -73,46 +73,68 @@ export default function Municipios() {
 
   const handleDeleteMunicipality = async () => {
     if (municipalityToDelete) {
-      await deleteMunicipio(String(municipalityToDelete.id));
+      try {
+        await deleteMunicipio(String(municipalityToDelete.id));
 
-      toast({
-        title: "Município excluído",
-        description: `O município "${municipalityToDelete.nome}" foi excluído com sucesso.`,
-      });
+        toast({
+          title: "Município excluído",
+          description: `O município "${municipalityToDelete.nome}" foi excluído com sucesso.`,
+        });
+
+        // Fechar modal e limpar estado
+        setIsDeleteModalOpen(false);
+        setMunicipalityToDelete(null);
+      } catch (error) {
+        console.error('Erro ao excluir município:', error);
+        toast({
+          title: "Erro ao excluir município",
+          description: "Ocorreu um erro ao tentar excluir o município. Tente novamente.",
+          variant: "destructive",
+        });
+      }
     }
   };
 
   const handleSaveMunicipality = async (municipalityData: MunicipioForm, fotoUrl: File[]) => {
-    const uploadedUrls = await Promise.all(
-      fotoUrl.map(async (file) => {
-        const url = await uploadImage(file);
-        return url;
-      })
-    );
+    try {
+      const uploadedUrls = await Promise.all(
+        fotoUrl.map(async (file) => {
+          const url = await uploadImage(file);
+          return url;
+        })
+      );
 
-    if (modalMode === 'create') {
-      createMunicipio({
-        municipio: municipalityData.municipio,
-        contato: municipalityData.contato,
-        fotosUrl: uploadedUrls,
-      });
+      if (modalMode === 'create') {
+        await createMunicipio({
+          municipio: municipalityData.municipio,
+          contato: municipalityData.contato,
+          fotosUrl: uploadedUrls,
+        });
+        toast({
+          title: "Município criado",
+          description: `O município "${municipalityData.municipio.nome}" foi criado com sucesso.`,
+        });
+      } else if (modalMode === 'edit') {
+        await updateMunicipio({
+          id: String(selectedMunicipality?.id),
+          municipio: municipalityData.municipio,
+          contato: municipalityData.contato,
+          fotosUrl: uploadedUrls,
+        });
+        toast({
+          title: "Município atualizado",
+          description: `O município "${municipalityData.municipio.nome}" foi atualizado com sucesso.`,
+        });
+      }
+      setIsModalOpen(false);
+    } catch (error) {
+      console.error('Erro ao salvar município:', error);
       toast({
-        title: "Município criado",
-        description: `O município "${municipalityData.municipio.nome}" foi criado com sucesso.`,
-      });
-    } else if (modalMode === 'edit') {
-      await updateMunicipio({
-        id: String(selectedMunicipality?.id),
-        municipio: municipalityData.municipio,
-        contato: municipalityData.contato,
-        fotosUrl: uploadedUrls,
-      });
-      toast({
-        title: "Município atualizado",
-        description: `O município "${municipalityData.municipio.nome}" foi atualizado com sucesso.`,
+        title: "Erro ao salvar município",
+        description: error instanceof Error ? error.message : "Ocorreu um erro inesperado. Verifique os dados e tente novamente.",
+        variant: "destructive",
       });
     }
-    setIsModalOpen(false);
   };
 
   return (
