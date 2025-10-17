@@ -6,7 +6,6 @@ on:
 
 jobs:
   ci:
-    name: Production CI
     uses: ./.github/workflows/base-ci.yml
     with:
       node-version: '18'
