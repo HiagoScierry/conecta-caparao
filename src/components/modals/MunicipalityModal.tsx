@@ -188,12 +188,29 @@ export function MunicipalityModal({
                   <FormItem>
                     <FormLabel>Descrição</FormLabel>
                     <FormControl>
-                      <Textarea
-                        {...form.register("descricao")}
-                        disabled={isViewMode}
-                        placeholder="Descrição do município"
-                        className="min-h-[100px]"
-                      />
+                      <div className="space-y-2">
+                        <Textarea
+                          {...form.register("descricao")}
+                          disabled={isViewMode}
+                          placeholder="Descrição do município"
+                          className="min-h-[100px]"
+                          maxLength={1000}
+                          onPaste={(e) => {
+                            // Permitir colar, mas verificar o limite
+                            const paste = e.clipboardData?.getData('text') || '';
+                            const currentValue = form.getValues("descricao") || "";
+                            const newValue = currentValue + paste;
+                            if (newValue.length > 1000) {
+                              e.preventDefault();
+                              const truncated = newValue.substring(0, 1000);
+                              form.setValue("descricao", truncated);
+                            }
+                          }}
+                        />
+                        <div className="text-sm text-muted-foreground text-right">
+                          {(form.watch("descricao")?.length || 0)}/1000 caracteres
+                        </div>
+                      </div>
                     </FormControl>
                   </FormItem>
                 </div>

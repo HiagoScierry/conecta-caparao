@@ -34,19 +34,36 @@ export function useCreateAtrativo(){
 
   return useMutation({
     mutationFn: async (atracao: AtracaoForm & { fotosURL: string[] }) => {
-      await fetch("/api/atrativos", {
+      const response = await fetch("/api/atrativos", {
         method: "POST",
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({ ...atracao }),
-      })
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => null);
+        if (response.status === 400 && errorData?.errors) {
+          // Erro de validação - reformatar para mensagem legível
+          const validationErrors = errorData.errors
+            .map((error: { path: string[]; message: string }) => `${error.path.join('.')}: ${error.message}`)
+            .join(', ');
+          throw new Error(`Dados inválidos: ${validationErrors}`);
+        }
+        throw new Error('Erro ao criar atração turística');
+      }
+
+      return response.json();
     },
     onSuccess: () => {
       invalidateAtrativos();
       invalidateDashboard();
-    }
-  })
+    },
+    onError: (error) => {
+      console.error('Error creating atrativo:', error);
+    },
+  });
 }
 
 export function useUpdateAtrativo(){
@@ -54,19 +71,36 @@ export function useUpdateAtrativo(){
 
   return useMutation({
     mutationFn: async (atracao: AtracaoForm & { fotosURL: string[] }) => {
-      await fetch(`/api/atrativos/${atracao.atracaoTuristica.id}`, {
+      const response = await fetch(`/api/atrativos/${atracao.atracaoTuristica.id}`, {
         method: "PUT",
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({ ...atracao }),
-      })
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => null);
+        if (response.status === 400 && errorData?.errors) {
+          // Erro de validação - reformatar para mensagem legível
+          const validationErrors = errorData.errors
+            .map((error: { path: string[]; message: string }) => `${error.path.join('.')}: ${error.message}`)
+            .join(', ');
+          throw new Error(`Dados inválidos: ${validationErrors}`);
+        }
+        throw new Error('Erro ao atualizar atração turística');
+      }
+
+      return response.json();
     },
     onSuccess: () => {
       invalidateAtrativos();
       invalidateDashboard();
-    }
-  })
+    },
+    onError: (error) => {
+      console.error('Error updating atrativo:', error);
+    },
+  });
 }
 
 export function useDeleteAtrativo(){
@@ -74,13 +108,22 @@ export function useDeleteAtrativo(){
 
   return useMutation({
     mutationFn: async (id: number) => {
-      await fetch(`/api/atrativos/${id}`, {
+      const response = await fetch(`/api/atrativos/${id}`, {
         method: "DELETE",
-      })
+      });
+
+      if (!response.ok) {
+        throw new Error('Erro ao deletar atração turística');
+      }
+
+      return response.json();
     },
     onSuccess: () => {
       invalidateAtrativos();
       invalidateDashboard();
-    }
-  })
+    },
+    onError: (error) => {
+      console.error('Error deleting atrativo:', error);
+    },
+  });
 }
