@@ -196,7 +196,6 @@ export function MunicipalityModal({
                           className="min-h-[100px]"
                           maxLength={1000}
                           onPaste={(e) => {
-                            // Permitir colar, mas verificar o limite e seleção
                             const paste = e.clipboardData?.getData('text') || '';
                             const currentValue = form.getValues("descricao") || "";
                             const target = e.currentTarget;
@@ -204,7 +203,7 @@ export function MunicipalityModal({
                             const selectionEnd = target.selectionEnd ?? currentValue.length;
                             const before = currentValue.slice(0, selectionStart);
                             const after = currentValue.slice(selectionEnd);
-                            let newValue = before + paste + after;
+                            const newValue = before + paste + after;
                             if (newValue.length > 1000) {
                               e.preventDefault();
                               // Truncate so that the pasted text fits within the limit
