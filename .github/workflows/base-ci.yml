@@ -1,0 +1,157 @@
+name: Base CI Jobs
+
+on:
+  workflow_call:
+    inputs:
+      node-version:
+        description: 'Node.js version to use'
+        required: false
+        type: string
+        default: '18'
+      cache-dependency-path:
+        description: 'Path to package-lock.json'
+        required: false
+        type: string
+        default: 'package-lock.json'
+      continue-on-security-error:
+        description: 'Continue workflow even if security audit fails'
+        required: false
+        type: boolean
+        default: false
+
+jobs:
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ inputs.node-version }}
+          cache: 'npm'
+          cache-dependency-path: ${{ inputs.cache-dependency-path }}
+          
+      - name: Install dependencies
+        run: npm ci
+        
+      - name: Run ESLint
+        run: npm run lint
+
+  test:
+    name: Tests
+    runs-on: ubuntu-latest
+    
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: root
+          MYSQL_DATABASE: test_db
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=3
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ inputs.node-version }}
+          cache: 'npm'
+          cache-dependency-path: ${{ inputs.cache-dependency-path }}
+          
+      - name: Install dependencies
+        run: npm ci
+        
+      - name: Setup environment variables
+        run: |
+          echo "DATABASE_URL=mysql://root:root@localhost:3306/test_db" >> $GITHUB_ENV
+          echo "NEXTAUTH_SECRET=test-secret" >> $GITHUB_ENV
+          echo "NEXTAUTH_URL=http://localhost:3000" >> $GITHUB_ENV
+          
+      - name: Generate Prisma Client
+        run: npx prisma generate
+        
+      - name: Run database migrations
+        run: npx prisma migrate deploy
+        
+      - name: Run tests
+        run: npm test
+
+  security:
+    name: Security Audit
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ inputs.node-version }}
+          cache: 'npm'
+          cache-dependency-path: ${{ inputs.cache-dependency-path }}
+          
+      - name: Install dependencies
+        run: npm ci
+        
+      - name: Run security audit (high level)
+        run: npm audit --audit-level=high
+        continue-on-error: ${{ inputs.continue-on-security-error }}
+        
+      - name: Check for vulnerabilities (moderate level)
+        run: npm audit --audit-level=moderate
+        continue-on-error: ${{ inputs.continue-on-security-error }}
+
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    if: ${{ !inputs.continue-on-security-error }}  # Only run build for production
+    needs: [lint, test]
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ inputs.node-version }}
+          cache: 'npm'
+          cache-dependency-path: ${{ inputs.cache-dependency-path }}
+          
+      - name: Install dependencies
+        run: npm ci
+        
+      - name: Setup environment variables for build
+        run: |
+          echo "DATABASE_URL=mysql://user:password@localhost:3306/conecta_caparao" >> $GITHUB_ENV
+          echo "NEXTAUTH_SECRET=build-secret" >> $GITHUB_ENV
+          echo "NEXTAUTH_URL=http://localhost:3000" >> $GITHUB_ENV
+          
+      - name: Generate Prisma Client
+        run: npx prisma generate
+        
+      - name: Build application
+        run: npm run build
+        
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: production-build
+          path: |
+            .next/
+            package.json
+            package-lock.json
+          retention-days: 30
