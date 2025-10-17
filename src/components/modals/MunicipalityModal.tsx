@@ -196,13 +196,21 @@ export function MunicipalityModal({
                           className="min-h-[100px]"
                           maxLength={1000}
                           onPaste={(e) => {
-                            // Permitir colar, mas verificar o limite
+                            // Permitir colar, mas verificar o limite e seleção
                             const paste = e.clipboardData?.getData('text') || '';
                             const currentValue = form.getValues("descricao") || "";
-                            const newValue = currentValue + paste;
+                            const target = e.currentTarget;
+                            const selectionStart = target.selectionStart ?? currentValue.length;
+                            const selectionEnd = target.selectionEnd ?? currentValue.length;
+                            const before = currentValue.slice(0, selectionStart);
+                            const after = currentValue.slice(selectionEnd);
+                            let newValue = before + paste + after;
                             if (newValue.length > 1000) {
                               e.preventDefault();
-                              const truncated = newValue.substring(0, 1000);
+                              // Truncate so that the pasted text fits within the limit
+                              const allowedPasteLength = 1000 - (before.length + after.length);
+                              const truncatedPaste = paste.slice(0, Math.max(0, allowedPasteLength));
+                              const truncated = before + truncatedPaste + after;
                               form.setValue("descricao", truncated);
                             }
                           }}
