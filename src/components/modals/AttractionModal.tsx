@@ -221,7 +221,7 @@ export function AttractionModal({
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-6">
                     <FormItem className="flex flex-col gap-1">
                       <FormLabel className="text-sm font-medium">
-                        Nome
+                        Nome *
                       </FormLabel>
                       <FormControl>
                         <Input
@@ -229,19 +229,25 @@ export function AttractionModal({
                             required: true,
                           })}
                           disabled={isViewMode}
-                          placeholder="Nome da atração"
+                          placeholder="Digite o nome da atração turística"
+                          className={form.formState.errors.atracaoTuristica?.nome ? "border-red-500" : ""}
                         />
                       </FormControl>
-                      {form.formState.errors.atracaoTuristica?.nome && (
-                        <span className="text-red-500 text-xs">
+                      {form.formState.errors.atracaoTuristica?.nome ? (
+                        <span className="text-red-500 text-xs flex items-center gap-1">
+                          <span className="w-4 h-4 text-xs">⚠️</span>
                           {form.formState.errors.atracaoTuristica.nome.message}
+                        </span>
+                      ) : (
+                        <span className="text-gray-500 text-xs">
+                          💡 Nome deve ser claro e identificar a atração
                         </span>
                       )}
                     </FormItem>
 
                     <FormItem className="flex flex-col gap-1">
                       <FormLabel className="text-sm font-medium">
-                        Mapa URL
+                        URL do Mapa *
                       </FormLabel>
                       <FormControl>
                         <Input
@@ -249,16 +255,22 @@ export function AttractionModal({
                             required: true,
                           })}
                           disabled={isViewMode}
-                          placeholder="URL do mapa"
+                          placeholder="https://maps.google.com/..."
                           type="url"
+                          className={form.formState.errors.atracaoTuristica?.mapaUrl ? "border-red-500" : ""}
                         />
                       </FormControl>
-                      {form.formState.errors.atracaoTuristica?.mapaUrl && (
-                        <span className="text-red-500 text-xs">
+                      {form.formState.errors.atracaoTuristica?.mapaUrl ? (
+                        <span className="text-red-500 text-xs flex items-center gap-1">
+                          <span className="w-4 h-4 text-xs">⚠️</span>
                           {
                             form.formState.errors.atracaoTuristica.mapaUrl
                               .message
                           }
+                        </span>
+                      ) : (
+                        <span className="text-gray-500 text-xs">
+                          💡 Cole o link do Google Maps ou similar
                         </span>
                       )}
                     </FormItem>
@@ -267,7 +279,7 @@ export function AttractionModal({
                   <div>
                     <FormItem className="flex flex-col gap-1">
                       <FormLabel className="text-sm font-medium">
-                        Descrição
+                        Descrição *
                       </FormLabel>
                       <FormControl>
                         <Textarea
@@ -275,16 +287,21 @@ export function AttractionModal({
                             required: true,
                           })}
                           disabled={isViewMode}
-                          placeholder="Descrição da atração"
-                          className="min-h-[100px]"
+                          placeholder="Descreva a atração turística de forma detalhada"
+                          className={`min-h-[100px] ${form.formState.errors.atracaoTuristica?.descricao ? "border-red-500" : ""}`}
                         />
                       </FormControl>
-                      {form.formState.errors.atracaoTuristica?.descricao && (
-                        <span className="text-red-500 text-xs">
+                      {form.formState.errors.atracaoTuristica?.descricao ? (
+                        <span className="text-red-500 text-xs flex items-center gap-1">
+                          <span className="w-4 h-4 text-xs">⚠️</span>
                           {
                             form.formState.errors.atracaoTuristica.descricao
                               .message
                           }
+                        </span>
+                      ) : (
+                        <span className="text-gray-500 text-xs">
+                          💡 Inclua informações relevantes como história, características especiais e o que o visitante pode esperar
                         </span>
                       )}
                     </FormItem>
@@ -297,7 +314,7 @@ export function AttractionModal({
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                     <FormItem className="flex flex-col gap-1">
                       <FormLabel className="text-sm font-medium">
-                        Email
+                        Email *
                       </FormLabel>
                       <FormControl>
                         <Input
@@ -305,13 +322,19 @@ export function AttractionModal({
                             required: true,
                           })}
                           disabled={isViewMode}
-                          placeholder="Email de contato"
+                          placeholder="contato@exemplo.com"
                           type="email"
+                          className={form.formState.errors.contato?.email ? "border-red-500" : ""}
                         />
                       </FormControl>
-                      {form.formState.errors.contato?.email && (
-                        <span className="text-red-500 text-xs">
+                      {form.formState.errors.contato?.email ? (
+                        <span className="text-red-500 text-xs flex items-center gap-1">
+                          <span className="w-4 h-4 text-xs">⚠️</span>
                           {form.formState.errors.contato.email.message}
+                        </span>
+                      ) : (
+                        <span className="text-gray-500 text-xs">
+                          💡 Email válido para contato com visitantes
                         </span>
                       )}
                     </FormItem>
@@ -324,25 +347,44 @@ export function AttractionModal({
                         <Input
                           {...form.register("contato.telefone")}
                           disabled={isViewMode}
-                          placeholder="(00) 0000-0000"
+                          placeholder="27999999999"
+                          className={form.formState.errors.contato?.telefone ? "border-red-500" : ""}
                         />
                       </FormControl>
+                      {form.formState.errors.contato?.telefone ? (
+                        <span className="text-red-500 text-xs flex items-center gap-1">
+                          <span className="w-4 h-4 text-xs">⚠️</span>
+                          {form.formState.errors.contato.telefone.message}
+                        </span>
+                      ) : (
+                        <span className="text-gray-500 text-xs">
+                          💡 Apenas números (10-11 dígitos) - opcional
+                        </span>
+                      )}
                     </FormItem>
 
                     <FormItem className="flex flex-col gap-1">
                       <FormLabel className="text-sm font-medium">
-                        Celular
+                        Celular *
                       </FormLabel>
                       <FormControl>
                         <Input
-                          {...form.register("contato.celular")}
+                          {...form.register("contato.celular", {
+                            required: true,
+                          })}
                           disabled={isViewMode}
-                          placeholder="(00) 00000-0000"
+                          placeholder="27999999999"
+                          className={form.formState.errors.contato?.celular ? "border-red-500" : ""}
                         />
                       </FormControl>
-                      {form.formState.errors.contato?.celular && (
-                        <span className="text-red-500 text-xs">
+                      {form.formState.errors.contato?.celular ? (
+                        <span className="text-red-500 text-xs flex items-center gap-1">
+                          <span className="w-4 h-4 text-xs">⚠️</span>
                           {form.formState.errors.contato.celular.message}
+                        </span>
+                      ) : (
+                        <span className="text-gray-500 text-xs">
+                          💡 Apenas números (10-11 dígitos)
                         </span>
                       )}
                     </FormItem>
@@ -355,9 +397,20 @@ export function AttractionModal({
                         <Input
                           {...form.register("contato.whatsapp")}
                           disabled={isViewMode}
-                          placeholder="(00) 00000-0000"
+                          placeholder="27999999999"
+                          className={form.formState.errors.contato?.whatsapp ? "border-red-500" : ""}
                         />
                       </FormControl>
+                      {form.formState.errors.contato?.whatsapp ? (
+                        <span className="text-red-500 text-xs flex items-center gap-1">
+                          <span className="w-4 h-4 text-xs">⚠️</span>
+                          {form.formState.errors.contato.whatsapp.message}
+                        </span>
+                      ) : (
+                        <span className="text-gray-500 text-xs">
+                          💡 Apenas números (10-11 dígitos) - opcional
+                        </span>
+                      )}
                     </FormItem>
 
                     <FormItem className="flex flex-col gap-1">
@@ -366,23 +419,32 @@ export function AttractionModal({
                       </FormLabel>
                       <FormControl>
                         <Input
-                          {...form.register("contato.instagram", {
-                            required: true,
-                          })}
+                          {...form.register("contato.instagram")}
                           disabled={isViewMode}
-                          placeholder="Instagram"
+                          placeholder="@usuario_instagram"
+                          className={form.formState.errors.contato?.instagram ? "border-red-500" : ""}
                         />
                       </FormControl>
+                      {form.formState.errors.contato?.instagram ? (
+                        <span className="text-red-500 text-xs flex items-center gap-1">
+                          <span className="w-4 h-4 text-xs">⚠️</span>
+                          {form.formState.errors.contato.instagram.message}
+                        </span>
+                      ) : (
+                        <span className="text-gray-500 text-xs">
+                          💡 Nome do usuário (3-30 caracteres) - opcional
+                        </span>
+                      )}
                     </FormItem>
                   </div>
                 </section>
 
                 {/* Municípios */}
                 <section className="border rounded-lg p-6 space-y-6">
-                  <h3 className="text-lg font-semibold">Municípios</h3>
+                  <h3 className="text-lg font-semibold">Município</h3>
                   <FormItem className="flex flex-col gap-1">
                     <FormLabel className="text-sm font-medium">
-                      Selecione o Município
+                      Selecione o Município *
                     </FormLabel>
                     <FormControl>
                       <Select
@@ -390,8 +452,8 @@ export function AttractionModal({
                         onValueChange={(value) => form.setValue("municipio", value)}
                         disabled={isViewMode}
                       >
-                        <SelectTrigger>
-                          <SelectValue placeholder="Selecione o município" />
+                        <SelectTrigger className={form.formState.errors.municipio ? "border-red-500" : ""}>
+                          <SelectValue placeholder="Selecione o município onde a atração está localizada" />
                         </SelectTrigger>
                         <SelectContent>
                           {municipios?.map((municipio) => (
@@ -402,6 +464,16 @@ export function AttractionModal({
                         </SelectContent>
                       </Select>
                     </FormControl>
+                    {form.formState.errors.municipio ? (
+                      <span className="text-red-500 text-xs flex items-center gap-1">
+                        <span className="w-4 h-4 text-xs">⚠️</span>
+                        {form.formState.errors.municipio.message}
+                      </span>
+                    ) : (
+                      <span className="text-gray-500 text-xs">
+                        💡 Escolha o município onde sua atração turística está localizada
+                      </span>
+                    )}
                   </FormItem>
                 </section>
 
@@ -411,70 +483,104 @@ export function AttractionModal({
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                     <FormItem className="flex flex-col gap-1">
                       <FormLabel className="text-sm font-medium">
-                        Logradouro
+                        Logradouro *
                       </FormLabel>
                       <FormControl>
                         <Input
-                          {...form.register("endereco.logradouro")}
+                          {...form.register("endereco.logradouro", {
+                            required: true,
+                          })}
                           disabled={isViewMode}
-                          placeholder="Logradouro"
+                          placeholder="Rua, Avenida, Estrada..."
+                          className={form.formState.errors.endereco?.logradouro ? "border-red-500" : ""}
                         />
                       </FormControl>
-                      {form.formState.errors.endereco?.logradouro && (
-                        <span className="text-red-500 text-xs">
+                      {form.formState.errors.endereco?.logradouro ? (
+                        <span className="text-red-500 text-xs flex items-center gap-1">
+                          <span className="w-4 h-4 text-xs">⚠️</span>
                           {form.formState.errors.endereco.logradouro.message}
                         </span>
+                      ) : (
+                        <span className="text-gray-500 text-xs">
+                          💡 Nome completo da rua, avenida ou estrada
+                        </span>
                       )}
                     </FormItem>
 
                     <FormItem className="flex flex-col gap-1">
                       <FormLabel className="text-sm font-medium">
-                        Número
+                        Número *
                       </FormLabel>
                       <FormControl>
                         <Input
-                          {...form.register("endereco.numero")}
+                          {...form.register("endereco.numero", {
+                            required: true,
+                          })}
                           disabled={isViewMode}
-                          placeholder="Número"
+                          placeholder="123 ou S/N"
+                          className={form.formState.errors.endereco?.numero ? "border-red-500" : ""}
                         />
                       </FormControl>
-                      {form.formState.errors.endereco?.numero && (
-                        <span className="text-red-500 text-xs">
+                      {form.formState.errors.endereco?.numero ? (
+                        <span className="text-red-500 text-xs flex items-center gap-1">
+                          <span className="w-4 h-4 text-xs">⚠️</span>
                           {form.formState.errors.endereco.numero.message}
                         </span>
-                      )}
-                    </FormItem>
-
-                    <FormItem className="flex flex-col gap-1">
-                      <FormLabel className="text-sm font-medium">
-                        Bairro
-                      </FormLabel>
-                      <FormControl>
-                        <Input
-                          {...form.register("endereco.bairro")}
-                          disabled={isViewMode}
-                          placeholder="Bairro"
-                        />
-                      </FormControl>
-                      {form.formState.errors.endereco?.bairro && (
-                        <span className="text-red-500 text-xs">
-                          {form.formState.errors.endereco.bairro.message}
+                      ) : (
+                        <span className="text-gray-500 text-xs">
+                          💡 Número do endereço ou S/N se não houver
                         </span>
                       )}
                     </FormItem>
 
                     <FormItem className="flex flex-col gap-1">
-                      <FormLabel className="text-sm font-medium">CEP</FormLabel>
+                      <FormLabel className="text-sm font-medium">
+                        Bairro *
+                      </FormLabel>
                       <FormControl>
                         <Input
-                          {...form.register("endereco.cep")}
+                          {...form.register("endereco.bairro", {
+                            required: true,
+                          })}
                           disabled={isViewMode}
-                          placeholder="00000-000"
+                          placeholder="Nome do bairro"
+                          className={form.formState.errors.endereco?.bairro ? "border-red-500" : ""}
                         />
                       </FormControl>
-                      {form.formState.errors.endereco?.cep && (
-                        <span className="text-red-500 text-xs">
+                      {form.formState.errors.endereco?.bairro ? (
+                        <span className="text-red-500 text-xs flex items-center gap-1">
+                          <span className="w-4 h-4 text-xs">⚠️</span>
+                          {form.formState.errors.endereco.bairro.message}
+                        </span>
+                      ) : (
+                        <span className="text-gray-500 text-xs">
+                          💡 Nome do bairro ou região
+                        </span>
+                      )}
+                    </FormItem>
+
+                    <FormItem className="flex flex-col gap-1">
+                      <FormLabel className="text-sm font-medium">
+                        CEP *
+                      </FormLabel>
+                      <FormControl>
+                        <Input
+                          {...form.register("endereco.cep", {
+                            required: true,
+                          })}
+                          disabled={isViewMode}
+                          placeholder="29000000"
+                          className={form.formState.errors.endereco?.cep ? "border-red-500" : ""}
+                        />
+                      </FormControl>
+                      {form.formState.errors.endereco?.cep ? (
+                        <span className="text-red-500 text-xs flex items-center gap-1">
+                          <span className="w-4 h-4 text-xs">⚠️</span>
                           {form.formState.errors.endereco.cep.message}
+                        </span>
+                      ) : (
+                        <span className="text-gray-500 text-xs">
+                          💡 Apenas números, 8 dígitos
                         </span>
                       )}
                     </FormItem>
@@ -490,7 +596,7 @@ export function AttractionModal({
                   <div>
                     <FormItem className="flex flex-col gap-1">
                       <FormLabel className="text-sm font-medium">
-                        Dias de Funcionamento
+                        Dias de Funcionamento *
                       </FormLabel>
                       <FormControl>
                         <div className="flex flex-wrap gap-4">
@@ -519,13 +625,14 @@ export function AttractionModal({
                           ))}
                         </div>
                       </FormControl>
-                      {form.formState.errors.horarioFuncionamento
-                        ?.diaDaSemana && (
-                        <span className="text-red-500 text-xs">
-                          {
-                            form.formState.errors.horarioFuncionamento
-                              .diaDaSemana.message
-                          }
+                      {form.formState.errors.horarioFuncionamento?.diaDaSemana ? (
+                        <span className="text-red-500 text-xs flex items-center gap-1">
+                          <span className="w-4 h-4 text-xs">⚠️</span>
+                          {form.formState.errors.horarioFuncionamento.diaDaSemana.message}
+                        </span>
+                      ) : (
+                        <span className="text-gray-500 text-xs">
+                          💡 Selecione pelo menos um dia de funcionamento
                         </span>
                       )}
                     </FormItem>
@@ -534,7 +641,7 @@ export function AttractionModal({
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-6">
                     <FormItem className="flex flex-col gap-1">
                       <FormLabel className="text-sm font-medium">
-                        Horário de Abertura
+                        Horário de Abertura *
                       </FormLabel>
                       <FormControl>
                         <Input
@@ -544,13 +651,24 @@ export function AttractionModal({
                           )}
                           disabled={isViewMode}
                           type="time"
+                          className={form.formState.errors.horarioFuncionamento?.horaAbertura ? "border-red-500" : ""}
                         />
                       </FormControl>
+                      {form.formState.errors.horarioFuncionamento?.horaAbertura ? (
+                        <span className="text-red-500 text-xs flex items-center gap-1">
+                          <span className="w-4 h-4 text-xs">⚠️</span>
+                          {form.formState.errors.horarioFuncionamento.horaAbertura.message}
+                        </span>
+                      ) : (
+                        <span className="text-gray-500 text-xs">
+                          💡 Horário em que a atração abre
+                        </span>
+                      )}
                     </FormItem>
 
                     <FormItem className="flex flex-col gap-1">
                       <FormLabel className="text-sm font-medium">
-                        Horário de Fechamento
+                        Horário de Fechamento *
                       </FormLabel>
                       <FormControl>
                         <Input
@@ -560,8 +678,19 @@ export function AttractionModal({
                           )}
                           disabled={isViewMode}
                           type="time"
+                          className={form.formState.errors.horarioFuncionamento?.horaFechamento ? "border-red-500" : ""}
                         />
                       </FormControl>
+                      {form.formState.errors.horarioFuncionamento?.horaFechamento ? (
+                        <span className="text-red-500 text-xs flex items-center gap-1">
+                          <span className="w-4 h-4 text-xs">⚠️</span>
+                          {form.formState.errors.horarioFuncionamento.horaFechamento.message}
+                        </span>
+                      ) : (
+                        <span className="text-gray-500 text-xs">
+                          💡 Horário em que a atração fecha
+                        </span>
+                      )}
                     </FormItem>
                   </div>
                 </section>
@@ -571,7 +700,7 @@ export function AttractionModal({
                   <h3 className="text-lg font-semibold">Categoria</h3>
                   <FormItem className="flex flex-col gap-1">
                     <FormLabel className="text-sm font-medium">
-                      Selecione a Categoria
+                      Selecione a Categoria *
                     </FormLabel>
                     <FormControl>
                       <RadioGroup
@@ -597,9 +726,16 @@ export function AttractionModal({
                         ))}
                       </RadioGroup>
                     </FormControl>
-                    <p className="text-red-500 text-xs mt-1">
-                      {form.formState.errors.categoria?.message}
-                    </p>
+                    {form.formState.errors.categoria ? (
+                      <span className="text-red-500 text-xs flex items-center gap-1">
+                        <span className="w-4 h-4 text-xs">⚠️</span>
+                        {form.formState.errors.categoria.message}
+                      </span>
+                    ) : (
+                      <span className="text-gray-500 text-xs">
+                        💡 Escolha a categoria que melhor define sua atração
+                      </span>
+                    )}
                   </FormItem>
                 </section>
 
@@ -608,7 +744,7 @@ export function AttractionModal({
                   <h3 className="text-lg font-semibold">SubCategoria</h3>
                   <FormItem className="flex flex-col gap-1">
                     <FormLabel className="text-sm font-medium">
-                      Selecione a SubCategoria
+                      Selecione as SubCategorias *
                     </FormLabel>
                     <FormControl>
                       <div className="grid grid-cols-4">
@@ -638,18 +774,25 @@ export function AttractionModal({
                         ))}
                       </div>
                     </FormControl>
-                    <p className="text-red-500 text-xs mt-1">
-                      {form.formState.errors.subCategoria?.message}
-                    </p>
+                    {form.formState.errors.subCategoria ? (
+                      <span className="text-red-500 text-xs flex items-center gap-1">
+                        <span className="w-4 h-4 text-xs">⚠️</span>
+                        {form.formState.errors.subCategoria.message}
+                      </span>
+                    ) : (
+                      <span className="text-gray-500 text-xs">
+                        💡 Selecione pelo menos uma subcategoria para detalhar melhor sua atração
+                      </span>
+                    )}
                   </FormItem>
                 </section>
 
                 {/* Perfil */}
                 <section className="border rounded-lg p-6 space-y-6">
-                  <h3 className="text-lg font-semibold">Perfil</h3>
+                  <h3 className="text-lg font-semibold">Perfil do Cliente</h3>
                   <FormItem className="flex flex-col gap-1">
                     <FormLabel className="text-sm font-medium">
-                      Selecione o Perfil
+                      Selecione os Perfis de Cliente
                     </FormLabel>
                     <FormControl>
                       <div className="grid grid-cols-4">
@@ -678,6 +821,16 @@ export function AttractionModal({
                         ))}
                       </div>
                     </FormControl>
+                    {form.formState.errors.perfil ? (
+                      <span className="text-red-500 text-xs flex items-center gap-1">
+                        <span className="w-4 h-4 text-xs">⚠️</span>
+                        {form.formState.errors.perfil.message}
+                      </span>
+                    ) : (
+                      <span className="text-gray-500 text-xs">
+                        💡 Selecione os perfis de cliente que mais se adequam à sua atração (opcional)
+                      </span>
+                    )}
                   </FormItem>
                 </section>
               </div>

@@ -178,11 +178,22 @@ export function UserModal({
                 name="nome"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Nome</FormLabel>
+                    <FormLabel>Nome *</FormLabel>
                     <FormControl>
-                      <Input placeholder="Nome do usuário" {...field} />
+                      <Input 
+                        placeholder="Digite o nome completo do usuário" 
+                        {...field} 
+                        className={form.formState.errors.nome ? "border-red-500" : ""}
+                      />
                     </FormControl>
-                    <FormMessage />
+                    <FormMessage className="flex items-center gap-1">
+                      {form.formState.errors.nome && <span className="w-4 h-4 text-xs">⚠️</span>}
+                    </FormMessage>
+                    {!form.formState.errors.nome && (
+                      <span className="text-gray-500 text-xs">
+                        💡 Nome deve ter pelo menos 2 caracteres e no máximo 100
+                      </span>
+                    )}
                   </FormItem>
                 )}
               />
@@ -191,11 +202,23 @@ export function UserModal({
                 name="email"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Email</FormLabel>
+                    <FormLabel>Email *</FormLabel>
                     <FormControl>
-                      <Input type="email" placeholder="email@exemplo.com" {...field} />
+                      <Input 
+                        type="email" 
+                        placeholder="usuario@exemplo.com" 
+                        {...field} 
+                        className={form.formState.errors.email ? "border-red-500" : ""}
+                      />
                     </FormControl>
-                    <FormMessage />
+                    <FormMessage className="flex items-center gap-1">
+                      {form.formState.errors.email && <span className="w-4 h-4 text-xs">⚠️</span>}
+                    </FormMessage>
+                    {!form.formState.errors.email && (
+                      <span className="text-gray-500 text-xs">
+                        💡 Digite um endereço de email válido
+                      </span>
+                    )}
                   </FormItem>
                 )}
               />
@@ -205,11 +228,23 @@ export function UserModal({
                   name="senha"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Senha</FormLabel>
+                      <FormLabel>Senha *</FormLabel>
                       <FormControl>
-                        <Input type="password" placeholder="Senha" {...field} />
+                        <Input 
+                          type="password" 
+                          placeholder="Digite uma senha segura" 
+                          {...field} 
+                          className={form.formState.errors.senha ? "border-red-500" : ""}
+                        />
                       </FormControl>
-                      <FormMessage />
+                      <FormMessage className="flex items-center gap-1">
+                        {form.formState.errors.senha && <span className="w-4 h-4 text-xs">⚠️</span>}
+                      </FormMessage>
+                      {!form.formState.errors.senha && (
+                        <span className="text-gray-500 text-xs">
+                          💡 Senha deve ter pelo menos 6 caracteres
+                        </span>
+                      )}
                     </FormItem>
                   )}
                 />
@@ -220,11 +255,23 @@ export function UserModal({
                   name="senha"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Nova Senha (opcional)</FormLabel>
+                      <FormLabel>Nova Senha</FormLabel>
                       <FormControl>
-                        <Input type="password" placeholder="Deixe em branco para manter a atual" {...field} />
+                        <Input 
+                          type="password" 
+                          placeholder="Deixe em branco para manter a atual" 
+                          {...field} 
+                          className={form.formState.errors.senha ? "border-red-500" : ""}
+                        />
                       </FormControl>
-                      <FormMessage />
+                      <FormMessage className="flex items-center gap-1">
+                        {form.formState.errors.senha && <span className="w-4 h-4 text-xs">⚠️</span>}
+                      </FormMessage>
+                      {!form.formState.errors.senha && (
+                        <span className="text-gray-500 text-xs">
+                          💡 Opcional: deixe em branco para manter a senha atual
+                        </span>
+                      )}
                     </FormItem>
                   )}
                 />
@@ -239,7 +286,7 @@ export function UserModal({
                         Administrador
                       </FormLabel>
                       <FormDescription>
-                        Permitir acesso total ao sistema
+                        💡 Administradores têm acesso total ao sistema, incluindo gerenciamento de usuários e configurações
                       </FormDescription>
                     </div>
                     <FormControl>

@@ -151,14 +151,25 @@ export function MunicipalityModal({
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                   {/* Campos do Município */}
                   <FormItem>
-                    <FormLabel>Nome</FormLabel>
+                    <FormLabel>Nome *</FormLabel>
                     <FormControl>
                       <Input
                         {...form.register("nome", { required: true })}
                         disabled={isViewMode}
-                        placeholder="Nome do município"
+                        placeholder="Digite o nome do município"
+                        className={form.formState.errors.nome ? "border-red-500" : ""}
                       />
                     </FormControl>
+                    {form.formState.errors.nome ? (
+                      <span className="text-red-500 text-xs flex items-center gap-1">
+                        <span className="w-4 h-4 text-xs">⚠️</span>
+                        {form.formState.errors.nome.message}
+                      </span>
+                    ) : (
+                      <span className="text-gray-500 text-xs">
+                        💡 Nome oficial do município
+                      </span>
+                    )}
                   </FormItem>
                   <FormItem>
                     <FormLabel>Site</FormLabel>
@@ -166,10 +177,21 @@ export function MunicipalityModal({
                       <Input
                         {...form.register("site")}
                         disabled={isViewMode}
-                        placeholder="Site do município"
+                        placeholder="https://www.municipio.gov.br"
                         type="url"
+                        className={form.formState.errors.site ? "border-red-500" : ""}
                       />
                     </FormControl>
+                    {form.formState.errors.site ? (
+                      <span className="text-red-500 text-xs flex items-center gap-1">
+                        <span className="w-4 h-4 text-xs">⚠️</span>
+                        {form.formState.errors.site.message}
+                      </span>
+                    ) : (
+                      <span className="text-gray-500 text-xs">
+                        💡 Site oficial da prefeitura (opcional)
+                      </span>
+                    )}
                   </FormItem>
                   <FormItem>
                     <FormLabel>Mapa URL</FormLabel>
@@ -177,23 +199,34 @@ export function MunicipalityModal({
                       <Input
                         {...form.register("mapaUrl")}
                         disabled={isViewMode}
-                        placeholder="URL do mapa"
+                        placeholder="https://maps.google.com/..."
                         type="url"
+                        className={form.formState.errors.mapaUrl ? "border-red-500" : ""}
                       />
                     </FormControl>
+                    {form.formState.errors.mapaUrl ? (
+                      <span className="text-red-500 text-xs flex items-center gap-1">
+                        <span className="w-4 h-4 text-xs">⚠️</span>
+                        {form.formState.errors.mapaUrl.message}
+                      </span>
+                    ) : (
+                      <span className="text-gray-500 text-xs">
+                        💡 Link do Google Maps ou similar (opcional)
+                      </span>
+                    )}
                   </FormItem>
                 </div>
 
                 <div className="col-span-full">
                   <FormItem>
-                    <FormLabel>Descrição</FormLabel>
+                    <FormLabel>Descrição *</FormLabel>
                     <FormControl>
                       <div className="space-y-2">
                         <Textarea
-                          {...form.register("descricao")}
+                          {...form.register("descricao", { required: true })}
                           disabled={isViewMode}
-                          placeholder="Descrição do município"
-                          className="min-h-[100px]"
+                          placeholder="Descreva o município de forma atrativa para turistas"
+                          className={`min-h-[100px] ${form.formState.errors.descricao ? "border-red-500" : ""}`}
                           maxLength={1000}
                           onPaste={(e) => {
                             const paste = e.clipboardData?.getData('text') || '';
@@ -219,6 +252,16 @@ export function MunicipalityModal({
                         </div>
                       </div>
                     </FormControl>
+                    {form.formState.errors.descricao ? (
+                      <span className="text-red-500 text-xs flex items-center gap-1">
+                        <span className="w-4 h-4 text-xs">⚠️</span>
+                        {form.formState.errors.descricao.message}
+                      </span>
+                    ) : (
+                      <span className="text-gray-500 text-xs">
+                        💡 Inclua história, pontos turísticos, cultura e características únicas do município
+                      </span>
+                    )}
                   </FormItem>
                 </div>
               </section>
@@ -230,15 +273,26 @@ export function MunicipalityModal({
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                   {/* Campos de Contato */}
                   <FormItem>
-                    <FormLabel>Email</FormLabel>
+                    <FormLabel>Email *</FormLabel>
                     <FormControl>
                       <Input
                         {...form.register("contato.email", { required: true })}
                         disabled={isViewMode}
-                        placeholder="Email de contato"
+                        placeholder="contato@municipio.gov.br"
                         type="email"
+                        className={form.formState.errors.contato?.email ? "border-red-500" : ""}
                       />
                     </FormControl>
+                    {form.formState.errors.contato?.email ? (
+                      <span className="text-red-500 text-xs flex items-center gap-1">
+                        <span className="w-4 h-4 text-xs">⚠️</span>
+                        {form.formState.errors.contato.email.message}
+                      </span>
+                    ) : (
+                      <span className="text-gray-500 text-xs">
+                        💡 Email oficial para contato com turistas
+                      </span>
+                    )}
                   </FormItem>
                   <FormItem>
                     <FormLabel>Telefone</FormLabel>
@@ -246,9 +300,20 @@ export function MunicipalityModal({
                       <Input
                         {...form.register("contato.telefone")}
                         disabled={isViewMode}
-                        placeholder="(00) 0000-0000"
+                        placeholder="27999999999"
+                        className={form.formState.errors.contato?.telefone ? "border-red-500" : ""}
                       />
                     </FormControl>
+                    {form.formState.errors.contato?.telefone ? (
+                      <span className="text-red-500 text-xs flex items-center gap-1">
+                        <span className="w-4 h-4 text-xs">⚠️</span>
+                        {form.formState.errors.contato.telefone.message}
+                      </span>
+                    ) : (
+                      <span className="text-gray-500 text-xs">
+                        💡 Telefone fixo (opcional)
+                      </span>
+                    )}
                   </FormItem>
                   <FormItem>
                     <FormLabel>Celular</FormLabel>
@@ -256,9 +321,20 @@ export function MunicipalityModal({
                       <Input
                         {...form.register("contato.celular")}
                         disabled={isViewMode}
-                        placeholder="(00) 00000-0000"
+                        placeholder="27999999999"
+                        className={form.formState.errors.contato?.celular ? "border-red-500" : ""}
                       />
                     </FormControl>
+                    {form.formState.errors.contato?.celular ? (
+                      <span className="text-red-500 text-xs flex items-center gap-1">
+                        <span className="w-4 h-4 text-xs">⚠️</span>
+                        {form.formState.errors.contato.celular.message}
+                      </span>
+                    ) : (
+                      <span className="text-gray-500 text-xs">
+                        💡 Celular para contato (opcional)
+                      </span>
+                    )}
                   </FormItem>
                   <FormItem>
                     <FormLabel>WhatsApp</FormLabel>
@@ -266,9 +342,20 @@ export function MunicipalityModal({
                       <Input
                         {...form.register("contato.whatsapp")}
                         disabled={isViewMode}
-                        placeholder="(00) 00000-0000"
+                        placeholder="27999999999"
+                        className={form.formState.errors.contato?.whatsapp ? "border-red-500" : ""}
                       />
                     </FormControl>
+                    {form.formState.errors.contato?.whatsapp ? (
+                      <span className="text-red-500 text-xs flex items-center gap-1">
+                        <span className="w-4 h-4 text-xs">⚠️</span>
+                        {form.formState.errors.contato.whatsapp.message}
+                      </span>
+                    ) : (
+                      <span className="text-gray-500 text-xs">
+                        💡 WhatsApp para comunicação rápida (opcional)
+                      </span>
+                    )}
                   </FormItem>
                   <FormItem>
                     <FormLabel>Instagram</FormLabel>
@@ -276,9 +363,20 @@ export function MunicipalityModal({
                       <Input
                         {...form.register("contato.instagram")}
                         disabled={isViewMode}
-                        placeholder="Instagram"
+                        placeholder="@usuario_instagram"
+                        className={form.formState.errors.contato?.instagram ? "border-red-500" : ""}
                       />
                     </FormControl>
+                    {form.formState.errors.contato?.instagram ? (
+                      <span className="text-red-500 text-xs flex items-center gap-1">
+                        <span className="w-4 h-4 text-xs">⚠️</span>
+                        {form.formState.errors.contato.instagram.message}
+                      </span>
+                    ) : (
+                      <span className="text-gray-500 text-xs">
+                        💡 Instagram oficial do município (opcional)
+                      </span>
+                    )}
                   </FormItem>
                 </div>
               </section>
