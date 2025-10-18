@@ -8,11 +8,22 @@ type FilterProps = {
     label: string
     value: string
   }[]
-  onChange?: (value: string) => void
+  selectedValues?: string[]
+  onChange?: (selectedValues: string[]) => void
   className?: string
 }
 
-export function Filter({ title, items, onChange, className }: FilterProps) {
+export function Filter({ title, items, selectedValues = [], onChange, className }: FilterProps) {
+  const handleCheckboxChange = (value: string) => {
+    if (selectedValues.includes(value)) {
+      // Remove o valor se já está selecionado
+      onChange?.(selectedValues.filter(v => v !== value))
+    } else {
+      // Adiciona o valor se não está selecionado
+      onChange?.([...selectedValues, value])
+    }
+  }
+
   return (
     <div className={`space-y-4 ${className}`} >
       <Accordion type="single" collapsible>
@@ -28,10 +39,11 @@ export function Filter({ title, items, onChange, className }: FilterProps) {
                     type="checkbox"
                     id={item.value}
                     value={item.value}
-                    onChange={() => onChange?.(item.value)}
+                    checked={selectedValues.includes(item.value)}
+                    onChange={() => handleCheckboxChange(item.value)}
                     className="h-4 w-4"
                   />
-                  <span>{item.label}</span>
+                  <label htmlFor={item.value} className="cursor-pointer">{item.label}</label>
                 </li>
               ))}
             </ul>
