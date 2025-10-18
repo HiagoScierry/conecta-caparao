@@ -6,6 +6,7 @@ import { Atrativos } from "@/components/public/Atrativos";
 import { Informacoes } from "@/components/public/Informacoes";
 import { useGetMunicipioById } from "@/hooks/http/useMunicipio";
 import { Progress } from "@/components/ui/progress";
+import { DescriptionSection } from "@/components/public/DescriptionSection";
 
 type Props = {
   params: Promise<{ id: string }>;
@@ -41,11 +42,11 @@ export default function PaginaMunicipios({
             }
           />
 
-          {/* <DescriptionSection
-            descricao={municipio.descricao}
+          <DescriptionSection
+            descricao={municipio.descricao || undefined}
             // subtitulo={municipio.descricao}
             // corSubtitulo={"text-tourism-azul"}
-          /> */}
+          />
           <GaleriaDeImagens
             imagemUrls={municipio.fotos.map((foto: {url: string}) => foto.url)}
           />

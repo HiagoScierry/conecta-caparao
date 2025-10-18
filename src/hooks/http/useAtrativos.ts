@@ -29,6 +29,22 @@ export function useGetAllAtrativos() {
   });
 }
 
+export function useGetAtrativoById(id: number) {
+  return useQuery<AtracaoTuristicaLoadedData, Error>({
+    queryKey: [...QUERY_KEYS.ATRATIVOS, id],
+    queryFn: async () => {
+      const response = await fetch(`/api/atrativos/${id}`);
+
+      if (!response.ok) {
+        throw new Error('Erro ao buscar atração');
+      }
+
+      return response.json();
+    },
+    enabled: !!id,
+  });
+}
+
 export function useCreateAtrativo(){
   const { invalidateAtrativos, invalidateDashboard } = useQueryInvalidation();
 

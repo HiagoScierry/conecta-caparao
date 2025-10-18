@@ -27,10 +27,10 @@ export default function PaginaNoticias() {
         <>
           <div className="w-full mx-auto flex justify-center items-center my-8">
             <DefaultHeader
-              titulo={noticias?.[0]?.titulo || "Nenhum evento encontrado"}
+              titulo={noticias?.[0]?.titulo || "Nenhuma notícia encontrada"}
               imagemUrl={noticias?.[0]?.fotos[0]?.foto.url ?? ""}
-              linkHref={`/eventos/${noticias?.[0]?.id}`}
-              linkText="Ver todos os eventos"
+              linkHref={`/noticias/${noticias?.[0]?.id}`}
+              linkText="Ver todas as notícias"
               linkStyle="text"
             />
           </div>
