@@ -43,10 +43,9 @@ export default function PaginaMunicipios({
           />
 
           <DescriptionSection
-            descricao={municipio.descricao || undefined}
-            // subtitulo={municipio.descricao}
-            // corSubtitulo={"text-tourism-azul"}
+            descricao={municipio?.descricao || "Descrição não disponível."}
           />
+
           <GaleriaDeImagens
             imagemUrls={municipio.fotos.map((foto: {url: string}) => foto.url)}
           />
@@ -64,7 +63,7 @@ export default function PaginaMunicipios({
             contato={{
               telefone: municipio.contato.telefone,
               email: municipio.contato.email,
-              site: "",
+              site: municipio.site || "Site não disponível.",
             }}
             mapa={municipio.mapaUrl ?? undefined}
           />
