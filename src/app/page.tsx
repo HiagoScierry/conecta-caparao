@@ -129,7 +129,7 @@ export default function Home() {
 
       <div className="flex flex-col mx-8 md:mx-16 lg:mx-32 my-12">
         <h2 className="text-3xl md:text-4xl font-bold text-tourism-cinza mb-12">
-          Notícias
+          Eventos
         </h2>
       
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12 justify-items-center">
