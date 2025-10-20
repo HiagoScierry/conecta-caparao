@@ -80,29 +80,37 @@ export class ServicoTuristicoPrismaRepository implements IServicoTuristicoReposi
 
   async update(id: number, data: ServicoTuristicoWithRelations, fotosURL?: string): Promise<ServicoTuristico> {
     if (fotosURL) {
-      // Buscar foto existente na galeria
+      // Buscar se esta foto já existe na galeria deste serviço
       const galeriaExistente = await connection.galeriaFoto.findFirst({
-        where: { servicoTuristicoId: id },
+        where: { 
+          servicoTuristicoId: id,
+          foto: {
+            url: fotosURL
+          }
+        },
         include: { foto: true }
       });
 
-      if (galeriaExistente) {
-        // Atualizar URL da foto existente
-        await connection.foto.update({
-          where: { id: galeriaExistente.idFoto },
-          data: { url: fotosURL },
+      // Só adicionar a foto se ela não existir na galeria deste serviço
+      if (!galeriaExistente) {
+        // Verificar se a foto já existe na tabela foto
+        let foto = await connection.foto.findFirst({
+          where: { url: fotosURL }
         });
-      } else {
-        // Criar nova foto se não existir
-        const foto = await connection.foto.create({
-          data: { url: fotosURL },
-        });
+
+        // Se a foto não existe, criar ela
+        if (!foto) {
+          foto = await connection.foto.create({
+            data: { url: fotosURL },
+          });
+        }
         
+        // Criar a relação na galeria
         await connection.galeriaFoto.create({
           data: {
             idFoto: foto.id,
             servicoTuristicoId: id,
-            capa: true,
+            capa: false, // Não substituir a capa existente
           }
         });
       }
