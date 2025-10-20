@@ -109,7 +109,11 @@ export class MunicipioPrimaRepository implements IMunicipioRepository {
     const existingMunicipio = await connection.municipio.findUnique({
       where: { id: Number(id) },
       include: {
-        fotos: true,
+        fotos: {
+          include: {
+            foto: true
+          }
+        },
       },
     });
 
@@ -117,25 +121,33 @@ export class MunicipioPrimaRepository implements IMunicipioRepository {
       throw new Error("Municipio not found");
     }
 
-    let fotosId = existingMunicipio.fotos.map(foto => ({ id: foto.id }));
+    let fotosParaConectar: { id: number }[] = [];
 
     if (fotosUrl) {
-      const fetchedFotos = await connection.foto.findMany({
-        where: {
-          url: {
-            in: fotosUrl,
+      // URLs das fotos já associadas ao município
+      const fotosExistenteUrls = existingMunicipio.fotos.map(galeria => galeria.foto.url);
+      
+      // Filtrar apenas as URLs que ainda não estão associadas a este município
+      const novasFotosUrl = fotosUrl.filter(url => !fotosExistenteUrls.includes(url));
+
+      if (novasFotosUrl.length > 0) {
+        const fetchedFotos = await connection.foto.findMany({
+          where: {
+            url: {
+              in: novasFotosUrl,
+            },
           },
-        },
-        select: {
-          id: true,
-        },
-      });
+          select: {
+            id: true,
+          },
+        });
 
-      if (fetchedFotos.length !== fotosUrl.length) {
-        throw new Error("One or more photos not found");
+        if (fetchedFotos.length !== novasFotosUrl.length) {
+          throw new Error("One or more photos not found");
+        }
+
+        fotosParaConectar = fetchedFotos.map(foto => ({ id: foto.id }));
       }
-
-      fotosId = fetchedFotos.map(foto => ({ id: foto.id }));
     }
 
     const updatedMunicipio = await connection.municipio.update({
@@ -146,7 +158,8 @@ export class MunicipioPrimaRepository implements IMunicipioRepository {
         mapaUrl: data.mapaUrl ?? existingMunicipio.mapaUrl,
         site: data.site ?? existingMunicipio.site,
         fotos: {
-          set: fotosId,
+          // Conectar apenas as novas fotos, mantendo as existentes
+          connect: fotosParaConectar,
         },
       },
       include: {

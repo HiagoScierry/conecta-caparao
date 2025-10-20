@@ -107,6 +107,28 @@ export class NoticiaPrismaRepository implements INoticiaRepository {
       throw new Error("Dados obrigatórios da notícia não fornecidos");
     }
 
+    // Buscar fotos já associadas a esta notícia
+    const noticiaExistente = await connection.noticia.findUnique({
+      where: { id },
+      include: {
+        fotos: {
+          include: {
+            foto: true
+          }
+        }
+      }
+    });
+
+    if (!noticiaExistente) {
+      throw new Error(`Noticia with id ${id} not found`);
+    }
+
+    // URLs das fotos já associadas à notícia
+    const fotosExistenteUrls = noticiaExistente.fotos.map(galeria => galeria.foto.url);
+    
+    // Filtrar apenas as URLs que ainda não estão associadas a esta notícia
+    const novasFotosUrl = fotosUrl.filter(url => !fotosExistenteUrls.includes(url));
+
     const noticia = await connection.noticia.update({
       where: { id },
       data: {
@@ -115,9 +137,9 @@ export class NoticiaPrismaRepository implements INoticiaRepository {
         data: new Date(data.data), // Converte string para Date
         updatedAt: new Date(),
         fotos: {
-          deleteMany: {},
-          create: fotosUrl.map((url, index) => ({
-            capa: index === 0,
+          // Não remover fotos existentes, apenas adicionar as novas
+          create: novasFotosUrl.map((url) => ({
+            capa: false, // Manter a capa existente ou definir lógica específica
             foto: {
               create: {
                 url,
