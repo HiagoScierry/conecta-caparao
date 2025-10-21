@@ -162,7 +162,7 @@ export default function PaginaAtrativos() {
                     <AtracoesCard
                       nome={servico.nome}
                       cidade={servico.municipio.nome}
-                      imagemUrls={servico?.foto?.url ? [servico.foto.url] : []}
+                      imagemUrls={servico.fotos.map(foto => foto.foto.url) || []}
                       id={servico.id}
                     />
                   </Link>
