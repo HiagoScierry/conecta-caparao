@@ -157,8 +157,8 @@ export default function PaginaAtrativos() {
                     />
                   </Link>
                 ))}
-                {filteredServicos?.map((servico: ServicoTuristicoFull) => (
-                  <Link key={`servico-${servico.id}`} href={`/servicos/${servico.id}`} passHref>
+                {/* {filteredServicos?.map((servico: ServicoTuristicoFull) => (
+                  <Link key={`servico-${servico.id}`} href={`/atrativos`} passHref>
                     <AtracoesCard
                       nome={servico.nome}
                       cidade={servico.municipio.nome}
@@ -166,7 +166,7 @@ export default function PaginaAtrativos() {
                       id={servico.id}
                     />
                   </Link>
-                ))}
+                ))} */}
               </div>
             )}
           </div>
