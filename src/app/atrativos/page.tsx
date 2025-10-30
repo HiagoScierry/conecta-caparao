@@ -27,6 +27,7 @@ export default function PaginaAtrativos() {
   const [selectedCategorias, setSelectedCategorias] = useState<string[]>([]);
   const [selectedSubcategorias, setSelectedSubcategorias] = useState<string[]>([]);
   const [selectedPerfis, setSelectedPerfis] = useState<string[]>([]);
+  const [selectedServicos, setSelectedServicos] = useState<string[]>([]);
 
   // Função para filtrar atrativos
   const filteredAtracoes = useMemo(() => {
@@ -81,6 +82,7 @@ export default function PaginaAtrativos() {
               setSelectedCategorias([]);
               setSelectedSubcategorias([]);
               setSelectedPerfis([]);
+              setSelectedServicos([]);
             }}
             className="px-4 py-2 bg-tourism-verde text-white rounded-lg hover:bg-tourism-verde/80 transition-colors"
           >
@@ -133,6 +135,17 @@ export default function PaginaAtrativos() {
               onChange={setSelectedPerfis}
               className="mb-6"
             />
+
+            <Filter
+              title="servicos"
+              items={servicos?.map((servico) => ({
+                label: servico.nome,
+                value: servico.id.toString(),
+              })) ?? []}
+              selectedValues={selectedServicos}
+              onChange={setSelectedServicos}
+              className="mb-6"
+            />
           </div>
 
           <div className="w-full md:flex-1">
@@ -157,7 +170,7 @@ export default function PaginaAtrativos() {
                     />
                   </Link>
                 ))}
-                {/* {filteredServicos?.map((servico: ServicoTuristicoFull) => (
+                {filteredServicos?.map((servico: ServicoTuristicoFull) => (
                   <Link key={`servico-${servico.id}`} href={`/atrativos`} passHref>
                     <AtracoesCard
                       nome={servico.nome}
@@ -166,7 +179,7 @@ export default function PaginaAtrativos() {
                       id={servico.id}
                     />
                   </Link>
-                ))} */}
+                ))} 
               </div>
             )}
           </div>
