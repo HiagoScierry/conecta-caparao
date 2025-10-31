@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -17,7 +18,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { ImageUpload } from "@/components/ImageUpload";
 import { useGetAllMunicipios } from "@/hooks/http/useMunicipio";
-import { ServicoForm } from "@/forms/servicoForm";
+import { ServicoForm, servicoFormSchema } from "@/forms/servicoForm";
 import { ServicoTuristicoFull } from "@/repositories/interfaces/IServicoTuristicoRepository";
 import { useDeleteUpload } from "@/hooks/http/useUpload";
 
@@ -96,6 +97,7 @@ export function ServiceModal({
   const [selectedImages, setSelectedImages] = useState<File[]>([]);
 
   const form = useForm<ServicoForm>({
+    resolver: zodResolver(servicoFormSchema),
     defaultValues: getDefaultValues(initialData),
   });
 
@@ -123,17 +125,8 @@ export function ServiceModal({
   };
 
   const onSubmit = (data: ServicoForm) => {
-    // Pega os erros do formulário
-    const errors = form.formState.errors;
-    if (Object.keys(errors).length > 0) {
-      // Se houver erros, não prossegue
-      console.error("Erros no formulário:", errors);
-      return;
-    }
-
-
     onSave({ ...data, fotos: selectedImages });
-    onClose(); // Idealmente, fechar o modal apenas se o onSave for bem-sucedido.
+    onClose();
   };
 
   return (
@@ -230,7 +223,7 @@ export function ServiceModal({
                   </div>
 
                   <FormItem>
-                    <FormLabel>Descrição *</FormLabel>
+                    <FormLabel>Descrição</FormLabel>
                     <FormControl>
                       <Textarea
                         {...form.register("servico.descricao", { required: true })}

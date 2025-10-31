@@ -13,7 +13,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { useForm } from "react-hook-form";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { ImageUpload } from "@/components/ImageUpload";
-import { MunicipioForm } from "@/forms/municipioForm";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { municipioForm, MunicipioForm } from "@/forms/municipioForm"; 
 import { useState, useEffect } from "react";
 import { useDeleteUpload } from "@/hooks/http/useUpload";
 import { Contato, Foto, Municipio } from "@prisma/client";
@@ -26,14 +27,15 @@ interface MunicipalityModalProps {
   onSave: (municipalityData: MunicipioForm, urlFotos: File[]) => void;
 }
 
-const DEFAULT_FORM_VALUES = {
-  id: 0,
-  nome: "",
-  descricao: "",
-  site: "",
-  mapaUrl: "",
+const DEFAULT_FORM_VALUES: MunicipioForm = {
+  municipio: {
+    nome: "",
+    descricao: "",
+    site: "",
+    mapaUrl: "",
+  },
   contato: {
-    id: 0,
+    id: "0",
     email: "",
     telefone: "",
     celular: "",
@@ -51,13 +53,30 @@ export function MunicipalityModal({
   onSave,
 }: MunicipalityModalProps) {
   const [selectedImages, setSelectedImages] = useState<File[]>([]);
-  const form = useForm<Municipio & { contato: Contato; fotos: Foto[] }>({
-    defaultValues: initialData || DEFAULT_FORM_VALUES,
+  const form = useForm<MunicipioForm>({ // <-- Usar o tipo 'MunicipioForm'
+    resolver: zodResolver(municipioForm), // <-- CONECTAR O ZOD AQUI
+    defaultValues: DEFAULT_FORM_VALUES,
   });
 
   useEffect(() => {
     if (initialData) {
-      form.reset(initialData);
+      form.reset({
+        municipio: {
+          id: String(initialData.id),
+          nome: initialData.nome,
+          descricao: initialData.descricao ?? "",
+          site: initialData.site ?? "",
+          mapaUrl: initialData.mapaUrl ?? "",
+        },
+        contato: {
+          ...initialData.contato,
+          id: String(initialData.contato.id), 
+        },
+        fotos: initialData.fotos.map(foto => ({
+          id: String(foto.id),
+          url: foto.url,
+        })),
+      });
     } else {
       form.reset(DEFAULT_FORM_VALUES);
     }
@@ -83,10 +102,10 @@ export function MunicipalityModal({
 
     const municipioForm: MunicipioForm = {
       municipio: {
-        nome: formData.nome,
-        descricao: formData.descricao ?? "",
-        site: formData.site ?? "",
-        mapaUrl: formData.mapaUrl ?? "",
+        nome: formData.municipio.nome,
+        descricao: formData.municipio.descricao ?? "",
+        site: formData.municipio.site ?? "",
+        mapaUrl: formData.municipio.mapaUrl ?? "",
       },
       contato: {
         id: String(formData.contato.id),
@@ -154,16 +173,16 @@ export function MunicipalityModal({
                     <FormLabel>Nome *</FormLabel>
                     <FormControl>
                       <Input
-                        {...form.register("nome", { required: true })}
+                        {...form.register("municipio.nome")}
                         disabled={isViewMode}
                         placeholder="Digite o nome do município"
-                        className={form.formState.errors.nome ? "border-red-500" : ""}
+                        className={form.formState.errors.municipio?.nome ? "border-red-500" : ""}
                       />
                     </FormControl>
-                    {form.formState.errors.nome ? (
+                    {form.formState.errors.municipio?.nome ? (
                       <span className="text-red-500 text-xs flex items-center gap-1">
                         <span className="w-4 h-4 text-xs">⚠️</span>
-                        {form.formState.errors.nome.message}
+                        {form.formState.errors.municipio.nome.message}
                       </span>
                     ) : (
                       <span className="text-gray-500 text-xs">
@@ -175,17 +194,17 @@ export function MunicipalityModal({
                     <FormLabel>Site</FormLabel>
                     <FormControl>
                       <Input
-                        {...form.register("site")}
+                        {...form.register("municipio.site")}
                         disabled={isViewMode}
                         placeholder="https://www.municipio.gov.br"
                         type="url"
-                        className={form.formState.errors.site ? "border-red-500" : ""}
+                        className={form.formState.errors.municipio?.site ? "border-red-500" : ""}
                       />
                     </FormControl>
-                    {form.formState.errors.site ? (
+                    {form.formState.errors.municipio?.site ? (
                       <span className="text-red-500 text-xs flex items-center gap-1">
                         <span className="w-4 h-4 text-xs">⚠️</span>
-                        {form.formState.errors.site.message}
+                        {form.formState.errors.municipio.site.message}
                       </span>
                     ) : (
                       <span className="text-gray-500 text-xs">
@@ -197,17 +216,17 @@ export function MunicipalityModal({
                     <FormLabel>Mapa URL</FormLabel>
                     <FormControl>
                       <Input
-                        {...form.register("mapaUrl")}
+                        {...form.register("municipio.mapaUrl")}
                         disabled={isViewMode}
                         placeholder="https://maps.google.com/..."
                         type="url"
-                        className={form.formState.errors.mapaUrl ? "border-red-500" : ""}
+                        className={form.formState.errors.municipio?.mapaUrl ? "border-red-500" : ""}
                       />
                     </FormControl>
-                    {form.formState.errors.mapaUrl ? (
+                    {form.formState.errors.municipio?.mapaUrl ? (
                       <span className="text-red-500 text-xs flex items-center gap-1">
                         <span className="w-4 h-4 text-xs">⚠️</span>
-                        {form.formState.errors.mapaUrl.message}
+                        {form.formState.errors.municipio.mapaUrl.message}
                       </span>
                     ) : (
                       <span className="text-gray-500 text-xs">
@@ -223,14 +242,14 @@ export function MunicipalityModal({
                     <FormControl>
                       <div className="space-y-2">
                         <Textarea
-                          {...form.register("descricao", { required: true })}
+                          {...form.register("municipio.descricao")}
                           disabled={isViewMode}
                           placeholder="Descreva o município de forma atrativa para turistas"
-                          className={`min-h-[100px] ${form.formState.errors.descricao ? "border-red-500" : ""}`}
+                          className={`min-h-[100px] ${form.formState.errors.municipio?.descricao ? "border-red-500" : ""}`}
                           maxLength={1000}
                           onPaste={(e) => {
                             const paste = e.clipboardData?.getData('text') || '';
-                            const currentValue = form.getValues("descricao") || "";
+                            const currentValue = form.getValues("municipio.descricao") || "";
                             const target = e.currentTarget;
                             const selectionStart = target.selectionStart ?? currentValue.length;
                             const selectionEnd = target.selectionEnd ?? currentValue.length;
@@ -243,19 +262,19 @@ export function MunicipalityModal({
                               const allowedPasteLength = 1000 - (before.length + after.length);
                               const truncatedPaste = paste.slice(0, Math.max(0, allowedPasteLength));
                               const truncated = before + truncatedPaste + after;
-                              form.setValue("descricao", truncated);
+                              form.setValue("municipio.descricao", truncated);
                             }
                           }}
                         />
                         <div className="text-sm text-muted-foreground text-right">
-                          {(form.watch("descricao")?.length || 0)}/1000 caracteres
+                          {(form.watch("municipio.descricao")?.length || 0)}/1000 caracteres
                         </div>
                       </div>
                     </FormControl>
-                    {form.formState.errors.descricao ? (
+                    {form.formState.errors.municipio?.descricao ? (
                       <span className="text-red-500 text-xs flex items-center gap-1">
                         <span className="w-4 h-4 text-xs">⚠️</span>
-                        {form.formState.errors.descricao.message}
+                        {form.formState.errors.municipio.descricao.message}
                       </span>
                     ) : (
                       <span className="text-gray-500 text-xs">
