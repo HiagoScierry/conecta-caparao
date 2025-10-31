@@ -17,5 +17,5 @@ export const contatoSchema = z.object({
     .max(11, "WhatsApp deve ter no máximo 11 dígitos")
     .regex(/^\d+$/, "WhatsApp deve conter apenas números")
     .optional(),
-  instagram: z.string().min(3).max(30).optional(),
+  instagram: z.string().min(3, "Instagram deve ter pelo menos 3 caracteres").max(30).optional(),
 });

@@ -189,7 +189,7 @@ export function EventModal({
                 <div>
                   <FormItem className="flex flex-col gap-1">
                     <FormLabel className="text-sm font-medium">
-                      Descrição *
+                      Descrição
                     </FormLabel>
                     <FormControl>
                       <Textarea
