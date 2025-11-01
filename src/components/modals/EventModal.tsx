@@ -8,6 +8,7 @@ import {
 } from "@/components/ui/dialog";
 import { Form, FormControl, FormItem, FormLabel } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { MaskedInput } from "@/components/ui/masked-input";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useForm } from "react-hook-form";
@@ -358,10 +359,11 @@ export function EventModal({
                   <FormItem className="flex flex-col gap-1">
                     <FormLabel className="text-sm font-medium">CEP *</FormLabel>
                     <FormControl>
-                      <Input
+                      <MaskedInput
+                        mask="cep"
                         {...form.register("endereco.cep", { required: true })}
                         disabled={isViewMode}
-                        placeholder="29000000"
+                        placeholder="29000-000"
                         className={form.formState.errors.endereco?.cep ? "border-red-500" : ""}
                       />
                     </FormControl>
@@ -372,7 +374,7 @@ export function EventModal({
                       </span>
                     ) : (
                       <span className="text-gray-500 text-xs">
-                        💡 Apenas números, 8 dígitos
+                        💡 CEP no formato 00000-000
                       </span>
                     )}
                   </FormItem>

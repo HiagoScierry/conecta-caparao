@@ -9,6 +9,7 @@ import {
 } from "@/components/ui/dialog";
 import { Form, FormControl, FormItem, FormLabel } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { MaskedInput } from "@/components/ui/masked-input";
 import { Textarea } from "@/components/ui/textarea";
 import { useForm } from "react-hook-form";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -316,10 +317,11 @@ export function MunicipalityModal({
                   <FormItem>
                     <FormLabel>Telefone</FormLabel>
                     <FormControl>
-                      <Input
+                      <MaskedInput
+                        mask="phone"
                         {...form.register("contato.telefone")}
                         disabled={isViewMode}
-                        placeholder="27999999999"
+                        placeholder="(27) 9999-9999"
                         className={form.formState.errors.contato?.telefone ? "border-red-500" : ""}
                       />
                     </FormControl>
@@ -330,17 +332,18 @@ export function MunicipalityModal({
                       </span>
                     ) : (
                       <span className="text-gray-500 text-xs">
-                        💡 Telefone fixo (opcional)
+                        💡 Telefone com DDD (opcional)
                       </span>
                     )}
                   </FormItem>
                   <FormItem>
                     <FormLabel>Celular</FormLabel>
                     <FormControl>
-                      <Input
+                      <MaskedInput
+                        mask="phone"
                         {...form.register("contato.celular")}
                         disabled={isViewMode}
-                        placeholder="27999999999"
+                        placeholder="(27) 99999-9999"
                         className={form.formState.errors.contato?.celular ? "border-red-500" : ""}
                       />
                     </FormControl>
@@ -351,17 +354,18 @@ export function MunicipalityModal({
                       </span>
                     ) : (
                       <span className="text-gray-500 text-xs">
-                        💡 Celular para contato (opcional)
+                        💡 Celular com DDD (opcional)
                       </span>
                     )}
                   </FormItem>
                   <FormItem>
                     <FormLabel>WhatsApp</FormLabel>
                     <FormControl>
-                      <Input
+                      <MaskedInput
+                        mask="phone"
                         {...form.register("contato.whatsapp")}
                         disabled={isViewMode}
-                        placeholder="27999999999"
+                        placeholder="(27) 99999-9999"
                         className={form.formState.errors.contato?.whatsapp ? "border-red-500" : ""}
                       />
                     </FormControl>
@@ -372,7 +376,7 @@ export function MunicipalityModal({
                       </span>
                     ) : (
                       <span className="text-gray-500 text-xs">
-                        💡 WhatsApp para comunicação rápida (opcional)
+                        💡 WhatsApp com DDD (opcional)
                       </span>
                     )}
                   </FormItem>

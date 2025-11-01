@@ -12,6 +12,7 @@ import {
 } from "@/components/ui/dialog";
 import { Form, FormControl, FormItem, FormLabel } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { MaskedInput } from "@/components/ui/masked-input";
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -274,10 +275,11 @@ export function ServiceModal({
                     <FormItem>
                       <FormLabel>Celular *</FormLabel>
                       <FormControl>
-                        <Input
+                        <MaskedInput
+                          mask="phone"
                           {...form.register("contato.celular", { required: true })}
                           disabled={isViewMode}
-                          placeholder="27999999999"
+                          placeholder="(27) 99999-9999"
                           className={form.formState.errors.contato?.celular ? "border-red-500" : ""}
                         />
                       </FormControl>
@@ -288,17 +290,18 @@ export function ServiceModal({
                         </span>
                       ) : (
                         <span className="text-gray-500 text-xs">
-                          💡 Apenas números (10-11 dígitos)
+                          💡 Celular com DDD obrigatório
                         </span>
                       )}
                     </FormItem>
                     <FormItem>
                       <FormLabel>Telefone</FormLabel>
                       <FormControl>
-                        <Input
+                        <MaskedInput
+                          mask="phone"
                           {...form.register("contato.telefone")}
                           disabled={isViewMode}
-                          placeholder="27999999999"
+                          placeholder="(27) 9999-9999"
                           className={form.formState.errors.contato?.telefone ? "border-red-500" : ""}
                         />
                       </FormControl>
@@ -309,17 +312,18 @@ export function ServiceModal({
                         </span>
                       ) : (
                         <span className="text-gray-500 text-xs">
-                          💡 Telefone fixo (opcional)
+                          💡 Telefone com DDD (opcional)
                         </span>
                       )}
                     </FormItem>
                     <FormItem>
                       <FormLabel>WhatsApp</FormLabel>
                       <FormControl>
-                        <Input
+                        <MaskedInput
+                          mask="phone"
                           {...form.register("contato.whatsapp")}
                           disabled={isViewMode}
-                          placeholder="27999999999"
+                          placeholder="(27) 99999-9999"
                           className={form.formState.errors.contato?.whatsapp ? "border-red-500" : ""}
                         />
                       </FormControl>
@@ -330,7 +334,7 @@ export function ServiceModal({
                         </span>
                       ) : (
                         <span className="text-gray-500 text-xs">
-                          💡 WhatsApp para atendimento rápido (opcional)
+                          💡 WhatsApp com DDD (opcional)
                         </span>
                       )}
                     </FormItem>
@@ -501,10 +505,11 @@ export function ServiceModal({
                     <FormItem>
                       <FormLabel>CEP *</FormLabel>
                       <FormControl>
-                        <Input
+                        <MaskedInput
+                          mask="cep"
                           {...form.register("endereco.cep", { required: true })}
                           disabled={isViewMode}
-                          placeholder="29000000"
+                          placeholder="29000-000"
                           className={form.formState.errors.endereco?.cep ? "border-red-500" : ""}
                         />
                       </FormControl>
@@ -515,7 +520,7 @@ export function ServiceModal({
                         </span>
                       ) : (
                         <span className="text-gray-500 text-xs">
-                          💡 Apenas números, 8 dígitos
+                          💡 CEP no formato 00000-000
                         </span>
                       )}
                     </FormItem>
