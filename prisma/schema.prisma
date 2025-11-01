@@ -70,7 +70,7 @@ model GaleriaFoto {
 model Municipio {
   id        Int      @id @default(autoincrement())
   nome      String
-  descricao String?
+  descricao String?  @db.LongText
   site      String?
   mapaUrl String @db.VarChar(2048)
 
@@ -134,7 +134,7 @@ model Subcategoria {
 model AtracaoTuristica {
   id        Int      @id @default(autoincrement())
   nome      String
-  descricao String?
+  descricao String?  @db.LongText
   mapaUrl   String?
   site      String?
   idContato     Int
@@ -175,7 +175,7 @@ model Endereco {
 model Evento {
   id          Int      @id @default(autoincrement())
   nome        String
-  descricao   String?
+  descricao   String?  @db.LongText
   data        DateTime
   idMunicipio Int
   idEndereco  Int
@@ -192,7 +192,7 @@ model Evento {
 model Noticia {
   id     Int      @id @default(autoincrement())
   titulo String
-  texto  String
+  texto  String   @db.LongText
   data   DateTime
 
   fotos GaleriaFoto[]
@@ -204,7 +204,7 @@ model Noticia {
 model ServicoTuristico {
   id          Int      @id @default(autoincrement())
   nome        String
-  descricao   String?
+  descricao   String?  @db.LongText
   site        String?
   idEndereco  Int
   idContato   Int

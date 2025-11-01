@@ -24,6 +24,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
+import { MaskedInput } from "@/components/ui/masked-input";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { ImageUpload } from "@/components/ImageUpload";
@@ -344,10 +345,11 @@ export function AttractionModal({
                         Telefone
                       </FormLabel>
                       <FormControl>
-                        <Input
+                        <MaskedInput
+                          mask="phone"
                           {...form.register("contato.telefone")}
                           disabled={isViewMode}
-                          placeholder="27999999999"
+                          placeholder="(27) 99999-9999"
                           className={form.formState.errors.contato?.telefone ? "border-red-500" : ""}
                         />
                       </FormControl>
@@ -358,7 +360,7 @@ export function AttractionModal({
                         </span>
                       ) : (
                         <span className="text-gray-500 text-xs">
-                          💡 Apenas números (10-11 dígitos) - opcional
+                          💡 Telefone com DDD - opcional
                         </span>
                       )}
                     </FormItem>
@@ -368,12 +370,13 @@ export function AttractionModal({
                         Celular *
                       </FormLabel>
                       <FormControl>
-                        <Input
+                        <MaskedInput
+                          mask="phone"
                           {...form.register("contato.celular", {
                             required: true,
                           })}
                           disabled={isViewMode}
-                          placeholder="27999999999"
+                          placeholder="(27) 99999-9999"
                           className={form.formState.errors.contato?.celular ? "border-red-500" : ""}
                         />
                       </FormControl>
@@ -384,7 +387,7 @@ export function AttractionModal({
                         </span>
                       ) : (
                         <span className="text-gray-500 text-xs">
-                          💡 Apenas números (10-11 dígitos)
+                          💡 Celular com DDD obrigatório
                         </span>
                       )}
                     </FormItem>
@@ -394,10 +397,11 @@ export function AttractionModal({
                         WhatsApp
                       </FormLabel>
                       <FormControl>
-                        <Input
+                        <MaskedInput
+                          mask="phone"
                           {...form.register("contato.whatsapp")}
                           disabled={isViewMode}
-                          placeholder="27999999999"
+                          placeholder="(27) 99999-9999"
                           className={form.formState.errors.contato?.whatsapp ? "border-red-500" : ""}
                         />
                       </FormControl>
@@ -408,7 +412,7 @@ export function AttractionModal({
                         </span>
                       ) : (
                         <span className="text-gray-500 text-xs">
-                          💡 Apenas números (10-11 dígitos) - opcional
+                          💡 WhatsApp com DDD - opcional
                         </span>
                       )}
                     </FormItem>
@@ -564,12 +568,13 @@ export function AttractionModal({
                         CEP *
                       </FormLabel>
                       <FormControl>
-                        <Input
+                        <MaskedInput
+                          mask="cep"
                           {...form.register("endereco.cep", {
                             required: true,
                           })}
                           disabled={isViewMode}
-                          placeholder="29000000"
+                          placeholder="29000-000"
                           className={form.formState.errors.endereco?.cep ? "border-red-500" : ""}
                         />
                       </FormControl>
@@ -580,7 +585,7 @@ export function AttractionModal({
                         </span>
                       ) : (
                         <span className="text-gray-500 text-xs">
-                          💡 Apenas números, 8 dígitos
+                          💡 CEP no formato 00000-000
                         </span>
                       )}
                     </FormItem>
