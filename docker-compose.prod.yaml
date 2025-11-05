@@ -47,7 +47,7 @@ services:
   mysql:
     image: mysql:8.0.29
     container_name: mysql_conecta_caparao
-    command: --default-authentication-plugin=mysql_native_password --innodb-buffer-pool-size=256M
+    command: --default-authentication-plugin=mysql_native_password --innodb-buffer-pool-size=256M --innodb-flush-log-at-trx-commit=1 --sync-binlog=1
     restart: unless-stopped
     # <-- ADICIONADO: Mapeamento de porta para acesso local via localhost:3306 -->
     ports:
@@ -92,7 +92,15 @@ services:
 
 volumes:
   mysql_data:
+    labels:
+      - "backup=true"
+      - "persistent=true"
+      - "app=conecta-caparao"
   uploads_data:
+    labels:
+      - "backup=true"
+      - "persistent=true"
+      - "app=conecta-caparao"
 
 networks:
   web:

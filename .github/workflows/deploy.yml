@@ -68,13 +68,14 @@ jobs:
             git checkout main
             git pull origin main
             
-            # Stop existing containers
+            # Stop existing containers (preserving volumes)
             echo "🛑 Stopping existing containers..."
-            docker compose -f ${{ inputs.docker-compose-file }} down || true
+            docker compose -f ${{ inputs.docker-compose-file }} stop || true
+            docker compose -f ${{ inputs.docker-compose-file }} rm -f || true
             
-            # Clean up old images (optional)
-            echo "🧹 Cleaning up unused Docker resources..."
-            docker system prune -f || true
+            # Clean up old images (but preserve volumes)
+            echo "🧹 Cleaning up unused Docker resources (preserving volumes)..."
+            docker image prune -f || true
             
             # Pull/build and start new containers
             echo "🏗️ Building and starting new containers..."
