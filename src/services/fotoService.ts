@@ -29,7 +29,15 @@ export class FotoService {
     if (!foto) {
       throw new Error("Foto not found");
     }
-    await this.fotoRepository.deleteFoto(id);
+    
+    try {
+      await this.fotoRepository.deleteFoto(id);
+    } catch (error: unknown) {
+      if (error && typeof error === 'object' && 'code' in error && error.code === 'P2003') {
+        throw new Error("Cannot delete foto: it is being referenced by other records");
+      }
+      throw error;
+    }
   }
 
 }
