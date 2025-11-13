@@ -34,13 +34,20 @@ export class FotoPrismaRepository implements IFotoRepository {
   }
 
   async deleteFoto(id: string): Promise<void> {
-    await connection.foto.delete({
-      where: {
-        id: +id
-      },
-      include: {
-        galeria: true
-      }
+    await connection.$transaction(async (tx) => {
+      // Primeiro deleta as referências na galeria de fotos
+      await tx.galeriaFoto.deleteMany({
+        where: {
+          idFoto: +id
+        }
+      });
+
+      // Depois deleta a foto
+      await tx.foto.delete({
+        where: {
+          id: +id
+        }
+      });
     });
   }
 }

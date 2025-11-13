@@ -45,14 +45,23 @@ export async function deleteMunicipio(id: string) {
     throw new Error("Municipio not found");
   }
 
-  if (municipio?.fotos && municipio.fotos.length > 0) {
-    for (const foto of municipio.fotos) {
-      await fotoServiceFactory().deleteFoto(String(foto.id));
+  try {
+    // Deleta as fotos associadas (e suas referências na galeria)
+    if (municipio?.fotos && municipio.fotos.length > 0) {
+      for (const foto of municipio.fotos) {
+        await fotoServiceFactory().deleteFoto(String(foto.id));
+      }
     }
-  }
-  await municipioServiceFactory().delete(id);
 
-  if (municipio.contato.id) {
-    await contatoServiceFactory().delete(Number(municipio.contato.id));
+    // Deleta o município
+    await municipioServiceFactory().delete(id);
+
+    // Deleta o contato associado
+    if (municipio.contato.id) {
+      await contatoServiceFactory().delete(Number(municipio.contato.id));
+    }
+  } catch (error) {
+    console.error('Error deleting municipio:', error);
+    throw new Error(`Failed to delete municipio: ${error instanceof Error ? error.message : 'Unknown error'}`);
   }
 }
