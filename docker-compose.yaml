@@ -13,66 +13,18 @@ services:
       MYSQL_PASSWORD: ${MYSQL_PASSWORD}
     ports:
       - "3306:3306"
-    labels:
-      - "traefik.enable=true"
-      - "traefik.tcp.routers.mysql.rule=HostSNI(`mysql.${TRAEFIK_DOMAIN}`)"
-      - "traefik.tcp.routers.mysql.entrypoints=mysql"
-      - "traefik.tcp.routers.mysql.tls=true"
-      - "traefik.tcp.routers.mysql.tls.certresolver=letsencrypt"
-      - "traefik.tcp.services.mysql.loadbalancer.server.port=3306"
-      - "traefik.docker.network=web"
     volumes:
       - mysql_data:/var/lib/mysql
       - ./mysql/init:/docker-entrypoint-initdb.d
-    networks:
-      - web
-      - app-network
     healthcheck:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p$MYSQL_ROOT_PASSWORD"]
       timeout: 20s
       retries: 10
 
-  app:
-    build:
-      context: .
-      dockerfile: dockerfile
-    container_name: conecta_caparao_app
-    restart: unless-stopped
-    environment:
-      - NODE_ENV=production
-      - DATABASE_URL=${DATABASE_URL}
-      - NEXTAUTH_URL=${NEXTAUTH_URL}
-      - NEXTAUTH_SECRET=${NEXTAUTH_SECRET}
-    ports:
-      - "3000:3000"
-    volumes:
-      - uploads_data:/app/public/uploads
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.conecta-caparao.rule=Host(`incaper.${TRAEFIK_DOMAIN}`)"
-      - "traefik.http.routers.conecta-caparao.entrypoints=websecure"
-      - "traefik.http.routers.conecta-caparao.tls.certresolver=letsencrypt"
-      - "traefik.http.services.conecta-caparao.loadbalancer.server.port=3000"
-      - "traefik.docker.network=web"
-    networks:
-      - web
-      - app-network
-    depends_on:
-      mysql:
-        condition: service_healthy
-    healthcheck:
-      test: ["CMD-SHELL", "curl -f http://localhost:3000/api/health || exit 1"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 40s
 
 volumes:
   mysql_data:
-  uploads_data:
 
 networks:
-  web:
-    external: true
   app-network:
     driver: bridge
