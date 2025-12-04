@@ -13,7 +13,10 @@ import React from "react";
           <Image
             src={imagemUrl || "/landscape.svg"}
             alt={`Imagem do município de ${nome}`}
-            className="w-full h-[400px] md:h-[500px] lg:h-[600px] object-cover"
+            fill
+            className="object-cover"
+            sizes="100vw"
+            priority
           />
         </div>
         <div className="absolute bottom-0 left-0 w-full p-12 md:p-24 lg:p-36">

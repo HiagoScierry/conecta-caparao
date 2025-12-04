@@ -1,4 +1,5 @@
 "use client";
+import { use } from "react";
 import { LayoutPublic } from "@/components/public/Layout";
 import { Hero } from "@/components/public/Hero";
 import { GaleriaDeImagens } from "@/components/public/GaleriaDeImagens";
@@ -11,11 +12,10 @@ import { DescriptionSection } from "@/components/public/DescriptionSection";
 type Props = {
   params: Promise<{ id: string }>;
 }
-
 export default function PaginaMunicipios({
   params,
 }: Props) {
-  const { id } = params as unknown as { id: string };
+  const { id } = use(params);
 
   const { data: municipio, isLoading } = useGetMunicipioById(id);
 
