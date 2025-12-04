@@ -132,7 +132,7 @@ export function useDeleteAtrativo(){
         throw new Error('Erro ao deletar atração turística');
       }
 
-      return response.json();
+      return response.text();
     },
     onSuccess: () => {
       invalidateAtrativos();

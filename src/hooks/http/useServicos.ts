@@ -88,7 +88,7 @@ export function useDeleteServico() {
       if (!response.ok) {
         throw new Error('Erro ao deletar serviço');
       }
-      return response.json();
+      return response.text();
     },
     onSuccess: () => {
       invalidateServicos();
