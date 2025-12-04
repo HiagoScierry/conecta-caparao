@@ -121,6 +121,15 @@ export function MunicipalityModal({
     onSave(municipioForm, selectedImages);
   });
 
+  useEffect(()=> {
+    const subscription = form.watch((data, { name }) => {
+      if (name) {
+        form.trigger(name);
+      }
+    });
+    return () => subscription?.unsubscribe?.();
+  }, [form]);
+
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-7xl max-h-[90vh]">
