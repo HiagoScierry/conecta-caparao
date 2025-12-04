@@ -26,7 +26,14 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { MaskedInput } from "@/components/ui/masked-input";
 import { Textarea } from "@/components/ui/textarea";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { ImageUpload } from "@/components/ImageUpload";
 
 import { AtracaoForm, atracaoTuristicaForm } from "@/forms/atracaoForm";
@@ -145,8 +152,7 @@ export function AttractionModal({
     form.reset(getFormValues(initialData));
 
     console.log("LOADED ATRACAO MODAL", initialData);
-    console.log(form.getValues('categoria'), initialData?.categoria.id);
-
+    console.log(form.getValues("categoria"), initialData?.categoria.id);
   }, [initialData, form]);
 
   const handleDeleteFoto = async (fotoId: string) => {
@@ -159,6 +165,32 @@ export function AttractionModal({
 
   const handleImageSelect = (files: File[]) => {
     setSelectedImages(files);
+  };
+
+  // Função para extrair URL do iframe do Google Maps
+  const extractUrlFromIframe = (input: string): string => {
+    // Se já é uma URL válida, retorna como está
+    if (input.startsWith('http') && !input.includes('<iframe')) {
+      return input;
+    }
+
+    // Regex para extrair o src do iframe
+    const srcMatch = input.match(/src="([^"]+)"/i);
+    if (srcMatch && srcMatch[1]) {
+      return srcMatch[1];
+    }
+
+    // Se não encontrou o padrão, retorna o input original
+    return input;
+  };
+
+  // Função para lidar com o paste no campo de mapa
+  const handleMapUrlPaste = (e: React.ClipboardEvent<HTMLInputElement>) => {
+    e.preventDefault();
+    const pastedText = e.clipboardData.getData('text');
+    const extractedUrl = extractUrlFromIframe(pastedText);
+    form.setValue('atracaoTuristica.mapaUrl', extractedUrl);
+    form.trigger('atracaoTuristica.mapaUrl');
   };
 
   const onSubmit = (data: AtracaoForm) => {
@@ -216,6 +248,56 @@ export function AttractionModal({
                   </FormItem>
                 </section>
 
+                {/* Municípios */}
+                <section className="border rounded-lg p-6 space-y-6">
+                  <h3 className="text-lg font-semibold">Município</h3>
+                  <FormItem className="flex flex-col gap-1">
+                    <FormLabel className="text-sm font-medium">
+                      Selecione o Município *
+                    </FormLabel>
+                    <FormControl>
+                      <Select
+                        value={form.watch("municipio")?.toString()}
+                        onValueChange={(value) =>
+                          form.setValue("municipio", value)
+                        }
+                        disabled={isViewMode}
+                      >
+                        <SelectTrigger
+                          className={
+                            form.formState.errors.municipio
+                              ? "border-red-500"
+                              : ""
+                          }
+                        >
+                          <SelectValue placeholder="Selecione o município onde a atração está localizada" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {municipios?.map((municipio) => (
+                            <SelectItem
+                              key={municipio.id}
+                              value={municipio.id.toString()}
+                            >
+                              {municipio.nome}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </FormControl>
+                    {form.formState.errors.municipio ? (
+                      <span className="text-red-500 text-xs flex items-center gap-1">
+                        <span className="w-4 h-4 text-xs">⚠️</span>
+                        {form.formState.errors.municipio.message}
+                      </span>
+                    ) : (
+                      <span className="text-gray-500 text-xs">
+                        💡 Escolha o município onde sua atração turística está
+                        localizada
+                      </span>
+                    )}
+                  </FormItem>
+                </section>
+
                 {/* Dados da Atração */}
                 <section className="border rounded-lg p-6 space-y-6">
                   <h3 className="text-lg font-semibold">Dados da Atração</h3>
@@ -231,7 +313,11 @@ export function AttractionModal({
                           })}
                           disabled={isViewMode}
                           placeholder="Digite o nome da atração turística"
-                          className={form.formState.errors.atracaoTuristica?.nome ? "border-red-500" : ""}
+                          className={
+                            form.formState.errors.atracaoTuristica?.nome
+                              ? "border-red-500"
+                              : ""
+                          }
                         />
                       </FormControl>
                       {form.formState.errors.atracaoTuristica?.nome ? (
@@ -247,18 +333,61 @@ export function AttractionModal({
                     </FormItem>
 
                     <FormItem className="flex flex-col gap-1">
-                      <FormLabel className="text-sm font-medium">
-                        URL do Mapa *
-                      </FormLabel>
+                      <div className="flex items-center gap-2">
+                        <FormLabel className="text-sm font-medium">
+                          URL do Mapa *
+                        </FormLabel>
+                        <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger type="button" className="text-blue-500 hover:text-blue-600 hover:scale-110 transition-all">
+                              <svg 
+                                className="w-4 h-4" 
+                                fill="currentColor" 
+                                viewBox="0 0 20 20" 
+                                xmlns="http://www.w3.org/2000/svg"
+                              >
+                                <path 
+                                  fillRule="evenodd" 
+                                  d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" 
+                                  clipRule="evenodd" 
+                                />
+                              </svg>
+                            </TooltipTrigger>
+                            <TooltipContent className="max-w-sm" side="top">
+                              <div className="space-y-2 text-sm">
+                                <p className="font-semibold">Como obter o embed URL do Google Maps:</p>
+                                <ol className="list-decimal list-inside space-y-1">
+                                  <li>Acesse o Google Maps</li>
+                                  <li>Pesquise pela atração turística</li>
+                                  <li>Clique em &quot;Compartilhar&quot;</li>
+                                  <li>Selecione &quot;Incorporar um mapa&quot;</li>
+                                  <li>Cole toda a tag &lt;iframe&gt; aqui</li>
+                                </ol>
+                                <p className="text-xs text-green-600 font-medium">
+                                  ✨ Pode colar a tag completa! O sistema extrairá a URL automaticamente.
+                                </p>
+                                <p className="text-xs text-gray-600 italic">
+                                  Ex: &lt;iframe src=&quot;https://www.google.com/maps/embed?pb=...&quot;&gt;
+                                </p>
+                              </div>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
+                      </div>
                       <FormControl>
                         <Input
                           {...form.register("atracaoTuristica.mapaUrl", {
                             required: true,
                           })}
                           disabled={isViewMode}
-                          placeholder="https://maps.google.com/..."
+                          placeholder="Cole aqui a tag <iframe> completa do Google Maps ou apenas a URL"
                           type="url"
-                          className={form.formState.errors.atracaoTuristica?.mapaUrl ? "border-red-500" : ""}
+                          className={
+                            form.formState.errors.atracaoTuristica?.mapaUrl
+                              ? "border-red-500"
+                              : ""
+                          }
+                          onPaste={handleMapUrlPaste}
                         />
                       </FormControl>
                       {form.formState.errors.atracaoTuristica?.mapaUrl ? (
@@ -271,7 +400,7 @@ export function AttractionModal({
                         </span>
                       ) : (
                         <span className="text-gray-500 text-xs">
-                          💡 Cole o link do Google Maps ou similar
+                          💡 Cole a tag &lt;iframe&gt; completa do Google Maps - a URL será extraída automaticamente
                         </span>
                       )}
                     </FormItem>
@@ -289,7 +418,11 @@ export function AttractionModal({
                           })}
                           disabled={isViewMode}
                           placeholder="Descreva a atração turística de forma detalhada"
-                          className={`min-h-[100px] ${form.formState.errors.atracaoTuristica?.descricao ? "border-red-500" : ""}`}
+                          className={`min-h-[100px] ${
+                            form.formState.errors.atracaoTuristica?.descricao
+                              ? "border-red-500"
+                              : ""
+                          }`}
                         />
                       </FormControl>
                       {form.formState.errors.atracaoTuristica?.descricao ? (
@@ -302,7 +435,9 @@ export function AttractionModal({
                         </span>
                       ) : (
                         <span className="text-gray-500 text-xs">
-                          💡 Inclua informações relevantes como história, características especiais e o que o visitante pode esperar
+                          💡 Inclua informações relevantes como história,
+                          características especiais e o que o visitante pode
+                          esperar
                         </span>
                       )}
                     </FormItem>
@@ -325,7 +460,11 @@ export function AttractionModal({
                           disabled={isViewMode}
                           placeholder="contato@exemplo.com"
                           type="email"
-                          className={form.formState.errors.contato?.email ? "border-red-500" : ""}
+                          className={
+                            form.formState.errors.contato?.email
+                              ? "border-red-500"
+                              : ""
+                          }
                         />
                       </FormControl>
                       {form.formState.errors.contato?.email ? (
@@ -350,7 +489,11 @@ export function AttractionModal({
                           {...form.register("contato.telefone")}
                           disabled={isViewMode}
                           placeholder="(27) 99999-9999"
-                          className={form.formState.errors.contato?.telefone ? "border-red-500" : ""}
+                          className={
+                            form.formState.errors.contato?.telefone
+                              ? "border-red-500"
+                              : ""
+                          }
                         />
                       </FormControl>
                       {form.formState.errors.contato?.telefone ? (
@@ -377,7 +520,11 @@ export function AttractionModal({
                           })}
                           disabled={isViewMode}
                           placeholder="(27) 99999-9999"
-                          className={form.formState.errors.contato?.celular ? "border-red-500" : ""}
+                          className={
+                            form.formState.errors.contato?.celular
+                              ? "border-red-500"
+                              : ""
+                          }
                         />
                       </FormControl>
                       {form.formState.errors.contato?.celular ? (
@@ -402,7 +549,11 @@ export function AttractionModal({
                           {...form.register("contato.whatsapp")}
                           disabled={isViewMode}
                           placeholder="(27) 99999-9999"
-                          className={form.formState.errors.contato?.whatsapp ? "border-red-500" : ""}
+                          className={
+                            form.formState.errors.contato?.whatsapp
+                              ? "border-red-500"
+                              : ""
+                          }
                         />
                       </FormControl>
                       {form.formState.errors.contato?.whatsapp ? (
@@ -426,7 +577,11 @@ export function AttractionModal({
                           {...form.register("contato.instagram")}
                           disabled={isViewMode}
                           placeholder="@usuario_instagram"
-                          className={form.formState.errors.contato?.instagram ? "border-red-500" : ""}
+                          className={
+                            form.formState.errors.contato?.instagram
+                              ? "border-red-500"
+                              : ""
+                          }
                         />
                       </FormControl>
                       {form.formState.errors.contato?.instagram ? (
@@ -441,44 +596,6 @@ export function AttractionModal({
                       )}
                     </FormItem>
                   </div>
-                </section>
-
-                {/* Municípios */}
-                <section className="border rounded-lg p-6 space-y-6">
-                  <h3 className="text-lg font-semibold">Município</h3>
-                  <FormItem className="flex flex-col gap-1">
-                    <FormLabel className="text-sm font-medium">
-                      Selecione o Município *
-                    </FormLabel>
-                    <FormControl>
-                      <Select
-                        value={form.watch("municipio")?.toString()}
-                        onValueChange={(value) => form.setValue("municipio", value)}
-                        disabled={isViewMode}
-                      >
-                        <SelectTrigger className={form.formState.errors.municipio ? "border-red-500" : ""}>
-                          <SelectValue placeholder="Selecione o município onde a atração está localizada" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {municipios?.map((municipio) => (
-                            <SelectItem key={municipio.id} value={municipio.id.toString()}>
-                              {municipio.nome}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </FormControl>
-                    {form.formState.errors.municipio ? (
-                      <span className="text-red-500 text-xs flex items-center gap-1">
-                        <span className="w-4 h-4 text-xs">⚠️</span>
-                        {form.formState.errors.municipio.message}
-                      </span>
-                    ) : (
-                      <span className="text-gray-500 text-xs">
-                        💡 Escolha o município onde sua atração turística está localizada
-                      </span>
-                    )}
-                  </FormItem>
                 </section>
 
                 {/* Endereço */}
@@ -496,7 +613,11 @@ export function AttractionModal({
                           })}
                           disabled={isViewMode}
                           placeholder="Rua, Avenida, Estrada..."
-                          className={form.formState.errors.endereco?.logradouro ? "border-red-500" : ""}
+                          className={
+                            form.formState.errors.endereco?.logradouro
+                              ? "border-red-500"
+                              : ""
+                          }
                         />
                       </FormControl>
                       {form.formState.errors.endereco?.logradouro ? (
@@ -522,7 +643,11 @@ export function AttractionModal({
                           })}
                           disabled={isViewMode}
                           placeholder="123 ou S/N"
-                          className={form.formState.errors.endereco?.numero ? "border-red-500" : ""}
+                          className={
+                            form.formState.errors.endereco?.numero
+                              ? "border-red-500"
+                              : ""
+                          }
                         />
                       </FormControl>
                       {form.formState.errors.endereco?.numero ? (
@@ -548,7 +673,11 @@ export function AttractionModal({
                           })}
                           disabled={isViewMode}
                           placeholder="Nome do bairro"
-                          className={form.formState.errors.endereco?.bairro ? "border-red-500" : ""}
+                          className={
+                            form.formState.errors.endereco?.bairro
+                              ? "border-red-500"
+                              : ""
+                          }
                         />
                       </FormControl>
                       {form.formState.errors.endereco?.bairro ? (
@@ -575,7 +704,11 @@ export function AttractionModal({
                           })}
                           disabled={isViewMode}
                           placeholder="29000-000"
-                          className={form.formState.errors.endereco?.cep ? "border-red-500" : ""}
+                          className={
+                            form.formState.errors.endereco?.cep
+                              ? "border-red-500"
+                              : ""
+                          }
                         />
                       </FormControl>
                       {form.formState.errors.endereco?.cep ? (
@@ -605,17 +738,43 @@ export function AttractionModal({
                       </FormLabel>
                       <FormControl>
                         <div className="flex flex-wrap gap-4">
-                          {(["SEGUNDA", "TERCA", "QUARTA", "QUINTA", "SEXTA", "SABADO", "DOMINGO"] as const).map((dia) => (
-                            <div key={dia} className="flex items-center space-x-2">
+                          {(
+                            [
+                              "SEGUNDA",
+                              "TERCA",
+                              "QUARTA",
+                              "QUINTA",
+                              "SEXTA",
+                              "SABADO",
+                              "DOMINGO",
+                            ] as const
+                          ).map((dia) => (
+                            <div
+                              key={dia}
+                              className="flex items-center space-x-2"
+                            >
                               <Checkbox
                                 id={`dia-${dia}`}
-                                checked={form.watch("horarioFuncionamento.diaDaSemana")?.includes(dia) || false}
+                                checked={
+                                  form
+                                    .watch("horarioFuncionamento.diaDaSemana")
+                                    ?.includes(dia) || false
+                                }
                                 onCheckedChange={(checked) => {
-                                  const currentDays = form.getValues("horarioFuncionamento.diaDaSemana") || [];
+                                  const currentDays =
+                                    form.getValues(
+                                      "horarioFuncionamento.diaDaSemana"
+                                    ) || [];
                                   if (checked) {
-                                    form.setValue("horarioFuncionamento.diaDaSemana", [...currentDays, dia]);
+                                    form.setValue(
+                                      "horarioFuncionamento.diaDaSemana",
+                                      [...currentDays, dia]
+                                    );
                                   } else {
-                                    form.setValue("horarioFuncionamento.diaDaSemana", currentDays.filter(d => d !== dia));
+                                    form.setValue(
+                                      "horarioFuncionamento.diaDaSemana",
+                                      currentDays.filter((d) => d !== dia)
+                                    );
                                   }
                                 }}
                                 disabled={isViewMode}
@@ -630,10 +789,14 @@ export function AttractionModal({
                           ))}
                         </div>
                       </FormControl>
-                      {form.formState.errors.horarioFuncionamento?.diaDaSemana ? (
+                      {form.formState.errors.horarioFuncionamento
+                        ?.diaDaSemana ? (
                         <span className="text-red-500 text-xs flex items-center gap-1">
                           <span className="w-4 h-4 text-xs">⚠️</span>
-                          {form.formState.errors.horarioFuncionamento.diaDaSemana.message}
+                          {
+                            form.formState.errors.horarioFuncionamento
+                              .diaDaSemana.message
+                          }
                         </span>
                       ) : (
                         <span className="text-gray-500 text-xs">
@@ -656,13 +819,22 @@ export function AttractionModal({
                           )}
                           disabled={isViewMode}
                           type="time"
-                          className={form.formState.errors.horarioFuncionamento?.horaAbertura ? "border-red-500" : ""}
+                          className={
+                            form.formState.errors.horarioFuncionamento
+                              ?.horaAbertura
+                              ? "border-red-500"
+                              : ""
+                          }
                         />
                       </FormControl>
-                      {form.formState.errors.horarioFuncionamento?.horaAbertura ? (
+                      {form.formState.errors.horarioFuncionamento
+                        ?.horaAbertura ? (
                         <span className="text-red-500 text-xs flex items-center gap-1">
                           <span className="w-4 h-4 text-xs">⚠️</span>
-                          {form.formState.errors.horarioFuncionamento.horaAbertura.message}
+                          {
+                            form.formState.errors.horarioFuncionamento
+                              .horaAbertura.message
+                          }
                         </span>
                       ) : (
                         <span className="text-gray-500 text-xs">
@@ -683,13 +855,22 @@ export function AttractionModal({
                           )}
                           disabled={isViewMode}
                           type="time"
-                          className={form.formState.errors.horarioFuncionamento?.horaFechamento ? "border-red-500" : ""}
+                          className={
+                            form.formState.errors.horarioFuncionamento
+                              ?.horaFechamento
+                              ? "border-red-500"
+                              : ""
+                          }
                         />
                       </FormControl>
-                      {form.formState.errors.horarioFuncionamento?.horaFechamento ? (
+                      {form.formState.errors.horarioFuncionamento
+                        ?.horaFechamento ? (
                         <span className="text-red-500 text-xs flex items-center gap-1">
                           <span className="w-4 h-4 text-xs">⚠️</span>
-                          {form.formState.errors.horarioFuncionamento.horaFechamento.message}
+                          {
+                            form.formState.errors.horarioFuncionamento
+                              .horaFechamento.message
+                          }
                         </span>
                       ) : (
                         <span className="text-gray-500 text-xs">
@@ -710,21 +891,28 @@ export function AttractionModal({
                     <FormControl>
                       <RadioGroup
                         value={form.watch("categoria")?.toString()}
-                        onValueChange={(value) => form.setValue("categoria", parseInt(value))}
+                        onValueChange={(value) =>
+                          form.setValue("categoria", parseInt(value))
+                        }
                         disabled={isViewMode}
                         className="grid grid-cols-4"
                       >
                         {categorias?.map((categoria: Categoria) => (
-                          <div key={categoria.id} className="flex items-center space-x-2">
-                            <RadioGroupItem 
-                              value={categoria.id.toString()} 
+                          <div
+                            key={categoria.id}
+                            className="flex items-center space-x-2"
+                          >
+                            <RadioGroupItem
+                              value={categoria.id.toString()}
                               id={`categoria-${categoria.id}`}
                             />
-                            <label 
+                            <label
                               htmlFor={`categoria-${categoria.id}`}
                               className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
                             >
-                              {categoria.id + " " + categoria.nome.charAt(0) +
+                              {categoria.id +
+                                " " +
+                                categoria.nome.charAt(0) +
                                 categoria.nome.slice(1).toLowerCase()}
                             </label>
                           </div>
@@ -754,16 +942,32 @@ export function AttractionModal({
                     <FormControl>
                       <div className="grid grid-cols-4">
                         {subCategorias?.map((subCategoria: Subcategoria) => (
-                          <div key={subCategoria.id} className="flex items-center space-x-2">
+                          <div
+                            key={subCategoria.id}
+                            className="flex items-center space-x-2"
+                          >
                             <Checkbox
                               id={`subcategoria-${subCategoria.id}`}
-                              checked={form.watch("subCategoria")?.includes(subCategoria.id) || false}
+                              checked={
+                                form
+                                  .watch("subCategoria")
+                                  ?.includes(subCategoria.id) || false
+                              }
                               onCheckedChange={(checked) => {
-                                const currentSubCategorias = form.getValues("subCategoria") || [];
+                                const currentSubCategorias =
+                                  form.getValues("subCategoria") || [];
                                 if (checked) {
-                                  form.setValue("subCategoria", [...currentSubCategorias, subCategoria.id]);
+                                  form.setValue("subCategoria", [
+                                    ...currentSubCategorias,
+                                    subCategoria.id,
+                                  ]);
                                 } else {
-                                  form.setValue("subCategoria", currentSubCategorias.filter(id => id !== subCategoria.id));
+                                  form.setValue(
+                                    "subCategoria",
+                                    currentSubCategorias.filter(
+                                      (id) => id !== subCategoria.id
+                                    )
+                                  );
                                 }
                               }}
                               disabled={isViewMode}
@@ -786,7 +990,8 @@ export function AttractionModal({
                       </span>
                     ) : (
                       <span className="text-gray-500 text-xs">
-                        💡 Selecione pelo menos uma subcategoria para detalhar melhor sua atração
+                        💡 Selecione pelo menos uma subcategoria para detalhar
+                        melhor sua atração
                       </span>
                     )}
                   </FormItem>
@@ -802,16 +1007,32 @@ export function AttractionModal({
                     <FormControl>
                       <div className="grid grid-cols-4">
                         {perfisCliente?.map((perfil: PerfilCliente) => (
-                          <div key={perfil.id} className="flex items-center space-x-2">
+                          <div
+                            key={perfil.id}
+                            className="flex items-center space-x-2"
+                          >
                             <Checkbox
                               id={`perfil-${perfil.id}`}
-                              checked={form.watch("perfil")?.includes(perfil.id.toString()) || false}
+                              checked={
+                                form
+                                  .watch("perfil")
+                                  ?.includes(perfil.id.toString()) || false
+                              }
                               onCheckedChange={(checked) => {
-                                const currentPerfis = form.getValues("perfil") || [];
+                                const currentPerfis =
+                                  form.getValues("perfil") || [];
                                 if (checked) {
-                                  form.setValue("perfil", [...currentPerfis, perfil.id.toString()]);
+                                  form.setValue("perfil", [
+                                    ...currentPerfis,
+                                    perfil.id.toString(),
+                                  ]);
                                 } else {
-                                  form.setValue("perfil", currentPerfis.filter(id => id !== perfil.id.toString()));
+                                  form.setValue(
+                                    "perfil",
+                                    currentPerfis.filter(
+                                      (id) => id !== perfil.id.toString()
+                                    )
+                                  );
                                 }
                               }}
                               disabled={isViewMode}
@@ -833,7 +1054,8 @@ export function AttractionModal({
                       </span>
                     ) : (
                       <span className="text-gray-500 text-xs">
-                        💡 Selecione os perfis de cliente que mais se adequam à sua atração
+                        💡 Selecione os perfis de cliente que mais se adequam à
+                        sua atração
                       </span>
                     )}
                   </FormItem>
