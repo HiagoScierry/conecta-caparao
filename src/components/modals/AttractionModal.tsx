@@ -360,7 +360,7 @@ export function AttractionModal({
                         </span>
                       ) : (
                         <span className="text-gray-500 text-xs">
-                          💡 Telefone com DDD - opcional
+                          💡 Telefone com DDD
                         </span>
                       )}
                     </FormItem>
@@ -387,7 +387,7 @@ export function AttractionModal({
                         </span>
                       ) : (
                         <span className="text-gray-500 text-xs">
-                          💡 Celular com DDD obrigatório
+                          💡 Celular com DDD
                         </span>
                       )}
                     </FormItem>
@@ -412,7 +412,7 @@ export function AttractionModal({
                         </span>
                       ) : (
                         <span className="text-gray-500 text-xs">
-                          💡 WhatsApp com DDD - opcional
+                          💡 WhatsApp com DDD
                         </span>
                       )}
                     </FormItem>
@@ -436,7 +436,7 @@ export function AttractionModal({
                         </span>
                       ) : (
                         <span className="text-gray-500 text-xs">
-                          💡 Nome do usuário (3-30 caracteres) - opcional
+                          💡 Nome do usuário (3-30 caracteres)
                         </span>
                       )}
                     </FormItem>
@@ -833,7 +833,7 @@ export function AttractionModal({
                       </span>
                     ) : (
                       <span className="text-gray-500 text-xs">
-                        💡 Selecione os perfis de cliente que mais se adequam à sua atração (opcional)
+                        💡 Selecione os perfis de cliente que mais se adequam à sua atração
                       </span>
                     )}
                   </FormItem>

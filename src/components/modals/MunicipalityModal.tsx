@@ -16,7 +16,7 @@ import { useForm } from "react-hook-form";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { ImageUpload } from "@/components/ImageUpload";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { municipioForm, MunicipioForm } from "@/forms/municipioForm"; 
+import { municipioForm, MunicipioForm } from "@/forms/municipioForm";
 import { useState, useEffect } from "react";
 import { useDeleteUpload } from "@/hooks/http/useUpload";
 import { Contato, Foto, Municipio } from "@prisma/client";
@@ -72,7 +72,7 @@ export function MunicipalityModal({
         },
         contato: {
           ...initialData.contato,
-          id: String(initialData.contato.id), 
+          id: String(initialData.contato.id),
         },
         fotos: initialData.fotos.map(foto => ({
           id: String(foto.id),
@@ -105,13 +105,13 @@ export function MunicipalityModal({
     if (input.startsWith('http') && !input.includes('<iframe')) {
       return input;
     }
-    
+
     // Regex para extrair o src do iframe
     const srcMatch = input.match(/src="([^"]+)"/i);
     if (srcMatch && srcMatch[1]) {
       return srcMatch[1];
     }
-    
+
     // Se não encontrou o padrão, retorna o input original
     return input;
   };
@@ -245,7 +245,7 @@ export function MunicipalityModal({
                       </span>
                     ) : (
                       <span className="text-gray-500 text-xs">
-                        💡 Site oficial da prefeitura (opcional)
+                        💡 Site oficial da prefeitura
                       </span>
                     )}
                   </FormItem>
@@ -295,7 +295,7 @@ export function MunicipalityModal({
                       </span>
                     ) : (
                       <span className="text-gray-500 text-xs">
-                        💡 Cole a tag &lt;iframe&gt; completa do Google Maps - a URL será extraída automaticamente (opcional)
+                        💡 Cole a tag &lt;iframe&gt; completa do Google Maps - a URL será extraída automaticamente
                       </span>
                     )}
                   </FormItem>
@@ -396,7 +396,7 @@ export function MunicipalityModal({
                       </span>
                     ) : (
                       <span className="text-gray-500 text-xs">
-                        💡 Telefone com DDD (opcional)
+                        💡 Telefone com DDD
                       </span>
                     )}
                   </FormItem>
@@ -418,7 +418,7 @@ export function MunicipalityModal({
                       </span>
                     ) : (
                       <span className="text-gray-500 text-xs">
-                        💡 Celular com DDD (opcional)
+                        💡 Celular com DDD
                       </span>
                     )}
                   </FormItem>
@@ -440,7 +440,7 @@ export function MunicipalityModal({
                       </span>
                     ) : (
                       <span className="text-gray-500 text-xs">
-                        💡 WhatsApp com DDD (opcional)
+                        💡 WhatsApp com DDD
                       </span>
                     )}
                   </FormItem>
@@ -461,7 +461,7 @@ export function MunicipalityModal({
                       </span>
                     ) : (
                       <span className="text-gray-500 text-xs">
-                        💡 Instagram oficial do município (opcional)
+                        💡 Instagram oficial do município
                       </span>
                     )}
                   </FormItem>

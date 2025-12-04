@@ -5,7 +5,7 @@ type AlignmentType = 'center' | 'left' | 'right';
 
 interface DescriptionSectionProps {
   /**
-   * Subtítulo da seção (opcional)
+   * Subtítulo da seção
    */
   subtitulo?: string;
   /**
@@ -35,11 +35,11 @@ interface DescriptionSectionProps {
   containerClassName?: string;
 }
 
-export function DescriptionSection({ 
-  subtitulo, 
-  descricao, 
-  corSubtitulo, 
-  corDescricao, 
+export function DescriptionSection({
+  subtitulo,
+  descricao,
+  corSubtitulo,
+  corDescricao,
   align = 'center',
   className,
   containerClassName
@@ -76,7 +76,7 @@ export function DescriptionSection({
             {subtitulo}
           </h2>
         )}
-        
+
         {descricao && (
           <p className={cn(
             "md:text-lg lg:text-xl max-w-3xl break-words leading-relaxed",
