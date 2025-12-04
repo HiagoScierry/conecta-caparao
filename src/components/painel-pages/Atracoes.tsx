@@ -113,20 +113,27 @@ export default function Atracoes() {
         });
         toast({
           title: "Atração criada",
-          description: `A atração "${attractionData.atracaoTuristica.nome}" foi criada com sucesso.`,
+          description: `A atração foi criada com sucesso.`,
         });
       } else if (modalMode === "edit") {
-        console.log(attractionData);
-        console.log(uploadedUrls);
+        try {
+          await updateAtrativo({
+            ...attractionData,
+            fotosURL: uploadedUrls,
+          });
+          toast({
+            title: "Atração atualizada",
+            description: `A atração foi atualizada com sucesso.`,
+          });
+        } catch (updateError) {
+          console.error("Error updating attraction:", updateError);
+          toast({
+            title: "Erro ao atualizar atração",
+            description: "Ocorreu um erro inesperado ao atualizar a atração.",
+            variant: "destructive",
+          });
 
-        await updateAtrativo({
-          ...attractionData,
-          fotosURL: uploadedUrls,
-        });
-        toast({
-          title: "Atração atualizada",
-          description: `A atração "${attractionData.atracaoTuristica.nome}" foi atualizada com sucesso.`,
-        });
+        }
       }
       setIsModalOpen(false);
     } catch (error) {
