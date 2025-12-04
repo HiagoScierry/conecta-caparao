@@ -11,6 +11,7 @@ import { Form, FormControl, FormItem, FormLabel } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { MaskedInput } from "@/components/ui/masked-input";
 import { Textarea } from "@/components/ui/textarea";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { useForm } from "react-hook-form";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { ImageUpload } from "@/components/ImageUpload";
@@ -96,6 +97,32 @@ export function MunicipalityModal({
 
   const handleImageSelect = (files: File[]) => {
     setSelectedImages(files);
+  };
+
+  // Função para extrair URL do iframe do Google Maps
+  const extractUrlFromIframe = (input: string): string => {
+    // Se já é uma URL válida, retorna como está
+    if (input.startsWith('http') && !input.includes('<iframe')) {
+      return input;
+    }
+    
+    // Regex para extrair o src do iframe
+    const srcMatch = input.match(/src="([^"]+)"/i);
+    if (srcMatch && srcMatch[1]) {
+      return srcMatch[1];
+    }
+    
+    // Se não encontrou o padrão, retorna o input original
+    return input;
+  };
+
+  // Função para lidar com o paste no campo de mapa
+  const handleMapUrlPaste = (e: React.ClipboardEvent<HTMLInputElement>) => {
+    e.preventDefault();
+    const pastedText = e.clipboardData.getData('text');
+    const extractedUrl = extractUrlFromIframe(pastedText);
+    form.setValue('municipio.mapaUrl', extractedUrl);
+    form.trigger('municipio.mapaUrl');
   };
 
   const handleSubmit = form.handleSubmit(() => {
@@ -223,14 +250,42 @@ export function MunicipalityModal({
                     )}
                   </FormItem>
                   <FormItem>
-                    <FormLabel>Mapa URL</FormLabel>
+                    <TooltipProvider>
+                      <div className="flex items-center gap-2">
+                        <FormLabel>Mapa URL</FormLabel>
+                        <Tooltip>
+                          <TooltipTrigger type="button" className="text-blue-500 hover:text-blue-700">
+                            <span className="text-sm">ℹ️</span>
+                          </TooltipTrigger>
+                          <TooltipContent className="max-w-sm">
+                            <div className="space-y-2 text-sm">
+                              <p className="font-semibold">Como obter o embed URL do Google Maps:</p>
+                              <ol className="list-decimal list-inside space-y-1">
+                                <li>Acesse o Google Maps</li>
+                                <li>Pesquise pelo município</li>
+                                <li>Clique em &quot;Compartilhar&quot;</li>
+                                <li>Selecione &quot;Incorporar um mapa&quot;</li>
+                                <li>Cole toda a tag &lt;iframe&gt; aqui</li>
+                              </ol>
+                              <p className="text-xs text-green-600 font-medium">
+                                ✨ Pode colar a tag completa! O sistema extrairá a URL automaticamente.
+                              </p>
+                              <p className="text-xs text-gray-600 italic">
+                                Ex: &lt;iframe src=&quot;https://www.google.com/maps/embed?pb=...&quot;&gt;
+                              </p>
+                            </div>
+                          </TooltipContent>
+                        </Tooltip>
+                      </div>
+                    </TooltipProvider>
                     <FormControl>
                       <Input
                         {...form.register("municipio.mapaUrl")}
                         disabled={isViewMode}
-                        placeholder="https://maps.google.com/..."
+                        placeholder="Cole aqui a tag <iframe> completa do Google Maps ou apenas a URL"
                         type="url"
                         className={form.formState.errors.municipio?.mapaUrl ? "border-red-500" : ""}
+                        onPaste={handleMapUrlPaste}
                       />
                     </FormControl>
                     {form.formState.errors.municipio?.mapaUrl ? (
@@ -240,7 +295,7 @@ export function MunicipalityModal({
                       </span>
                     ) : (
                       <span className="text-gray-500 text-xs">
-                        💡 Link do Google Maps ou similar (opcional)
+                        💡 Cole a tag &lt;iframe&gt; completa do Google Maps - a URL será extraída automaticamente (opcional)
                       </span>
                     )}
                   </FormItem>
