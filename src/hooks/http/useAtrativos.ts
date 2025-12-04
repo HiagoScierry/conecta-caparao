@@ -31,7 +31,7 @@ export function useGetAllAtrativos() {
 
 export function useGetAtrativoById(id: number) {
   return useQuery<AtracaoTuristicaLoadedData, Error>({
-    queryKey: [...QUERY_KEYS.ATRATIVOS, id],
+    queryKey: QUERY_KEYS.ATRATIVO(id),
     queryFn: async () => {
       const response = await fetch(`/api/atrativos/${id}`);
 
