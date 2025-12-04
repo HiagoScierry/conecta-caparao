@@ -60,12 +60,21 @@ export default function Servicos() {
 
   const handleDeleteService = async () => {
     if (serviceToDelete) {
-      await deleteServico(serviceToDelete.id);
-      toast({
-        title: "Serviço excluído",
-        description: `O serviço "${serviceToDelete.nome}" foi excluído com sucesso.`,
-      });
-      console.log("Serviço excluído:", serviceToDelete);
+      try {
+        await deleteServico(serviceToDelete.id);
+        toast({
+          title: "Serviço excluído",
+          description: `O serviço "${serviceToDelete.nome}" foi excluído com sucesso.`,
+        });
+        setIsDeleteModalOpen(false);
+      } catch (error) {
+        toast({
+          title: "Erro",
+          description: "Ocorreu um erro ao excluir o serviço. Tente novamente.",
+          variant: "destructive",
+        });
+        console.error("Erro ao excluir serviço:", error);
+      }
     }
   };
 

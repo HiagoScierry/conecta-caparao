@@ -31,7 +31,7 @@ export function useGetAllAtrativos() {
 
 export function useGetAtrativoById(id: number) {
   return useQuery<AtracaoTuristicaLoadedData, Error>({
-    queryKey: [...QUERY_KEYS.ATRATIVOS, id],
+    queryKey: QUERY_KEYS.ATRATIVO(id),
     queryFn: async () => {
       const response = await fetch(`/api/atrativos/${id}`);
 
@@ -132,7 +132,7 @@ export function useDeleteAtrativo(){
         throw new Error('Erro ao deletar atração turística');
       }
 
-      return response.json();
+      return response.text();
     },
     onSuccess: () => {
       invalidateAtrativos();

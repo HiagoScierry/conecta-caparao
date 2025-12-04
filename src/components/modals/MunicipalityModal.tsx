@@ -11,11 +11,12 @@ import { Form, FormControl, FormItem, FormLabel } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { MaskedInput } from "@/components/ui/masked-input";
 import { Textarea } from "@/components/ui/textarea";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { useForm } from "react-hook-form";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { ImageUpload } from "@/components/ImageUpload";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { municipioForm, MunicipioForm } from "@/forms/municipioForm"; 
+import { municipioForm, MunicipioForm } from "@/forms/municipioForm";
 import { useState, useEffect } from "react";
 import { useDeleteUpload } from "@/hooks/http/useUpload";
 import { Contato, Foto, Municipio } from "@prisma/client";
@@ -71,7 +72,7 @@ export function MunicipalityModal({
         },
         contato: {
           ...initialData.contato,
-          id: String(initialData.contato.id), 
+          id: String(initialData.contato.id),
         },
         fotos: initialData.fotos.map(foto => ({
           id: String(foto.id),
@@ -98,6 +99,32 @@ export function MunicipalityModal({
     setSelectedImages(files);
   };
 
+  // Função para extrair URL do iframe do Google Maps
+  const extractUrlFromIframe = (input: string): string => {
+    // Se já é uma URL válida, retorna como está
+    if (input.startsWith('http') && !input.includes('<iframe')) {
+      return input;
+    }
+
+    // Regex para extrair o src do iframe
+    const srcMatch = input.match(/src="([^"]+)"/i);
+    if (srcMatch && srcMatch[1]) {
+      return srcMatch[1];
+    }
+
+    // Se não encontrou o padrão, retorna o input original
+    return input;
+  };
+
+  // Função para lidar com o paste no campo de mapa
+  const handleMapUrlPaste = (e: React.ClipboardEvent<HTMLInputElement>) => {
+    e.preventDefault();
+    const pastedText = e.clipboardData.getData('text');
+    const extractedUrl = extractUrlFromIframe(pastedText);
+    form.setValue('municipio.mapaUrl', extractedUrl);
+    form.trigger('municipio.mapaUrl');
+  };
+
   const handleSubmit = form.handleSubmit(() => {
     const formData = form.getValues();
 
@@ -120,6 +147,15 @@ export function MunicipalityModal({
 
     onSave(municipioForm, selectedImages);
   });
+
+  useEffect(()=> {
+    const subscription = form.watch((data, { name }) => {
+      if (name) {
+        form.trigger(name);
+      }
+    });
+    return () => subscription?.unsubscribe?.();
+  }, [form]);
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
@@ -209,19 +245,58 @@ export function MunicipalityModal({
                       </span>
                     ) : (
                       <span className="text-gray-500 text-xs">
-                        💡 Site oficial da prefeitura (opcional)
+                        💡 Site oficial da prefeitura
                       </span>
                     )}
                   </FormItem>
                   <FormItem>
-                    <FormLabel>Mapa URL</FormLabel>
+                    <div className="flex items-center gap-2">
+                      <FormLabel>Mapa URL</FormLabel>
+                      <TooltipProvider>
+                        <Tooltip>
+                          <TooltipTrigger type="button" className="text-blue-500 hover:text-blue-600 hover:scale-110 transition-all">
+                            <svg 
+                              className="w-4 h-4" 
+                              fill="currentColor" 
+                              viewBox="0 0 20 20" 
+                              xmlns="http://www.w3.org/2000/svg"
+                            >
+                              <path 
+                                fillRule="evenodd" 
+                                d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" 
+                                clipRule="evenodd" 
+                              />
+                            </svg>
+                          </TooltipTrigger>
+                          <TooltipContent className="max-w-sm" side="top">
+                            <div className="space-y-2 text-sm">
+                              <p className="font-semibold">Como obter o embed URL do Google Maps:</p>
+                              <ol className="list-decimal list-inside space-y-1">
+                                <li>Acesse o Google Maps</li>
+                                <li>Pesquise pelo município</li>
+                                <li>Clique em &quot;Compartilhar&quot;</li>
+                                <li>Selecione &quot;Incorporar um mapa&quot;</li>
+                                <li>Cole toda a tag &lt;iframe&gt; aqui</li>
+                              </ol>
+                              <p className="text-xs text-green-600 font-medium">
+                                ✨ Pode colar a tag completa! O sistema extrairá a URL automaticamente.
+                              </p>
+                              <p className="text-xs text-gray-600 italic">
+                                Ex: &lt;iframe src=&quot;https://www.google.com/maps/embed?pb=...&quot;&gt;
+                              </p>
+                            </div>
+                          </TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
+                    </div>
                     <FormControl>
                       <Input
                         {...form.register("municipio.mapaUrl")}
                         disabled={isViewMode}
-                        placeholder="https://maps.google.com/..."
+                        placeholder="Cole aqui a tag <iframe> completa do Google Maps ou apenas a URL"
                         type="url"
                         className={form.formState.errors.municipio?.mapaUrl ? "border-red-500" : ""}
+                        onPaste={handleMapUrlPaste}
                       />
                     </FormControl>
                     {form.formState.errors.municipio?.mapaUrl ? (
@@ -231,7 +306,7 @@ export function MunicipalityModal({
                       </span>
                     ) : (
                       <span className="text-gray-500 text-xs">
-                        💡 Link do Google Maps ou similar (opcional)
+                        💡 Cole a tag &lt;iframe&gt; completa do Google Maps - a URL será extraída automaticamente
                       </span>
                     )}
                   </FormItem>
@@ -332,7 +407,7 @@ export function MunicipalityModal({
                       </span>
                     ) : (
                       <span className="text-gray-500 text-xs">
-                        💡 Telefone com DDD (opcional)
+                        💡 Telefone com DDD
                       </span>
                     )}
                   </FormItem>
@@ -354,7 +429,7 @@ export function MunicipalityModal({
                       </span>
                     ) : (
                       <span className="text-gray-500 text-xs">
-                        💡 Celular com DDD (opcional)
+                        💡 Celular com DDD
                       </span>
                     )}
                   </FormItem>
@@ -376,7 +451,7 @@ export function MunicipalityModal({
                       </span>
                     ) : (
                       <span className="text-gray-500 text-xs">
-                        💡 WhatsApp com DDD (opcional)
+                        💡 WhatsApp com DDD
                       </span>
                     )}
                   </FormItem>
@@ -397,7 +472,7 @@ export function MunicipalityModal({
                       </span>
                     ) : (
                       <span className="text-gray-500 text-xs">
-                        💡 Instagram oficial do município (opcional)
+                        💡 Instagram oficial do município
                       </span>
                     )}
                   </FormItem>

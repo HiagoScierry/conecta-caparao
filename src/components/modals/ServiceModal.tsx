@@ -217,7 +217,7 @@ export function ServiceModal({
                         </span>
                       ) : (
                         <span className="text-gray-500 text-xs">
-                          💡 Site oficial do serviço (opcional)
+                          💡 Site oficial do serviço
                         </span>
                       )}
                     </FormItem>
@@ -290,7 +290,7 @@ export function ServiceModal({
                         </span>
                       ) : (
                         <span className="text-gray-500 text-xs">
-                          💡 Celular com DDD obrigatório
+                          💡 Celular com DDD
                         </span>
                       )}
                     </FormItem>
@@ -312,7 +312,7 @@ export function ServiceModal({
                         </span>
                       ) : (
                         <span className="text-gray-500 text-xs">
-                          💡 Telefone com DDD (opcional)
+                          💡 Telefone com DDD
                         </span>
                       )}
                     </FormItem>
@@ -334,7 +334,7 @@ export function ServiceModal({
                         </span>
                       ) : (
                         <span className="text-gray-500 text-xs">
-                          💡 WhatsApp com DDD (opcional)
+                          💡 WhatsApp com DDD
                         </span>
                       )}
                     </FormItem>
@@ -355,7 +355,7 @@ export function ServiceModal({
                         </span>
                       ) : (
                         <span className="text-gray-500 text-xs">
-                          💡 Instagram do serviço (opcional)
+                          💡 Instagram do serviço
                         </span>
                       )}
                     </FormItem>

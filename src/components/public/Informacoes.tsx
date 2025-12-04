@@ -51,45 +51,40 @@ export function Informacoes({contato: {telefone, email, site }, mapa}: Props) {
       {mapa && (
         <div className="order-2 md:order-2 flex-1">
           <div className="w-full h-96 bg-gray-200 rounded-sm overflow-hidden">
-            <h2 className="text-2xl w-full font-bold bg-tourism-verde pl-2 mb-2 flex items-center gap-2">
-              <MapPin size={20} />
-              Mapa
-            </h2>
-            
-            {!isValidMap || mapError ? (
-              <div className="flex flex-col items-center justify-center h-full bg-gray-100 text-gray-600 p-4">
-                <AlertTriangle size={48} className="text-amber-500 mb-3" />
-                <p className="text-lg font-semibold mb-2">Mapa não disponível</p>
-                <p className="text-sm text-center">
-                  {!isValidMap 
-                    ? "URL do mapa inválida ou não é do Google Maps"
-                    : "Erro ao carregar o mapa"
-                  }
-                </p>
-                {!isValidMap && mapa && (
-                  <a 
-                    href={mapa} 
-                    target="_blank" 
-                    rel="noopener noreferrer"
-                    className="mt-3 text-blue-600 hover:text-blue-800 underline text-sm"
-                  >
-                    Abrir link em nova aba
-                  </a>
-                )}
-              </div>
-            ) : (
-              <iframe
-                src={mapa}
-                width="100%"
-                height="100%"
-                style={{ border: 0 }}
-                allowFullScreen={false}
-                loading="lazy"
-                referrerPolicy="no-referrer-when-downgrade"
-                onError={handleMapError}
-                title="Mapa de localização"
-              />
-            )}
+        <h2 className="text-2xl w-full font-bold bg-tourism-verde pl-2 mb-2 flex items-center gap-2">
+          <MapPin size={20} />
+          Mapa
+        </h2>
+
+        {!isValidMap || mapError ? (
+          <div className="flex flex-col items-center justify-center h-full bg-gray-100 text-gray-600 p-4">
+            <AlertTriangle size={48} className="text-amber-500 mb-3" />
+            <p className="text-lg font-semibold mb-2">Mapa não disponível</p>
+            <p className="text-sm text-center">
+          Link direto para o Google Maps
+            </p>
+            <a
+          href={mapa}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="mt-3 bg-blue-600 hover:bg-blue-800 text-white px-4 py-2 rounded text-sm"
+            >
+          Abrir no Google Maps
+            </a>
+          </div>
+        ) : (
+          <iframe
+            src={mapa}
+            width="100%"
+            height="100%"
+            style={{ border: 0 }}
+            allowFullScreen={false}
+            loading="lazy"
+            referrerPolicy="no-referrer-when-downgrade"
+            onError={handleMapError}
+            title="Mapa de localização"
+          />
+        )}
           </div>
         </div>
       )}
