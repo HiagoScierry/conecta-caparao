@@ -11,6 +11,7 @@ import { Form, FormControl, FormItem, FormLabel } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { MaskedInput } from "@/components/ui/masked-input";
 import { Textarea } from "@/components/ui/textarea";
+import { RichTextEditor } from "@/components/ui/rich-text-editor";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { useForm } from "react-hook-form";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -317,33 +318,22 @@ export function MunicipalityModal({
                     <FormLabel>Descrição *</FormLabel>
                     <FormControl>
                       <div className="space-y-2">
-                        <Textarea
-                          {...form.register("municipio.descricao")}
-                          disabled={isViewMode}
-                          placeholder="Descreva o município de forma atrativa para turistas"
-                          className={`min-h-[100px] ${form.formState.errors.municipio?.descricao ? "border-red-500" : ""}`}
-                          maxLength={1000}
-                          onPaste={(e) => {
-                            const paste = e.clipboardData?.getData('text') || '';
-                            const currentValue = form.getValues("municipio.descricao") || "";
-                            const target = e.currentTarget;
-                            const selectionStart = target.selectionStart ?? currentValue.length;
-                            const selectionEnd = target.selectionEnd ?? currentValue.length;
-                            const before = currentValue.slice(0, selectionStart);
-                            const after = currentValue.slice(selectionEnd);
-                            const newValue = before + paste + after;
-                            if (newValue.length > 1000) {
-                              e.preventDefault();
-                              // Truncate so that the pasted text fits within the limit
-                              const allowedPasteLength = 1000 - (before.length + after.length);
-                              const truncatedPaste = paste.slice(0, Math.max(0, allowedPasteLength));
-                              const truncated = before + truncatedPaste + after;
-                              form.setValue("municipio.descricao", truncated);
+                        <RichTextEditor
+                          value={form.watch("municipio.descricao")}
+                          onChange={(value) => {
+                            // Limita o conteúdo a 1000 caracteres
+                            const strippedText = value.replace(/<[^>]*>/g, '');
+                            if (strippedText.length <= 1000) {
+                              form.setValue("municipio.descricao", value);
                             }
                           }}
+                          disabled={isViewMode}
+                          placeholder="Descreva o município de forma atrativa para turistas"
+                          className={form.formState.errors.municipio?.descricao ? "border-red-500" : ""}
+                          minHeight="150px"
                         />
                         <div className="text-sm text-muted-foreground text-right">
-                          {(form.watch("municipio.descricao")?.length || 0)}/1000 caracteres
+                          {(form.watch("municipio.descricao")?.replace(/<[^>]*>/g, '').length || 0)}/1000 caracteres
                         </div>
                       </div>
                     </FormControl>

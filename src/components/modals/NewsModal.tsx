@@ -11,7 +11,7 @@ import { Form, FormControl, FormItem, FormLabel } from "@/components/ui/form";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Textarea } from "@/components/ui/textarea";
+import { RichTextEditor } from "@/components/ui/rich-text-editor";
 import { ImageUpload } from "@/components/ImageUpload";
 import { NoticiasForm, noticiasForm } from "@/forms/noticiasForm";
 import { useEffect, useState } from "react";
@@ -172,11 +172,13 @@ export function NewsModal({
                 <FormItem>
                   <FormLabel className="text-base font-medium">Texto *</FormLabel>
                   <FormControl>
-                    <Textarea
-                      {...form.register("noticia.texto", { required: true })}
+                    <RichTextEditor
+                      value={form.watch("noticia.texto")}
+                      onChange={(value) => form.setValue("noticia.texto", value)}
                       disabled={isViewMode}
                       placeholder="Digite o conteúdo completo da notícia"
-                      className={`min-h-[150px] ${form.formState.errors.noticia?.texto ? "border-red-500" : ""}`}
+                      className={form.formState.errors.noticia?.texto ? "border-red-500" : ""}
+                      minHeight="200px"
                     />
                   </FormControl>
                   {form.formState.errors.noticia?.texto ? (

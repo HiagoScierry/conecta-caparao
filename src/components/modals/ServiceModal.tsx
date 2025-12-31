@@ -13,7 +13,7 @@ import {
 import { Form, FormControl, FormItem, FormLabel } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { MaskedInput } from "@/components/ui/masked-input";
-import { Textarea } from "@/components/ui/textarea";
+import { RichTextEditor } from "@/components/ui/rich-text-editor";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -226,11 +226,13 @@ export function ServiceModal({
                   <FormItem>
                     <FormLabel>Descrição</FormLabel>
                     <FormControl>
-                      <Textarea
-                        {...form.register("servico.descricao", { required: true })}
+                      <RichTextEditor
+                        value={form.watch("servico.descricao")}
+                        onChange={(value) => form.setValue("servico.descricao", value)}
                         disabled={isViewMode}
                         placeholder="Descreva o serviço oferecido de forma detalhada"
-                        className={`min-h-[100px] ${form.formState.errors.servico?.descricao ? "border-red-500" : ""}`}
+                        className={form.formState.errors.servico?.descricao ? "border-red-500" : ""}
+                        minHeight="150px"
                       />
                     </FormControl>
                     {form.formState.errors.servico?.descricao ? (

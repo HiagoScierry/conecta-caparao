@@ -25,7 +25,7 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { MaskedInput } from "@/components/ui/masked-input";
-import { Textarea } from "@/components/ui/textarea";
+import { RichTextEditor } from "@/components/ui/rich-text-editor";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import {
   Select,
@@ -412,17 +412,17 @@ export function AttractionModal({
                         Descrição *
                       </FormLabel>
                       <FormControl>
-                        <Textarea
-                          {...form.register("atracaoTuristica.descricao", {
-                            required: true,
-                          })}
+                        <RichTextEditor
+                          value={form.watch("atracaoTuristica.descricao")}
+                          onChange={(value) => form.setValue("atracaoTuristica.descricao", value)}
                           disabled={isViewMode}
                           placeholder="Descreva a atração turística de forma detalhada"
-                          className={`min-h-[100px] ${
+                          className={
                             form.formState.errors.atracaoTuristica?.descricao
                               ? "border-red-500"
                               : ""
-                          }`}
+                          }
+                          minHeight="150px"
                         />
                       </FormControl>
                       {form.formState.errors.atracaoTuristica?.descricao ? (

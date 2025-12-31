@@ -193,11 +193,13 @@ export function EventModal({
                       Descrição
                     </FormLabel>
                     <FormControl>
-                      <Textarea
-                        {...form.register("evento.descricao", { required: true })}
+                      <RichTextEditor
+                        value={form.watch("evento.descricao")}
+                        onChange={(value) => form.setValue("evento.descricao", value)}
                         disabled={isViewMode}
                         placeholder="Descreva o evento de forma detalhada"
-                        className={`min-h-[100px] ${form.formState.errors.evento?.descricao ? "border-red-500" : ""}`}
+                        className={form.formState.errors.evento?.descricao ? "border-red-500" : ""}
+                        minHeight="150px"
                       />
                     </FormControl>
                     {form.formState.errors.evento?.descricao ? (
