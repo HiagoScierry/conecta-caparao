@@ -49,10 +49,8 @@ export default function PaginaEvento({ params }: Props) {
           </div>
 
           {/* Corpo do Texto */}
-          <div className="max-w-3xl mx-auto text-lg text-tourism-cinza text-justify leading-relaxed space-y-6 mb-12">
-            <p>
-              {evento?.descricao || "Conteúdo não disponível."}
-            </p>
+          <div className="max-w-3xl mx-auto text-lg text-tourism-cinza text-justify leading-relaxed space-y-6 mb-12 prose prose-lg max-w-none">
+            <div dangerouslySetInnerHTML={{ __html: evento?.descricao || "Conteúdo não disponível." }} />
           </div>
 
           {/* Galeria de Imagens */}

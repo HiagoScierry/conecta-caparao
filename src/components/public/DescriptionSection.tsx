@@ -78,12 +78,13 @@ export function DescriptionSection({
         )}
 
         {descricao && (
-          <p className={cn(
-            "md:text-lg lg:text-xl max-w-3xl break-words leading-relaxed",
-            corDescricao
-          )}>
-            {descricao}
-          </p>
+          <div 
+            className={cn(
+              "md:text-lg lg:text-xl max-w-3xl break-words leading-relaxed prose prose-lg max-w-none",
+              corDescricao
+            )}
+            dangerouslySetInnerHTML={{ __html: descricao }}
+          />
         )}
       </div>
     </section>

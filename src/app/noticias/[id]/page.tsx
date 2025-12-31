@@ -50,10 +50,8 @@ export default function PaginaNoticia({ params }: Props) {
           </div>
 
           {/* Corpo do Texto */}
-          <div className="max-w-3xl mx-auto text-lg text-tourism-cinza text-justify leading-relaxed space-y-6 mb-12">
-            <p>
-              {noticia?.texto || "Conteúdo não disponível."}
-            </p>
+          <div className="max-w-3xl mx-auto text-lg text-tourism-cinza text-justify leading-relaxed space-y-6 mb-12 prose prose-lg max-w-none">
+            <div dangerouslySetInnerHTML={{ __html: noticia?.texto || "Conteúdo não disponível." }} />
           </div>
 
           {/* Galeria de Imagens */}
