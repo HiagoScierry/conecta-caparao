@@ -1,34 +1,33 @@
 import { Banner } from "@/components/public/Banner";
-import { LayoutPublic } from "@/components/public/Layout";
+import { LayoutPublic } from "@/components/public/Layout"
+import { FiPhone, FiMail } from "react-icons/fi"; 
+import { FaWhatsapp, FaInstagram, FaFacebook } from "react-icons/fa"; 
 
 export default function PaginaMunicipios() {
   return (
     <LayoutPublic>
-      <div className="container mx-auto py-8 px-4 md:px-16">
-        <Banner titulo="Contate-nos" cor="bg-tourism-verde" />
+      <div className="container mx-auto py-16 px-8 bg-gradient-menta md:px-16 ">
+        <Banner titulo="Contate-nos" cor="bg-new-marinho" />
 
-        <main className="grid grid-cols-1 md:grid-cols-2 gap-8 mt-8">
+        <main className="grid grid-cols-1 md:grid-cols-2 gap-12 mt-8 w-full">
           {/* Formulário (primeiro no mobile, segundo no desktop) */}
-          <form className="order-1 md:order-2 space-y-4">
+          <form className="w-full order-1 md:order-2 space-y-4">
             <div>
-              <label
-                className="block text-sm font-medium mb-1"
-                htmlFor="nome"
-              >
+              <label className="sr-only" htmlFor="nome">
                 Nome
               </label>
               <input
                 type="text"
                 id="nome"
-                className="w-full px-3 py-2 border border-gray-300 rounded-md
-                           focus:outline-none focus:ring-2 focus:ring-tourism-verde"
-                placeholder="Seu nome"
+                className="w-full px-4 py-3 border text-new-cinza placeholder:text-new-cinza border-gray-300 rounded-md
+                          focus:outline-none focus:ring-2 focus:ring-new-marinho bg-white/50bg-white/50"
+                placeholder="Nome Completo"
               />
             </div>
 
             <div>
-              <label
-                className="block text-sm font-medium mb-1"
+              <label 
+                className="sr-only" 
                 htmlFor="email"
               >
                 Email
@@ -36,15 +35,15 @@ export default function PaginaMunicipios() {
               <input
                 type="email"
                 id="email"
-                className="w-full px-3 py-2 border border-gray-300 rounded-md
-                           focus:outline-none focus:ring-2 focus:ring-tourism-verde"
-                placeholder="Seu email"
+                className="w-full px-4 py-3 border text-new-cinza placeholder:text-new-cinza border-gray-300 rounded-md
+                          focus:outline-none focus:ring-2 focus:ring-new-marinho bg-white/50bg-white/50"
+                placeholder="E-mail"
               />
             </div>
 
             <div>
               <label
-                className="block text-sm font-medium mb-1"
+                className="sr-only"
                 htmlFor="telefone"
               >
                 Telefone
@@ -52,15 +51,15 @@ export default function PaginaMunicipios() {
               <input
                 type="tel"
                 id="telefone"
-                className="w-full px-3 py-2 border border-gray-300 rounded-md
-                           focus:outline-none focus:ring-2 focus:ring-tourism-verde"
-                placeholder="Seu telefone"
+                className="w-full px-4 py-3 border text-new-cinza placeholder:text-new-cinza border-gray-300 rounded-md
+                          focus:outline-none focus:ring-2 focus:ring-new-marinho bg-white/50bg-white/50"
+                placeholder="Telefone"
               />
             </div>
 
             <div>
               <label
-                className="block text-sm font-medium mb-1"
+                className="sr-only"
                 htmlFor="assunto"
               >
                 Assunto
@@ -68,15 +67,15 @@ export default function PaginaMunicipios() {
               <input
                 type="text"
                 id="assunto"
-                className="w-full px-3 py-2 border border-gray-300 rounded-md
-                           focus:outline-none focus:ring-2 focus:ring-tourism-verde"
-                placeholder="Assunto da mensagem"
+                className="w-full px-4 py-3 border text-new-cinza placeholder:text-new-cinza border-gray-300 rounded-md
+                          focus:outline-none focus:ring-2 focus:ring-new-marinho bg-white/50bg-white/50"
+                placeholder="Assunto"
               />
             </div>
 
             <div>
               <label
-                className="block text-sm font-medium mb-1"
+                className="sr-only"
                 htmlFor="mensagem"
               >
                 Mensagem
@@ -84,35 +83,36 @@ export default function PaginaMunicipios() {
               <textarea
                 id="mensagem"
                 rows={4}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md
-                           focus:outline-none focus:ring-2 focus:ring-tourism-verde"
-                placeholder="Sua mensagem"
+                className="w-full px-4 py-3 border text-new-cinza placeholder:text-new-cinza border-gray-300 rounded-md
+                          focus:outline-none focus:ring-2 focus:ring-new-marinho bg-white/50bg-white/50"
+                placeholder="Mensagem"
               />
             </div>
 
-            <button
-              type="submit"
-              className="w-full md:w-auto px-6 py-2 bg-tourism-verde text-white
-                         rounded-md hover:bg-tourism-verde-escuro transition-colors"
-            >
-              Enviar
-            </button>
+            <div className="flex justify-center">
+              <button
+                type="submit"
+                className="px-6 py-2 bg-new-marinho text-white rounded-md hover:bg-tourism-verde-escuro transition-colors"
+              >
+                Enviar Mensagem
+              </button>
+            </div>
           </form>
 
           {/* Informações (segundo no mobile, primeiro no desktop) */}
-          <div className="order-2 md:order-1 space-y-4">
-            <h1 className="text-2xl font-bold">Fale Conosco</h1>
+          <div className="w-full order-2 md:order-1 space-y-4">
+            <h1 className="font-title text-4xl text-new-marinho font-bold">Fale Conosco</h1>
             <p>
-              📞 <span className="font-medium">Telefone:</span> (99) 9999-9999
+              <span><FiPhone className="w-5 h-5 inline mr-2"/></span> (99) 9999-9999
             </p>
             <p>
-              💬 <span className="font-medium">WhatsApp:</span> (99) 9999-9999
+              <span><FaWhatsapp className="w-5 h-5 inline mr-2"/></span> (99) 9999-9999
             </p>
             <p>
-              ✉️ <span className="font-medium">Email:</span> contato@example.com
+              <span><FiMail className="w-5 h-5 inline mr-2"/></span> contato@example.com
             </p>
             <p>
-              📍 <span className="font-medium">Instagram:</span> @exemplo
+              <span><FaInstagram className="w-5 h-5 inline mr-2"/></span><span><FaFacebook className="w-5 h-5 inline mr-2"/></span> 
             </p>
           </div>
         </main>

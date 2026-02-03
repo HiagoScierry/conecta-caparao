@@ -8,7 +8,19 @@ import { Sonner } from "@/components/ui/sonner";
 import { useState, useEffect } from "react";
 import Head from "next/head";
 import { AuthProvider } from "@/hooks/auth-context";
+import { Montserrat, Nunito } from "next/font/google";
 
+const montserrat = Montserrat({
+  subsets: ["latin"],
+  variable: "--font-montserrat",
+  display: "swap",
+});
+
+const nunito = Nunito({
+  subsets: ["latin"],
+  variable: "--font-nunito",
+  display: "swap",
+});
 
 export default function RootLayout({
   children,
@@ -39,12 +51,12 @@ export default function RootLayout({
   }, []);
 
   return (
-    <html lang="en">
+    <html lang="pt-br" className={`${montserrat.variable} ${nunito.variable}`}>
       <Head>
         <title>Incaper - Guia do Caparaó</title>
         <meta name="description" content="Um guia completo do Parque Nacional do Caparaó, com informações sobre atrativos, eventos, notícias e muito mais." />
       </Head>
-      <body suppressHydrationWarning={true}>
+      <body suppressHydrationWarning={true} className="font-sans">
         <QueryClientProvider client={queryClient}>
           <TooltipProvider>
             <AuthProvider>
