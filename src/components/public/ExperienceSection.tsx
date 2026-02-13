@@ -1,14 +1,7 @@
 import React from 'react';
 import { Section } from './Section';
 import { ExperienceCard } from './ExperienceCard';
-import Link from 'next/link';
-import {
-  MountainSnow,
-  HandPlatter,
-  Hotel,
-  Handshake,
-  Wrench,
-} from 'lucide-react';
+
 import {
   FaUtensils,
   FaBed,
@@ -48,7 +41,7 @@ export function ExperienceSection() {
 
   return (
     <Section bgClass='bg-gradient-menta' className='py-24'>
-      <div className='mb-20 text-left '>
+      <div className='mb-20 text-left'>
         <span className='text-[18px] font-bold tracking-[0.2em] text-new-azul uppercase'>
           O QUE TE ESPERA
         </span>

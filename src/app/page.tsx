@@ -5,6 +5,7 @@ import { GaleriaDeImagens } from '@/components/public/GaleriaDeImagens';
 import { MunicipiosCard } from '@/components/public/MunicipiosCard';
 import { Button } from '@/components/ui/button';
 import { ExperienceSection } from '@/components/public/ExperienceSection';
+import { AttractionsGallery } from '@/components/public/AttractionsGallery';
 import { DefaultCard } from '@/components/public/DefaultCard';
 import Image from 'next/image';
 
@@ -110,6 +111,8 @@ export default function Home() {
         </div>
       </section>
       <ExperienceSection />
+
+      <AttractionsGallery />
 
       <div className='w-full mx-auto my-8'>
         <GaleriaDeImagens imagemUrls={Carrosel.imagemUrls} />
