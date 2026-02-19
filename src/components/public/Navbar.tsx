@@ -2,7 +2,9 @@
 import React, { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { Menu, X } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import {
   NavigationMenu,
   NavigationMenuItem,
@@ -11,77 +13,94 @@ import {
 
 export function Navbar() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const pathname = usePathname();
 
   const navItems = [
-    { label: "Início", href: "/" },
     { label: "Municípios", href: "/municipios" },
     { label: "Atrativos", href: "/atrativos" },
     { label: "Notícias", href: "/noticias" },
     { label: "Eventos", href: "/eventos" },
+    { label: "Cultura", href: "/cultura" },
     { label: "Contato", href: "/contato" },
-    { label: "Painel", href: "/entrar" },
-
   ];
 
   return (
-    <nav className="relative top-0 z-50">
-      <div className="flex items-center justify-between gap-2 px-6 md:px-12 lg:px-24 py-4 bg-tourism-azul border-b">
+    <nav className="relative top-0 z-50 bg-white shadow-sm">
+      <div className="flex items-center justify-between gap-4 px-6 md:px-12 lg:px-20 py-3 md:py-4">
         {/* Logo */}
-        <Link href="/">
+        <Link href="/" className="flex-shrink-0">
           <Image
             src="/Logomarca.svg"
             alt="Logo Turismo Caparaó"
-            width={80}
-            height={80}
+            width={60}
+            height={60}
+            className="md:w-[70px] md:h-[70px]"
           />
         </Link>
 
         {/* Menu Desktop */}
-        <NavigationMenu className="hidden md:flex">
-          <NavigationMenuList className="flex gap-4 md:gap-6 lg:gap-12">
-            {navItems.map((item) => (
-              <NavigationMenuItem key={item.href}>
-                <Link
-                  href={item.href}
-                  className="text-tourism-branco font-medium text-lg hover:text-tourism-rosa transition-colors"
-                >
-                  {item.label}
-                </Link>
-              </NavigationMenuItem>
-            ))}
-          </NavigationMenuList>
-        </NavigationMenu>
+        <div className="hidden lg:flex items-center gap-8">
+          <NavigationMenu>
+            <NavigationMenuList className="flex gap-8">
+              {navItems.map((item) => {
+                const isActive = pathname === item.href || pathname.startsWith(item.href + '/');
+                return (
+                  <NavigationMenuItem key={item.href}>
+                    <Link
+                      href={item.href}
+                      className={`font-medium text-base transition-all px-5 py-2.5 rounded-lg ${
+                        isActive
+                          ? "bg-tourism-cinzaescuro text-white shadow-md ring-2 ring-tourism-cinzaescuro/50"
+                          : "text-tourism-cinzaescuro hover:font-bold"
+                      }`}
+                    >
+                      {item.label}
+                    </Link>
+                  </NavigationMenuItem>
+                );
+              })}
+            </NavigationMenuList>
+          </NavigationMenu>
+        </div>
 
         {/* Menu Mobile */}
-        <div className="md:hidden">
+        <div className="lg:hidden">
           <button
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-            className="text-tourism-branco focus:outline-none p-2 transition-transform duration-300"
+            className="text-tourism-marinho focus:outline-none p-2 transition-transform duration-300"
             aria-label="Abrir ou fechar menu"
           >
-            {isMobileMenuOpen ? <X size={36} /> : <Menu size={36} />}
+            {isMobileMenuOpen ? <X size={28} /> : <Menu size={28} />}
           </button>
 
           <div
             className={`
-              absolute top-full left-0 w-full bg-tourism-branco z-50 flex flex-col items-center justify-center
+              absolute top-full left-0 w-full bg-white shadow-lg z-50 flex flex-col
               transition-all duration-300 ease-in-out
               ${isMobileMenuOpen ? "opacity-100 translate-y-0 pointer-events-auto" : "opacity-0 -translate-y-4 pointer-events-none"}
             `}
           >
-            {navItems.map((item) => (
-              <Link
-                key={item.href}
-                href={item.href}
-                className="text-tourism-azul text-2xl font-medium py-4 w-full block text-center border-b border-tourism-rosa"
-                onClick={() => setIsMobileMenuOpen(false)}
-              >
-                {item.label}
-              </Link>
-            ))}
+            {navItems.map((item) => {
+              const isActive = pathname === item.href || pathname.startsWith(item.href + '/');
+              return (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className={`text-lg font-medium py-4 px-6 border-b border-gray-100 transition-colors ${
+                    isActive
+                      ? "bg-tourism-cinzaescuro text-white shadow-md"
+                      : "text-tourism-cinzaescuro hover:bg-gray-50"
+                  }`}
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  {item.label}
+                </Link>
+              );
+            })}
           </div>
         </div>
       </div>
     </nav>
   );
 }
+
