@@ -1,6 +1,7 @@
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
+import Link from "next/link";
 
 interface CardMunicipioProps {
   nome: string;
@@ -34,10 +35,10 @@ export function CardMunicipio({ nome, descricao, imagemUrl, href }: CardMunicipi
           variant="ghost"
           className="w-full bg-tourism-menta hover:bg-tourism-verde hover:text-white text-tourism-verde font-semibold group/button transition-all"
         >
-          <a href={href} className="flex items-center justify-center gap-2">
+          <Link href={href} className="flex items-center justify-center gap-2">
             Explorar {nome}
             <ArrowRight className="h-4 w-4 group-hover/button:translate-x-1 transition-transform" />
-          </a>
+          </Link>
         </Button>
       </div>
     </div>

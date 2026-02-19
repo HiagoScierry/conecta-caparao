@@ -8,7 +8,7 @@ interface SecaoExperienciasProps {
 
 export function SecaoExperiencias({ tituloDestaque, tituloPrincipal, children }: SecaoExperienciasProps) {
   return (
-    <section className="w-full bg-gradient-menta py-12 md:py-16 lg:py-20">
+    <section className="w-full bg-gradient-to-b from-tourism-menta/50 via-white to-white py-12 md:py-16 lg:py-20">
       <div className="container mx-auto px-6 md:px-12 lg:px-20">
         <div className="text-left mb-10 md:mb-12">
           <p className="text-tourism-azul-claro text-sm md:text-base font-semibold uppercase tracking-wide mb-2">

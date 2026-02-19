@@ -1,18 +1,17 @@
 import { LayoutPublic } from "@/components/public/Layout";
 import { Atrativos } from "@/components/public/Atrativos";
-import { HeroHome } from "@/components/public/HeroHome";
+import { Hero } from "@/components/public/Hero";
 import { SecaoExperiencias } from "@/components/public/SecaoExperiencias";
 import { GaleriaAtrativos } from "@/components/public/GaleriaAtrativos";
 import { SecaoEventos } from "@/components/public/SecaoEventos";
 import { SecaoMunicipios } from "@/components/public/SecaoMunicipios";
 import { SecaoMomentos } from "@/components/public/SecaoMomentos";
 import { SecaoNoticias } from "@/components/public/SecaoNoticias";
-import Image from "next/image";
 
 export default function Home() {
   return (
     <LayoutPublic>
-      <HeroHome 
+      <Hero 
         titulo="As Raízes do Caparaó"
         subtitulo="Uma história tecida nas montanhas, preservada pelo coração do povo"
         imagemUrl="/Hero.jpg"

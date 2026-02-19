@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { MapPin, AlertTriangle } from "lucide-react";
+import { useMemo, useState } from "react";
+import { MapPin, AlertTriangle, Phone, Mail, Globe } from "lucide-react";
 
 type Props = {
   contato: {
@@ -14,80 +14,127 @@ type Props = {
  * Valida se a URL é um mapa válido do Google Maps
  */
 function isValidGoogleMapsUrl(url: string): boolean {
-  if (!url || typeof url !== 'string') return false;
-  
+  if (!url || typeof url !== "string") {
+    return false;
+  }
+
   const googleMapsPatterns = [
     /^https:\/\/(www\.)?google\.com\/maps/,
     /^https:\/\/(www\.)?maps\.google\.com/,
     /^https:\/\/(www\.)?google\.[a-z]{2,}\/maps/,
     /^https:\/\/maps\.app\.goo\.gl/,
-    /embed\?pb=/i
+    /embed\?pb=/i,
   ];
-  
-  return googleMapsPatterns.some(pattern => pattern.test(url));
+
+  return googleMapsPatterns.some((pattern) => pattern.test(url));
 }
 
-export function Informacoes({contato: {telefone, email, site }, mapa}: Props) {
+export function Informacoes({ contato: { telefone, email, site }, mapa }: Props) {
   const [mapError, setMapError] = useState(false);
-  const isValidMap = mapa ? isValidGoogleMapsUrl(mapa) : false;
 
-  const handleMapError = () => {
-    setMapError(true);
-  };
+  const formattedSite = useMemo(() => {
+    if (!site) {
+      return "";
+    }
+    const withProtocol = site.startsWith("http") ? site : `https://${site}`;
+    try {
+      const url = new URL(withProtocol);
+      return url.href;
+    } catch {
+      return site;
+    }
+  }, [site]);
+
+  const safeMapUrl = useMemo(() => {
+    if (!mapa) {
+      return null;
+    }
+    return isValidGoogleMapsUrl(mapa) ? mapa : null;
+  }, [mapa]);
+
+  const handleMapError = () => setMapError(true);
 
   return (
-    <div className="flex flex-col md:flex-row justify-between lg:gap-48 lg:px-20 gap-8 p-8 mt-8">
-      <div className="order-1 md:order-1 flex-1 space-y-2 rounded-md">
-        <div className="w-full bg-[#0096E180] rounded-sm overflow-hidden pb-2">
-          <h2 className="text-2xl w-full font-bold bg-tourism-verde pl-2 mb-2">
+    <section className="w-full bg-white py-12">
+      <div className={`container mx-auto px-6 md:px-12 lg:px-20 grid grid-cols-1 gap-6 md:grid-cols-2`}>
+        <div className="rounded-2xl shadow-md border border-tourism-menta/30 overflow-hidden w-full md:self-start">
+          <div className="bg-tourism-marinho text-white px-5 py-3 text-sm font-semibold tracking-[0.3em] uppercase">
             Informações
-          </h2>
-          <p className="pl-2">Telefone: {telefone}</p>
-          <p className="pl-2">Email: {email}</p>
-          <p className="pl-2">Site: {site}</p>
+          </div>
+          <div className="p-5 space-y-3 text-tourism-cinza-escuro">
+            <div className="flex items-center gap-3">
+              <Phone className="h-5 w-5 text-tourism-marinho" />
+              <span className="text-base font-semibold">
+                {telefone || "Não informado"}
+              </span>
+            </div>
+            <div className="flex items-center gap-3">
+              <Mail className="h-5 w-5 text-tourism-marinho" />
+              {email ? (
+                <a href={`mailto:${email}`} className="text-base font-semibold  underline-offset-4 hover:underline">
+                  {email}
+                </a>
+              ) : (
+                <span className="text-base font-semibold">Não informado</span>
+              )}
+            </div>
+            <div className="flex items-center gap-3">
+              <Globe className="h-5 w-5 text-tourism-marinho" />
+              {formattedSite ? (
+                <a
+                  href={formattedSite}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-base font-semibold underline-offset-4 hover:underline"
+                >
+                  {formattedSite.replace(/^https?:\/\//, "")}
+                </a>
+              ) : (
+                <span className="text-base font-semibold">Não informado</span>
+              )}
+            </div>
+          </div>
+        </div>
+
+        <div className="rounded-2xl shadow-md border border-tourism-menta/30 overflow-hidden">
+          <div className="bg-tourism-marinho text-white px-5 py-3 text-sm font-semibold tracking-[0.3em] uppercase flex items-center gap-2">
+            <MapPin className="h-4 w-4" />
+            Mapa
+          </div>
+          <div className="h-64 bg-tourism-menta/20">
+            {!safeMapUrl || mapError ? (
+              <div className="flex h-full flex-col items-center justify-center gap-3 text-center text-tourism-cinza-escuro px-6">
+                <AlertTriangle className="h-10 w-10 text-amber-500" />
+                <p className="text-base font-semibold">Mapa não disponível</p>
+                {mapa ? (
+                  <a
+                    href={mapa}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-sm font-semibold text-tourism-azul underline-offset-4 hover:underline"
+                  >
+                    Abrir no Google Maps
+                  </a>
+                ) : (
+                  <span className="text-sm">Nenhum link fornecido.</span>
+                )}
+              </div>
+            ) : (
+              <iframe
+                src={safeMapUrl}
+                width="100%"
+                height="100%"
+                style={{ border: 0 }}
+                allowFullScreen={false}
+                loading="lazy"
+                referrerPolicy="no-referrer-when-downgrade"
+                onError={handleMapError}
+                title="Mapa de localização"
+              />
+            )}
+          </div>
         </div>
       </div>
-
-      {mapa && (
-        <div className="order-2 md:order-2 flex-1">
-          <div className="w-full h-96 bg-gray-200 rounded-sm overflow-hidden">
-        <h2 className="text-2xl w-full font-bold bg-tourism-verde pl-2 mb-2 flex items-center gap-2">
-          <MapPin size={20} />
-          Mapa
-        </h2>
-
-        {!isValidMap || mapError ? (
-          <div className="flex flex-col items-center justify-center h-full bg-gray-100 text-gray-600 p-4">
-            <AlertTriangle size={48} className="text-amber-500 mb-3" />
-            <p className="text-lg font-semibold mb-2">Mapa não disponível</p>
-            <p className="text-sm text-center">
-          Link direto para o Google Maps
-            </p>
-            <a
-          href={mapa}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="mt-3 bg-blue-600 hover:bg-blue-800 text-white px-4 py-2 rounded text-sm"
-            >
-          Abrir no Google Maps
-            </a>
-          </div>
-        ) : (
-          <iframe
-            src={mapa}
-            width="100%"
-            height="100%"
-            style={{ border: 0 }}
-            allowFullScreen={false}
-            loading="lazy"
-            referrerPolicy="no-referrer-when-downgrade"
-            onError={handleMapError}
-            title="Mapa de localização"
-          />
-        )}
-          </div>
-        </div>
-      )}
-    </div>
+    </section>
   );
 }

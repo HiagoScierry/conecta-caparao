@@ -1,92 +1,117 @@
 import React from "react";
 import { cn } from "@/lib/utils";
 
-type AlignmentType = 'center' | 'left' | 'right';
+type AlignmentType = "center" | "left" | "right";
 
 interface DescriptionSectionProps {
-  /**
-   * Subtítulo da seção
-   */
   subtitulo?: string;
-  /**
-   * Descrição principal da seção
-   */
+  titulo?: string;
   descricao?: string;
-  /**
-   * Classes CSS personalizadas para o subtítulo
-   */
-  corSubtitulo?: string;
-  /**
-   * Classes CSS personalizadas para a descrição
-   */
-  corDescricao?: string;
-  /**
-   * Alinhamento do conteúdo
-   * @default 'center'
-   */
   align?: AlignmentType;
-  /**
-   * Classes CSS personalizadas para a seção
-   */
   className?: string;
-  /**
-   * Classes CSS personalizadas para o container
-   */
   containerClassName?: string;
+  preserveLineBreaks?: boolean;
 }
 
 export function DescriptionSection({
   subtitulo,
+  titulo,
   descricao,
-  corSubtitulo,
-  corDescricao,
-  align = 'center',
+  align = "center",
   className,
-  containerClassName
+  containerClassName,
+  preserveLineBreaks = false,
 }: DescriptionSectionProps) {
-  // Se não há conteúdo para mostrar, não renderiza nada
-  if (!subtitulo && !descricao) {
+  if (!subtitulo && !titulo && !descricao) {
     return null;
   }
 
   const getAlignmentClasses = (alignment: AlignmentType) => {
     switch (alignment) {
-      case 'left':
-        return "items-start text-left md:items-start md:text-start";
-      case 'right':
-        return "items-end text-right md:items-end md:text-end";
-      case 'center':
+      case "left":
+        return "items-start text-left md:items-start md:text-left";
+      case "right":
+        return "items-end text-right md:items-end md:text-right";
+      case "center":
       default:
         return "items-center text-center";
     }
   };
 
-  return (
-    <section className={cn("w-full bg-tourism-branco py-12", className)}>
-      <div className={cn(
-        "container mx-auto flex flex-col px-4 space-y-4",
-        getAlignmentClasses(align),
-        containerClassName
-      )}>
-        {subtitulo && (
-          <h2 className={cn(
-            "text-2xl md:text-4xl font-bold max-w-3xl",
-            corSubtitulo
-          )}>
-            {subtitulo}
-          </h2>
-        )}
+  const normalizedDescricao = descricao
+    ? descricao
+        .replace(/\r\n/g, "\n")
+        .replace(/&nbsp;|\u00a0/g, " ")
+    : "";
 
-        {descricao && (
-          <div 
-            className={cn(
-              "md:text-lg lg:text-xl max-w-3xl break-words leading-relaxed prose prose-lg max-w-none",
-              corDescricao
-            )}
-            dangerouslySetInnerHTML={{ __html: descricao }}
-          />
-        )}
-      </div>
-    </section>
+  const containsHtml = normalizedDescricao
+    ? /<[^>]+>/.test(normalizedDescricao)
+    : false;
+
+  const plainParagraphs = !containsHtml && normalizedDescricao
+    ? normalizedDescricao
+        .split(/\n{2,}/)
+        .map((paragraph) => paragraph.trim())
+        .filter(Boolean)
+    : [];
+
+  const paragraphTextBlocks = !preserveLineBreaks
+    ? plainParagraphs.map((paragraph) => paragraph.replace(/\s*\n\s*/g, " "))
+    : [];
+
+  const paragraphHtmlBlocks = preserveLineBreaks
+    ? plainParagraphs.map((paragraph) =>
+        paragraph
+          .split(/\n/)
+          .map((line) => line.trim())
+          .filter(Boolean)
+          .join("<br />")
+      )
+    : [];
+
+  return (
+    <div
+      className={cn(
+        "flex flex-col space-y-4 md:space-y-6",
+        getAlignmentClasses(align),
+        containerClassName,
+        className,
+      )}
+    >
+      {subtitulo && (
+        <span className="text-xs md:text-sm font-semibold tracking-[0.4em] uppercase text-tourism-verde">
+          {subtitulo}
+        </span>
+      )}
+
+      {titulo && (
+        <h2 className="text-3xl md:text-5xl font-bold text-tourism-marinho max-w-3xl">
+          {titulo}
+        </h2>
+      )}
+
+      {containsHtml && normalizedDescricao && (
+        <div
+          className="text-base md:text-lg text-tourism-cinza-escuro leading-relaxed prose prose-lg break-words"
+          dangerouslySetInnerHTML={{ __html: normalizedDescricao }}
+        />
+      )}
+
+      {!containsHtml && !preserveLineBreaks && paragraphTextBlocks.length > 0 && (
+        <div className="space-y-4 text-base md:text-lg text-tourism-cinza-escuro leading-relaxed">
+          {paragraphTextBlocks.map((paragraph, index) => (
+            <p key={index}>{paragraph}</p>
+          ))}
+        </div>
+      )}
+
+      {!containsHtml && preserveLineBreaks && paragraphHtmlBlocks.length > 0 && (
+        <div className="space-y-4 text-base md:text-lg text-tourism-cinza-escuro leading-relaxed">
+          {paragraphHtmlBlocks.map((paragraph, index) => (
+            <p key={index} dangerouslySetInnerHTML={{ __html: paragraph }} />
+          ))}
+        </div>
+      )}
+    </div>
   );
 }
