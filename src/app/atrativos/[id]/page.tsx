@@ -52,8 +52,6 @@ export default function PageAtrativo({ params }: Props) {
         <DescriptionSection
           subtitulo={atrativo.nome}
           descricao={atrativo.descricao || ""}
-          corSubtitulo={"text-tourism-azul"}
-          corDescricao={"#000"}
           align="left"
         />
         <div className="md:w-1/4 h-full bg-tourism-azul mt-8">

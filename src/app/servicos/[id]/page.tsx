@@ -62,8 +62,6 @@ export default function PageServico({ params }: Props) {
         <DescriptionSection
           subtitulo={servico.nome}
           descricao={servico.descricao || ""}
-          corSubtitulo={"text-tourism-azul"}
-          corDescricao={"#000"}
           align="left"
         />
         <div className="md:w-1/4 h-full bg-tourism-azul mt-8">
