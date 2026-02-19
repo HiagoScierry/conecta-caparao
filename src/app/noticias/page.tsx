@@ -10,28 +10,28 @@ export default function PaginaNoticias() {
 
   return (
     <LayoutPublic>
-      <div className='bg-gradient-to-b from-tourism-menta via-white to-white py-12 md:py-20 px-4 md:px-16'>
-        <div className='max-w-7xl mx-auto'>
-          <div className='text-left mb-12 space-y-3'>
-            <p className='text-tourism-verde text-xs md:text-sm font-semibold tracking-wider uppercase'>
+      <div className="bg-gradient-to-b from-tourism-menta via-white to-white py-12 md:py-20 px-4 md:px-16">
+        <div className="max-w-7xl mx-auto">
+          <div className="text-left mb-12 space-y-3">
+            <p className="text-tourism-verde text-xs md:text-sm font-semibold tracking-wider uppercase">
               Descubra
             </p>
-            <h1 className='text-tourism-marinho text-4xl md:text-5xl lg:text-6xl font-bold'>
+            <h1 className="text-tourism-marinho text-4xl md:text-5xl lg:text-6xl font-bold">
               O Que Acontece no Caparaó
             </h1>
-            <p className='text-tourism-cinza-escuro text-base md:text-lg max-w-3xl'>
+            <p className="text-tourism-cinza-escuro text-base md:text-lg max-w-3xl">
               Fique por dentro das últimas novidades, e descobertas da nossa
               região
             </p>
           </div>
 
           {noticias ? (
-            <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8'>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               {noticias.map((noticia: NoticiaFull) => (
                 <CardNoticia
                   key={noticia.id}
                   titulo={noticia.titulo}
-                  descricao={noticia.texto?.slice(0, 160) ?? ""}
+                  descricao={noticia.texto ?? ""}
                   imagemUrl={
                     noticia.fotos[0]?.foto.url || "/noticias/placeholder.jpg"
                   }
@@ -42,8 +42,8 @@ export default function PaginaNoticias() {
               ))}
             </div>
           ) : (
-            <div className='flex items-center justify-center min-h-[60vh]'>
-              <Loader2 className='w-12 h-12 text-tourism-verde animate-spin' />
+            <div className="flex items-center justify-center min-h-[60vh]">
+              <Loader2 className="w-12 h-12 text-tourism-verde animate-spin" />
             </div>
           )}
         </div>
