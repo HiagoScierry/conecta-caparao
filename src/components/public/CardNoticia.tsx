@@ -40,7 +40,7 @@ export function CardNoticia({
           <time dateTime={data}>{data}</time>
         </div>
 
-        <h3 className="text-tourism-marinho text-xl md:text-2xl font-bold leading-tight line-clamp-2 group-hover:text-tourism-azul transition-colors">
+        <h3 className="text-tourism-marinho text-xl md:text-2xl font-bold h-[48px] md:h-[62px] overflow-hidden group-hover:text-tourism-azul transition-colors">
           {titulo}
         </h3>
 
