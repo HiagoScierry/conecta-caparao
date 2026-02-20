@@ -53,7 +53,8 @@ export default function PaginaNoticias() {
                   titulo={noticia.titulo}
                   descricao={noticia.texto ?? ""}
                   imagemUrl={
-                    noticia.fotos[0]?.foto.url || "/noticias/placeholder.jpg"
+                    noticia?.fotos?.[0]?.foto?.url ||
+                    "/noticias/placeholder.jpg"
                   }
                   data={new Date(noticia.data).toLocaleDateString("pt-BR")}
                   href={`/noticias/${noticia.id}`}
