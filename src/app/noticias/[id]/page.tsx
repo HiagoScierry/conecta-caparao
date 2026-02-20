@@ -106,8 +106,7 @@ export default function PaginaNoticia({ params }: Props) {
                             titulo={n.titulo}
                             descricao={n.texto}
                             imagemUrl={
-                              n.fotos?.[0]?.foto?.url ||
-                              "/noticias/placeholder.jpg"
+                              n.fotos?.[0]?.foto?.url || "/landscape.svg"
                             }
                             data={new Date(n.data).toLocaleDateString("pt-BR")}
                             href={`/noticias/${n.id}`}

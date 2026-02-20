@@ -10,25 +10,24 @@ export function SecaoEventos() {
       imagemUrl: "/eventos/evento01.jpg",
       localizacao: "Alto Caparaó, MG",
       data: "06/07",
-      badge: "Evento Especial",
       href: "/eventos/1",
     },
     {
       titulo: "Travessia do Pico da Bandeira",
-      descricao: "Expedição guiada ao terceiro pico mais alto do Brasil com o nascer do sol",
+      descricao:
+        "Expedição guiada ao terceiro pico mais alto do Brasil com o nascer do sol",
       imagemUrl: "/eventos/evento02.jpg",
       localizacao: "Parque Nacional",
       data: "01/07 a 31/12",
-      badge: "De 01 a 31/12",
       href: "/eventos/2",
     },
     {
       titulo: "Circuito das Cachoeiras",
-      descricao: "Trilha guiada pelas principais cachoeiras da região com banho refrescante",
+      descricao:
+        "Trilha guiada pelas principais cachoeiras da região com banho refrescante",
       imagemUrl: "/eventos/evento03.jpg",
       localizacao: "Dores do Rio Preto, ES",
       data: "06/07",
-      badge: "Experiência",
       href: "/eventos/3",
     },
   ];
