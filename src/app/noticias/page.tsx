@@ -10,7 +10,6 @@ export default function PaginaNoticias() {
     data: noticias,
     isLoading,
     isError,
-    error,
   } = useGetNoticias() as {
     data?: NoticiaFull[];
     isLoading: boolean;
