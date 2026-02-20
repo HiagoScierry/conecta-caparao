@@ -45,7 +45,7 @@ export default function PaginaNoticia({ params }: Props) {
 
               <div className="w-full rounded-2xl overflow-hidden shadow-lg mb-6">
                 <Image
-                  src={noticia?.fotos[0]?.foto.url || "/landscape.svg"}
+                  src={noticia?.fotos?.[0]?.foto?.url || "/landscape.svg"}
                   alt={noticia?.titulo || "Imagem da notícia"}
                   width={1600}
                   height={960}
@@ -76,7 +76,9 @@ export default function PaginaNoticia({ params }: Props) {
                   </h2>
                 </div>
                 <GaleriaDeImagens
-                  imagemUrls={noticia?.fotos.map((foto) => foto.foto.url) || []}
+                  imagemUrls={
+                    noticia?.fotos?.map((foto) => foto.foto.url) || []
+                  }
                 />
               </div>
             </section>
@@ -104,10 +106,9 @@ export default function PaginaNoticia({ params }: Props) {
                             titulo={n.titulo}
                             descricao={n.texto}
                             imagemUrl={
-                              n.fotos[0]?.foto.url ||
+                              n.fotos?.[0]?.foto?.url ||
                               "/noticias/placeholder.jpg"
                             }
-                            categoria={""}
                             data={new Date(n.data).toLocaleDateString("pt-BR")}
                             href={`/noticias/${n.id}`}
                           />

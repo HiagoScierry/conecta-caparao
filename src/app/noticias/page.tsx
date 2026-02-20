@@ -6,7 +6,17 @@ import { NoticiaFull } from "@/repositories/interfaces/INoticiaRepository";
 import { Loader2 } from "lucide-react";
 
 export default function PaginaNoticias() {
-  const { data: noticias } = useGetNoticias() as { data: NoticiaFull[] };
+  const {
+    data: noticias,
+    isLoading,
+    isError,
+    error,
+  } = useGetNoticias() as {
+    data?: NoticiaFull[];
+    isLoading: boolean;
+    isError: boolean;
+    error?: unknown;
+  };
 
   return (
     <LayoutPublic>
@@ -25,7 +35,17 @@ export default function PaginaNoticias() {
             </p>
           </div>
 
-          {noticias ? (
+          {isLoading ? (
+            <div className="flex items-center justify-center min-h-[60vh]">
+              <Loader2 className="w-12 h-12 text-tourism-verde animate-spin" />
+            </div>
+          ) : isError ? (
+            <div className="flex items-center justify-center min-h-[60vh]">
+              <p className="text-red-600">
+                Erro ao carregar notícias. Tente novamente mais tarde.
+              </p>
+            </div>
+          ) : noticias && noticias.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               {noticias.map((noticia: NoticiaFull) => (
                 <CardNoticia
@@ -35,15 +55,14 @@ export default function PaginaNoticias() {
                   imagemUrl={
                     noticia.fotos[0]?.foto.url || "/noticias/placeholder.jpg"
                   }
-                  categoria={""}
                   data={new Date(noticia.data).toLocaleDateString("pt-BR")}
                   href={`/noticias/${noticia.id}`}
                 />
               ))}
             </div>
           ) : (
-            <div className="flex items-center justify-center min-h-[60vh]">
-              <Loader2 className="w-12 h-12 text-tourism-verde animate-spin" />
+            <div className="text-center py-20 text-tourism-cinza-escuro">
+              Nenhuma notícia encontrada.
             </div>
           )}
         </div>

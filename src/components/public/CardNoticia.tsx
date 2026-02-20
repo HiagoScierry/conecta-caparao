@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Link from "next/link";
 import { Calendar, ArrowRight } from "lucide-react";
 import { DescriptionSection } from "@/components/public/DescriptionSection";
 
@@ -6,7 +7,6 @@ interface CardNoticiaProps {
   titulo: string;
   descricao: string;
   imagemUrl: string;
-  categoria: string;
   data: string;
   href: string;
 }
@@ -15,12 +15,13 @@ export function CardNoticia({
   titulo,
   descricao,
   imagemUrl,
-  categoria,
   data,
   href,
 }: CardNoticiaProps) {
   const truncatedDescricao =
-    descricao.length > 160 ? descricao.slice(0, 160) + " [...]" : descricao;
+    descricao?.length > 160
+      ? descricao.slice(0, 160) + " [...]"
+      : descricao || "";
 
   return (
     <article className="group bg-white rounded-2xl overflow-hidden shadow-md hover:shadow-2xl transition-all duration-300">
@@ -31,11 +32,6 @@ export function CardNoticia({
           fill
           className="object-cover group-hover:scale-110 transition-transform duration-500"
         />
-        <div className="absolute top-4 left-4">
-          <span className="bg-tourism-azul-claro px-4 py-2 rounded-full text-xs md:text-sm font-semibold text-white shadow-md">
-            {categoria}
-          </span>
-        </div>
       </div>
 
       <div className="p-6 space-y-4">
@@ -58,13 +54,13 @@ export function CardNoticia({
           />
         </div>
 
-        <a
+        <Link
           href={href}
           className="inline-flex items-center gap-2 text-tourism-azul hover:text-tourism-azul-claro font-semibold text-sm md:text-base group/link transition-colors"
         >
           Ler mais
           <ArrowRight className="h-4 w-4 group-hover/link:translate-x-1 transition-transform" />
-        </a>
+        </Link>
       </div>
     </article>
   );
