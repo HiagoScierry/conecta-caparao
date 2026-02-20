@@ -7,27 +7,27 @@ const noticias = [
   {
     id: 1,
     titulo: "Caparaó é Destaque Nacional em Observação de Aves",
-    descricao: "A região se consolida como um dos melhores destinos para observadores de aves, com mais de 400 espécies catalogadas[...]",
+    descricao:
+      "A região se consolida como um dos melhores destinos para observadores de aves, com mais de 400 espécies catalogadas[...]",
     imagemUrl: "/noticias/noticia01.jpg",
-    categoria: "Ecoturismo",
-    data: "15 Dez 2025"
+    data: "15 Dez 2025",
   },
   {
     id: 2,
     titulo: "Festival de Café das Montanhas Atrai Milhares",
-    descricao: "Evento celebra a tradição cafeeira da região com degustações, workshops e apresentações culturais[...]",
+    descricao:
+      "Evento celebra a tradição cafeeira da região com degustações, workshops e apresentações culturais[...]",
     imagemUrl: "/noticias/noticia02.jpg",
-    categoria: "Cultura",
-    data: "27 Dez 2025"
+    data: "27 Dez 2025",
   },
   {
     id: 3,
     titulo: "Nova Trilha Ecológica Inaugurada no Parque",
-    descricao: "Percurso de 8km oferece vistas panorâmicas e acesso a cachoeiras preservadas para os mais[...]",
+    descricao:
+      "Percurso de 8km oferece vistas panorâmicas e acesso a cachoeiras preservadas para os mais[...]",
     imagemUrl: "/noticias/noticia03.jpg",
-    categoria: "Aventura",
-    data: "01 Jan 2026"
-  }
+    data: "01 Jan 2026",
+  },
 ];
 
 export function SecaoNoticias() {
@@ -53,7 +53,6 @@ export function SecaoNoticias() {
               titulo={noticia.titulo}
               descricao={noticia.descricao}
               imagemUrl={noticia.imagemUrl}
-              categoria={noticia.categoria}
               data={noticia.data}
               href={`/noticias/${noticia.id}`}
             />

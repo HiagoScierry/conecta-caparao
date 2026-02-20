@@ -1,7 +1,12 @@
 "use client";
 import React from "react";
+import { use } from "react";
 import Image from "next/image";
-import { DefaultCard } from "@/components/public/DefaultCard";
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
+import { ArrowRight } from "lucide-react";
+import { CardNoticia } from "@/components/public/CardNoticia";
+import { DescriptionSection } from "@/components/public/DescriptionSection";
 import { LayoutPublic } from "@/components/public/Layout";
 import { GaleriaDeImagens } from "@/components/public/GaleriaDeImagens";
 import { useGetNoticiaById, useGetNoticias } from "@/hooks/http/useNoticia";
@@ -10,10 +15,10 @@ import { NoticiaFull } from "@/repositories/interfaces/INoticiaRepository";
 
 type Props = {
   params: Promise<{ id: string }>;
-}
+};
 
 export default function PaginaNoticia({ params }: Props) {
-  const { id } = params as unknown as { id: string };
+  const { id } = use(params);
 
   const { data: noticias } = useGetNoticias();
   const { data: noticia, isLoading } = useGetNoticiaById(Number(id));
@@ -31,51 +36,105 @@ export default function PaginaNoticia({ params }: Props) {
           />
         </div>
       ) : (
-        <main className="container mx-auto px-4 py-8 md:py-16">
-          {/* Título Principal */}
-          <div className="text-center mb-8 md:mb-12">
-            <h1 className="text-3xl md:text-5xl font-bold text-tourism-azul text-center leading-tight">
-              {noticia?.titulo}
-            </h1>
-          </div>
+        <>
+          <main className="container mx-auto px-4 py-8 md:py-16">
+            <div className="container mx-auto px-6 md:px-12 lg:px-20 space-y-6">
+              <h1 className="text-tourism-marinho text-4xl md:text-5xl lg:text-6xl font-bold mb-6">
+                {noticia?.titulo}
+              </h1>
 
-          {/* Imagem Principal */}
-          <div className="relative w-full h-80 md:h-[500px] mb-8 md:mb-12">
-            <Image
-              src={noticia?.fotos[0]?.foto.url || ""}
-              alt="Parque Nacional do Caparaó"
-              fill
-              className="object-cover rounded-lg shadow-lg"
-            />
-          </div>
+              <div className="w-full rounded-2xl overflow-hidden shadow-lg mb-6">
+                <Image
+                  src={noticia?.fotos?.[0]?.foto?.url || "/landscape.svg"}
+                  alt={noticia?.titulo || "Imagem da notícia"}
+                  width={1600}
+                  height={960}
+                  className="object-cover w-full h-[420px] md:h-[520px]"
+                />
+              </div>
 
-          {/* Corpo do Texto */}
-          <div className="max-w-3xl mx-auto text-lg text-tourism-cinza text-justify leading-relaxed space-y-6 mb-12 prose prose-lg max-w-none">
-            <div dangerouslySetInnerHTML={{ __html: noticia?.texto || "Conteúdo não disponível." }} />
-          </div>
-
-          {/* Galeria de Imagens */}
-          <GaleriaDeImagens imagemUrls={noticia?.fotos.map(foto => foto.foto.url) || []} />
-
-          {/* Seção "Outras Notícias" */}
-          <div className="flex flex-col mx-auto md:mx-16 my-12">
-            <h2 className="text-3xl md:text-4xl font-bold text-tourism-cinza mb-12">
-              Outras Notícias
-            </h2>
-
-            {/* Grid de Cards de Notícia */}
-            <div className="flex flex-col md:flex-row md:justify-center gap-6 md:gap-12 lg:gap-24 m-auto">
-              {noticias?.map((noticia: NoticiaFull) => (
-                  <DefaultCard
-                    key={noticia.id}
-                    titulo={noticia.titulo}
-                    imagemUrl={noticia.fotos[0]?.foto.url || ""}
-                    link={`/noticias/${noticia.id}`}
+              <div className="w-full text-tourism-cinza text-base md:text-lg leading-relaxed">
+                {noticia?.texto ? (
+                  <DescriptionSection
+                    descricao={noticia.texto}
+                    align="left"
+                    preserveLineBreaks={false}
+                    className="text-tourism-cinza text-base md:text-lg leading-relaxed"
+                    containerClassName="items-start text-left"
                   />
-              ))}
+                ) : (
+                  <p>Resumo não disponível.</p>
+                )}
+              </div>
             </div>
-          </div>
-        </main>
+
+            <section className="w-full bg-white py-12">
+              <div className="container mx-auto px-6 md:px-12 lg:px-20 space-y-6">
+                <div className="space-y-2">
+                  <h2 className="text-tourism-marinho text-3xl md:text-4xl font-bold">
+                    Galeria de Fotos
+                  </h2>
+                </div>
+                <GaleriaDeImagens
+                  imagemUrls={
+                    noticia?.fotos?.map((foto) => foto.foto.url) || []
+                  }
+                />
+              </div>
+            </section>
+
+            <section className="w-full bg-white py-12">
+              <div className="container mx-auto px-6 md:px-12 lg:px-20 space-y-6">
+                <div className="space-y-2">
+                  <h2 className="text-tourism-marinho text-3xl md:text-4xl font-bold">
+                    Mais Notícias
+                  </h2>
+
+                  <div className="mt-8">
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                      {noticias
+                        ?.filter((n: NoticiaFull) => n.id !== noticia?.id)
+                        .sort(
+                          (a: NoticiaFull, b: NoticiaFull) =>
+                            new Date(b.data).getTime() -
+                            new Date(a.data).getTime(),
+                        )
+                        .slice(0, 3)
+                        .map((n: NoticiaFull) => (
+                          <CardNoticia
+                            key={n.id}
+                            titulo={n.titulo}
+                            descricao={n.texto}
+                            imagemUrl={
+                              n.fotos?.[0]?.foto?.url ||
+                              "/noticias/placeholder.jpg"
+                            }
+                            data={new Date(n.data).toLocaleDateString("pt-BR")}
+                            href={`/noticias/${n.id}`}
+                          />
+                        ))}
+                    </div>
+
+                    <div className="text-center mt-10">
+                      <Button
+                        asChild
+                        className="bg-tourism-marinho hover:bg-tourism-marinho/90 text-white font-bold px-8 py-6 text-base shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300"
+                      >
+                        <Link
+                          href="/noticias"
+                          className="flex items-center gap-2"
+                        >
+                          Ver Todas as Notícias
+                          <ArrowRight className="h-5 w-5" />
+                        </Link>
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </section>
+          </main>
+        </>
       )}
     </LayoutPublic>
   );
