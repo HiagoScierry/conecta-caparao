@@ -50,9 +50,7 @@ export default function PaginaEventos() {
                   key={evento.id}
                   titulo={evento.nome}
                   descricao={evento.descricao ?? ""}
-                  imagemUrl={
-                    evento?.fotos?.[0]?.foto?.url || "/eventos/placeholder.jpg"
-                  }
+                  imagemUrl={evento?.fotos?.[0]?.foto?.url || "/landscape.svg"}
                   data={new Date(evento.data).toLocaleDateString("pt-BR")}
                   localizacao={evento.municipio?.nome || ""}
                   href={`/eventos/${evento.id}`}
