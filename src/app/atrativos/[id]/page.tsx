@@ -1,23 +1,24 @@
 "use client";
+import { use } from "react";
 import { LayoutPublic } from "@/components/public/Layout";
-import { DescriptionSection } from "@/components/public/DescriptionSection";
-import { Informacoes } from "@/components/public/Informacoes";
-import { Badge } from "@/components/ui/badge";
+import { Hero } from "@/components/public/Hero";
 import { GaleriaDeImagens } from "@/components/public/GaleriaDeImagens";
+import { Informacoes } from "@/components/public/Informacoes";
 import { useGetAtrativoById } from "@/hooks/http/useAtrativos";
 import { Progress } from "@/components/ui/progress";
+import { DescriptionSection } from "@/components/public/DescriptionSection";
 
 type Props = {
   params: Promise<{ id: string }>;
-}
+};
 
 export default function PageAtrativo({ params }: Props) {
-  const { id } = params as unknown as { id: string };
+  const { id } = use(params);
   const { data: atrativo, isLoading } = useGetAtrativoById(Number(id));
 
-  if (isLoading) {
-    return (
-      <LayoutPublic>
+  return (
+    <LayoutPublic>
+      {isLoading || !atrativo ? (
         <div className="flex items-center justify-center min-h-[60vh]">
           <Progress
             about="Carregando..."
@@ -27,83 +28,57 @@ export default function PageAtrativo({ params }: Props) {
             }}
           />
         </div>
-      </LayoutPublic>
-    );
-  }
+      ) : (
+        <>
+          <Hero
+            titulo={atrativo.nome}
+            imagemUrl={
+              atrativo.fotos && atrativo.fotos.length > 0
+                ? atrativo.fotos[0].foto.url
+                : "/landscape.svg"
+            }
+          />
 
-  if (!atrativo) {
-    return (
-      <LayoutPublic>
-        <div className="flex items-center justify-center min-h-[60vh]">
-          <div className="text-center">
-            <h1 className="text-2xl font-bold text-gray-600">Atrativo não encontrado</h1>
-          </div>
-        </div>
-      </LayoutPublic>
-    );
-  }
+          <section className="w-full bg-gradient-to-b from-tourism-menta/50 via-white to-white py-16">
+            <div className="container mx-auto px-6 md:px-12 lg:px-20">
+              <DescriptionSection
+                subtitulo="DESCUBRA"
+                titulo={`Conheça ${atrativo.nome}`}
+                descricao={atrativo?.descricao || "Descrição não disponível."}
+                align="left"
+                containerClassName="w-full"
+              />
+            </div>
+          </section>
 
-  return (
-    <LayoutPublic>
-      <GaleriaDeImagens
-        imagemUrls={atrativo.fotos?.map(foto => foto.foto.url) || []}
-      />
-      <div className="flex flex-col md:flex-row p-4 lg:px-16 w-full h-full bg-tourism-branco">
-        <DescriptionSection
-          subtitulo={atrativo.nome}
-          descricao={atrativo.descricao || ""}
-          align="left"
-        />
-        <div className="md:w-1/4 h-full bg-tourism-azul mt-8">
-          <h1 className="text-white text-xl p-2 border-b-2">Perfil</h1>
-          <div className="p-2">
-            {atrativo.perfis?.map((perfil) => (
-              <Badge
-                key={perfil.id}
-                className="m-1"
-                style={{
-                  backgroundColor: "#2563eb",
-                  color: "#fff",
-                }}
-              >
-                {perfil.nome}
-              </Badge>
-            ))}
-            {atrativo.categorias?.map((categoria) => (
-              <Badge
-                key={categoria.id}
-                className="m-1"
-                style={{
-                  backgroundColor: "#16a34a",
-                  color: "#fff",
-                }}
-              >
-                {categoria.nome}
-              </Badge>
-            ))}
-            {atrativo.subcategorias?.map((subcategoria) => (
-              <Badge
-                key={subcategoria.id}
-                className="m-1"
-                style={{
-                  backgroundColor: "#dc2626",
-                  color: "#fff",
-                }}
-              >
-                {subcategoria.nome}
-              </Badge>
-            ))}
-          </div>
-        </div>
-      </div>
-      <Informacoes
-        contato={{
-          telefone: atrativo.contato?.telefone || "",
-          email: atrativo.contato?.email || "",
-          site: atrativo.contato?.instagram || "",
-        }}
-        mapa={atrativo.mapaUrl || ""}
-      />
+          <section className="w-full bg-white py-12">
+            <div className="container mx-auto px-6 md:px-12 lg:px-20 space-y-6">
+              <div className="space-y-2">
+                <h2 className="text-tourism-marinho text-3xl md:text-4xl font-bold">
+                  Galeria de Fotos
+                </h2>
+              </div>
+              <GaleriaDeImagens
+                imagemUrls={atrativo.fotos.map(
+                  (foto: { foto: { url: string } }) => foto.foto.url,
+                )}
+              />
+            </div>
+          </section>
+
+          <Informacoes
+            contato={{
+              telefone: atrativo.contato?.telefone || "",
+              email: atrativo.contato?.email || "",
+              site: atrativo.contato?.instagram || "",
+            }}
+            mapa={atrativo.mapaUrl ?? undefined}
+            perfis={atrativo.perfis || []}
+            categorias={atrativo.categorias || []}
+            subcategorias={atrativo.subcategorias || []}
+          />
+        </>
+      )}
     </LayoutPublic>
   );
 }
