@@ -138,4 +138,61 @@ export class AtracaoTuristicaPrismaRepository implements IAtracaoTuristicaReposi
       where: { id },
     });
   }
+
+  async findAllWithFilters(filters?: {
+    municipioId?: number;
+    categoriaId?: number;
+    subcategoriaId?: number;
+    perfilClienteId?: number;
+    excludeIds?: number[];
+  }): Promise<AtracaoTuristica[]> {
+    const where: any = {};
+
+    if (filters?.municipioId) {
+      where.idMunicipio = filters.municipioId;
+    }
+
+    if (filters?.categoriaId) {
+      where.categorias = {
+        some: { id: filters.categoriaId },
+      };
+    }
+
+    if (filters?.subcategoriaId) {
+      where.subcategorias = {
+        some: { id: filters.subcategoriaId },
+      };
+    }
+
+    if (filters?.perfilClienteId) {
+      where.perfis = {
+        some: { id: filters.perfilClienteId },
+      };
+    }
+
+    if (filters?.excludeIds && filters.excludeIds.length > 0) {
+      where.id = {
+        notIn: filters.excludeIds,
+      };
+    }
+
+    return connection.atracaoTuristica.findMany({
+      where,
+      include: {
+        contato: true,
+        endereco: true,
+        municipio: true,
+        horarios: true,
+        fotos: {
+          include: {
+            foto: true,
+          },
+        },
+        perfis: true,
+        categorias: true,
+        subcategorias: true,
+      },
+      orderBy: { nome: 'asc' },
+    });
+  }
 }

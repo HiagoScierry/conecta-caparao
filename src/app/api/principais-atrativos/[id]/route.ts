@@ -1,0 +1,126 @@
+import {
+  getPrincipalAtrativoById,
+  updatePrincipalAtrativo,
+  deletePrincipalAtrativo,
+} from "@/controllers/principalAtrativoController";
+import { principalAtrativoInputSchema } from "@/schemas/principalAtrativoSchema";
+import { NextResponse } from "next/server";
+import { z } from "zod";
+
+export async function GET(
+  request: Request,
+  { params }: { params: { id: string } }
+) {
+  try {
+    const id = Number(params.id);
+
+    if (isNaN(id)) {
+      return new NextResponse(JSON.stringify({ error: "ID inválido" }), {
+        status: 400,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
+
+    const principal = await getPrincipalAtrativoById(id);
+
+    if (!principal) {
+      return new NextResponse(JSON.stringify({ error: "Principal atrativo não encontrado" }), {
+        status: 404,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
+
+    return NextResponse.json(principal);
+  } catch (error) {
+    console.error("Erro ao buscar principal atrativo:", error);
+    return new NextResponse("Internal Server Error", { status: 500 });
+  }
+}
+
+export async function PUT(
+  request: Request,
+  { params }: { params: { id: string } }
+) {
+  try {
+    const id = Number(params.id);
+
+    if (isNaN(id)) {
+      return new NextResponse(JSON.stringify({ error: "ID inválido" }), {
+        status: 400,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
+
+    const body = await request.json();
+
+    // Validar apenas os campos fornecidos
+    const updateSchema = z.object({
+      posicao: z.number().min(1).max(5).optional(),
+      idAtracaoTuristica: z.number().optional(),
+    });
+
+    updateSchema.parse(body);
+
+    const { posicao, idAtracaoTuristica } = body;
+
+    const atualizado = await updatePrincipalAtrativo(
+      id,
+      posicao,
+      idAtracaoTuristica
+    );
+
+    return NextResponse.json({
+      message: "Principal atrativo atualizado com sucesso!",
+      data: atualizado,
+    });
+  } catch (error) {
+    if (error instanceof z.ZodError) {
+      console.error("Validation failed!", error.errors);
+      return new NextResponse(JSON.stringify({ errors: error.errors }), {
+        status: 400,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
+
+    console.error("Erro ao atualizar principal atrativo:", error);
+
+    const mensagem = error instanceof Error ? error.message : "Internal Server Error";
+
+    return new NextResponse(JSON.stringify({ error: mensagem }), {
+      status: 500,
+      headers: { "Content-Type": "application/json" },
+    });
+  }
+}
+
+export async function DELETE(
+  request: Request,
+  { params }: { params: { id: string } }
+) {
+  try {
+    const id = Number(params.id);
+
+    if (isNaN(id)) {
+      return new NextResponse(JSON.stringify({ error: "ID inválido" }), {
+        status: 400,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
+
+    const deletado = await deletePrincipalAtrativo(id);
+
+    return NextResponse.json({
+      message: "Principal atrativo removido com sucesso!",
+      data: deletado,
+    });
+  } catch (error) {
+    console.error("Erro ao remover principal atrativo:", error);
+
+    const mensagem = error instanceof Error ? error.message : "Internal Server Error";
+
+    return new NextResponse(JSON.stringify({ error: mensagem }), {
+      status: 500,
+      headers: { "Content-Type": "application/json" },
+    });
+  }
+}

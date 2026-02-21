@@ -18,4 +18,11 @@ export interface IAtracaoTuristicaRepository {
   create(data: AtracaoForm, fotosUrl: string[]): Promise<AtracaoTuristica>;
   update(id: number, data: AtracaoForm, perfisParaRemover: string[], fotos: string[]): Promise<AtracaoTuristica>;
   delete(id: number): Promise<void>;
+  findAllWithFilters(filters?: {
+    municipioId?: number;
+    categoriaId?: number;
+    subcategoriaId?: number;
+    perfilClienteId?: number;
+    excludeIds?: number[];
+  }): Promise<AtracaoTuristica[]>;
 }
