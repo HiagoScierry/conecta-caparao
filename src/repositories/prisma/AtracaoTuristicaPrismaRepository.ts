@@ -1,4 +1,4 @@
-import { AtracaoTuristica } from "@prisma/client";
+import { AtracaoTuristica, Prisma } from "@prisma/client";
 import { connection } from "@/config/database/connection";
 import { IAtracaoTuristicaRepository } from "../interfaces/IAtracaoTuristicaRepository";
 import { AtracaoForm } from "@/forms/atracaoForm";
@@ -146,7 +146,7 @@ export class AtracaoTuristicaPrismaRepository implements IAtracaoTuristicaReposi
     perfilClienteId?: number;
     excludeIds?: number[];
   }): Promise<AtracaoTuristica[]> {
-    const where: any = {};
+    const where: Prisma.AtracaoTuristicaWhereInput = {};
 
     if (filters?.municipioId) {
       where.idMunicipio = filters.municipioId;

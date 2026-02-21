@@ -3,7 +3,6 @@ import {
   updatePrincipalAtrativo,
   deletePrincipalAtrativo,
 } from "@/controllers/principalAtrativoController";
-import { principalAtrativoInputSchema } from "@/schemas/principalAtrativoSchema";
 import { NextResponse } from "next/server";
 import { z } from "zod";
 

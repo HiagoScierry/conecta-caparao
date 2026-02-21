@@ -113,7 +113,7 @@ export default function PrincipaisAtrativos() {
     }
   };
 
-  const handleDeletePrincipal = async (item: PrincipalAtratoItem | any) => {
+  const handleDeletePrincipal = async (item: PrincipalAtratoItem) => {
     setAtrativoToDelete(item);
     setIsDeleteModalOpen(true);
   };

@@ -16,6 +16,12 @@ export interface PrincipalAtrativoResponse {
   total: number;
 }
 
+export interface AtrativoDisponivel {
+  id: number;
+  nome: string;
+  municipio?: { id: number; nome: string };
+}
+
 export function useGetAllPrincipaisAtrativos() {
   return useQuery<PrincipalAtrativoResponse, Error>({
     queryKey: QUERY_KEYS.PRINCIPAIS_ATRATIVOS,
@@ -59,7 +65,7 @@ export function useGetAtratosDiponiveis(filters?: {
   if (filters?.subcategoriaId) queryParams.append("subcategoriaId", String(filters.subcategoriaId));
   if (filters?.perfilClienteId) queryParams.append("perfilClienteId", String(filters.perfilClienteId));
 
-  return useQuery<any[], Error>({
+  return useQuery<AtrativoDisponivel[], Error>({
     queryKey: ["atrativos-disponiveis", filters],
     queryFn: async () => {
       const response = await fetch(`/api/principais-atrativos?${queryParams.toString()}`);
