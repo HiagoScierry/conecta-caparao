@@ -379,7 +379,7 @@ export default function PrincipaisAtrativos() {
                   {principais
                     .sort((a, b) => a.posicao - b.posicao)
                     .map((item) => (
-                      <TableRow key={item.id}>
+                      <TableRow key={item.idAtracaoTuristica}>
                         <TableCell>
                           <Badge variant="secondary">#{item.posicao}</Badge>
                         </TableCell>
