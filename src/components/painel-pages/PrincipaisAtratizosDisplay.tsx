@@ -35,7 +35,7 @@ export default function PrincipaisAtratizosDisplay() {
         .sort((a, b) => a.posicao - b.posicao)
         .map((item) => (
           <Card
-            key={item.id}
+            key={item.idAtracaoTuristica}
             className="relative overflow-hidden hover:shadow-lg transition-shadow"
           >
             <div className="absolute top-2 right-2 z-10">
