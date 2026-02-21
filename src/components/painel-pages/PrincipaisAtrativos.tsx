@@ -145,7 +145,7 @@ export default function PrincipaisAtrativos() {
     .filter(
       (pos) =>
         !principais.some((p) => p.posicao === pos) ||
-        principais.find((p) => p.posicao === pos)?.id === atrativoToDelete?.id
+        principais.find((p) => p.posicao === pos)?.idAtracaoTuristica === atrativoToDelete?.id
     );
 
   return (
