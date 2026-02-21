@@ -28,4 +28,14 @@ export class AtracaoTuristicaService {
     return this.atracaoTuristicaRepository.delete(id);
   }
 
+  async findAllWithFilters(filters?: {
+    municipioId?: number;
+    categoriaId?: number;
+    subcategoriaId?: number;
+    perfilClienteId?: number;
+    excludeIds?: number[];
+  }) {
+    return this.atracaoTuristicaRepository.findAllWithFilters(filters);
+  }
+
 }

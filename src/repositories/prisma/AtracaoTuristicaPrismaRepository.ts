@@ -1,4 +1,4 @@
-import { AtracaoTuristica } from "@prisma/client";
+import { AtracaoTuristica, Prisma } from "@prisma/client";
 import { connection } from "@/config/database/connection";
 import { IAtracaoTuristicaRepository } from "../interfaces/IAtracaoTuristicaRepository";
 import { AtracaoForm } from "@/forms/atracaoForm";
@@ -136,6 +136,63 @@ export class AtracaoTuristicaPrismaRepository implements IAtracaoTuristicaReposi
   async delete(id: number): Promise<void> {
     await connection.atracaoTuristica.delete({
       where: { id },
+    });
+  }
+
+  async findAllWithFilters(filters?: {
+    municipioId?: number;
+    categoriaId?: number;
+    subcategoriaId?: number;
+    perfilClienteId?: number;
+    excludeIds?: number[];
+  }): Promise<AtracaoTuristica[]> {
+    const where: Prisma.AtracaoTuristicaWhereInput = {};
+
+    if (filters?.municipioId) {
+      where.idMunicipio = filters.municipioId;
+    }
+
+    if (filters?.categoriaId) {
+      where.categorias = {
+        some: { id: filters.categoriaId },
+      };
+    }
+
+    if (filters?.subcategoriaId) {
+      where.subcategorias = {
+        some: { id: filters.subcategoriaId },
+      };
+    }
+
+    if (filters?.perfilClienteId) {
+      where.perfis = {
+        some: { id: filters.perfilClienteId },
+      };
+    }
+
+    if (filters?.excludeIds && filters.excludeIds.length > 0) {
+      where.id = {
+        notIn: filters.excludeIds,
+      };
+    }
+
+    return connection.atracaoTuristica.findMany({
+      where,
+      include: {
+        contato: true,
+        endereco: true,
+        municipio: true,
+        horarios: true,
+        fotos: {
+          include: {
+            foto: true,
+          },
+        },
+        perfis: true,
+        categorias: true,
+        subcategorias: true,
+      },
+      orderBy: { nome: 'asc' },
     });
   }
 }
