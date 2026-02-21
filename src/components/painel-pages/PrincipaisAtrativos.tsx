@@ -25,6 +25,7 @@ import {
   useCreatePrincipalAtrativo,
   useDeletePrincipalAtrativo,
   useGetAtratosDiponiveis,
+  PrincipalAtrativoWithRelations,
 } from "@/hooks/http/usePrincipaisAtrativos";
 import { DeleteConfirmModal } from "@/components/modals/DeleteConfirmModal";
 import { useGetAllMunicipios } from "@/hooks/http/useMunicipio";
@@ -113,7 +114,13 @@ export default function PrincipaisAtrativos() {
     }
   };
 
-  const handleDeletePrincipal = async (item: PrincipalAtratoItem) => {
+  const handleDeletePrincipal = async (itemWithRelation: PrincipalAtrativoWithRelations) => {
+    const item: PrincipalAtratoItem = {
+      id: itemWithRelation.id,
+      posicao: itemWithRelation.posicao,
+      idAtracaoTuristica: itemWithRelation.idAtracaoTuristica,
+      atracaoTuristica: itemWithRelation.atracaoTuristica,
+    };
     setAtrativoToDelete(item);
     setIsDeleteModalOpen(true);
   };
