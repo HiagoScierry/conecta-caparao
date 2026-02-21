@@ -3,24 +3,25 @@ import {
   updatePrincipalAtrativo,
   deletePrincipalAtrativo,
 } from "@/controllers/principalAtrativoController";
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 
 export async function GET(
-  request: Request,
-  { params }: { params: { id: string } }
+  request: NextRequest,
+  context: { params: Promise<{ id: string }> }
 ) {
   try {
-    const id = Number(params.id);
+    const { id } = await context.params;
+    const numericId = Number(id);
 
-    if (isNaN(id)) {
+    if (isNaN(numericId)) {
       return new NextResponse(JSON.stringify({ error: "ID inválido" }), {
         status: 400,
         headers: { "Content-Type": "application/json" },
       });
     }
 
-    const principal = await getPrincipalAtrativoById(id);
+    const principal = await getPrincipalAtrativoById(numericId);
 
     if (!principal) {
       return new NextResponse(JSON.stringify({ error: "Principal atrativo não encontrado" }), {
@@ -37,13 +38,14 @@ export async function GET(
 }
 
 export async function PUT(
-  request: Request,
-  { params }: { params: { id: string } }
+  request: NextRequest,
+  context: { params: Promise<{ id: string }> }
 ) {
   try {
-    const id = Number(params.id);
+    const { id } = await context.params;
+    const numericId = Number(id);
 
-    if (isNaN(id)) {
+    if (isNaN(numericId)) {
       return new NextResponse(JSON.stringify({ error: "ID inválido" }), {
         status: 400,
         headers: { "Content-Type": "application/json" },
@@ -63,7 +65,7 @@ export async function PUT(
     const { posicao, idAtracaoTuristica } = body;
 
     const atualizado = await updatePrincipalAtrativo(
-      id,
+      numericId,
       posicao,
       idAtracaoTuristica
     );
@@ -93,20 +95,21 @@ export async function PUT(
 }
 
 export async function DELETE(
-  request: Request,
-  { params }: { params: { id: string } }
+  request: NextRequest,
+  context: { params: Promise<{ id: string }> }
 ) {
   try {
-    const id = Number(params.id);
+    const { id } = await context.params;
+    const numericId = Number(id);
 
-    if (isNaN(id)) {
+    if (isNaN(numericId)) {
       return new NextResponse(JSON.stringify({ error: "ID inválido" }), {
         status: 400,
         headers: { "Content-Type": "application/json" },
       });
     }
 
-    const deletado = await deletePrincipalAtrativo(id);
+    const deletado = await deletePrincipalAtrativo(numericId);
 
     return NextResponse.json({
       message: "Principal atrativo removido com sucesso!",
