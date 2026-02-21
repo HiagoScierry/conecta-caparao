@@ -116,7 +116,7 @@ export default function PrincipaisAtrativos() {
 
   const handleDeletePrincipal = async (itemWithRelation: PrincipalAtrativoWithRelations) => {
     const item: PrincipalAtratoItem = {
-      id: itemWithRelation.id,
+      id: itemWithRelation.idAtracaoTuristica,
       posicao: itemWithRelation.posicao,
       idAtracaoTuristica: itemWithRelation.idAtracaoTuristica,
       atracaoTuristica: itemWithRelation.atracaoTuristica,
