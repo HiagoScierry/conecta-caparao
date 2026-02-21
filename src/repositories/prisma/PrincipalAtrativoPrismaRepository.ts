@@ -2,7 +2,7 @@ import { PrincipalAtrativo } from '@prisma/client';
 import { IPrincipalAtrativoRepository } from '../interfaces/IPrincipalAtrativoRepository';
 import { connection } from '@/config/database/connection';
 
-export class PrincipalAtativoPrismaRepository implements IPrincipalAtrativoRepository {
+export class PrincipalAtrativoPrismaRepository implements IPrincipalAtrativoRepository {
   async create(posicao: number, idAtracaoTuristica: number): Promise<PrincipalAtrativo> {
     return connection.principalAtrativo.create({
       data: {
