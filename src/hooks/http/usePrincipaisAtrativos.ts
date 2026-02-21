@@ -3,6 +3,7 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import { QUERY_KEYS, useQueryInvalidation } from "./useQueryInvalidation";
 
 export interface PrincipalAtrativoWithRelations extends PrincipalAtrativo {
+  idAtracaoTuristica: number;
   atracaoTuristica: {
     id: number;
     nome: string;
