@@ -1,10 +1,6 @@
 import { LayoutPublic } from "@/components/public/Layout";
 import { Hero } from "@/components/public/Hero";
-import { SecaoNoticias } from "@/components/public/SecaoNoticias";
 import { CardNoticia } from "@/components/public/CardNoticia";
-import { Button } from "@/components/ui/button";
-import { ArrowRight } from "lucide-react";
-import Link from "next/link";
 
 const noticiasCultura = [
   {
@@ -118,22 +114,8 @@ export default function CulturaPage() {
               />
             ))}
           </div>
-
-          <div className="text-center">
-            <Button
-              asChild
-              className="bg-tourism-marinho hover:bg-tourism-marinho/90 text-white font-bold px-8 py-6 text-base shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300"
-            >
-              <Link href="/noticias" className="flex items-center gap-2">
-                Ver Todas as Notícias
-                <ArrowRight className="h-5 w-5" />
-              </Link>
-            </Button>
-          </div>
         </div>
       </section>
-
-      <SecaoNoticias />
     </LayoutPublic>
   );
 }
