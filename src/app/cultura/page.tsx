@@ -1,35 +1,25 @@
+"use client";
+
 import { LayoutPublic } from "@/components/public/Layout";
 import { Hero } from "@/components/public/Hero";
 import { CardNoticia } from "@/components/public/CardNoticia";
+import { useGetAllAtrativos, AtracaoTuristicaLoadedData } from "@/hooks/http/useAtrativos";
 
-const noticiasCultura = [
-  {
-    id: 1,
-    titulo: "Festival do Café e Sabores",
-    descricao:
-      "Uma celebração das tradições do Caparaó com músicas locais, bancas de produtos artesanais e degustações de café e quitandas.",
-    imagemUrl: "/noticias/noticia01.jpg",
-    data: "10 Fev 2026",
-  },
-  {
-    id: 2,
-    titulo: "Roda de Viola na Praça",
-    descricao:
-      "Encontros semanais que mantêm viva a tradição musical da região — histórias e canções passadas entre gerações.",
-    imagemUrl: "/noticias/noticia02.jpg",
-    data: "02 Mar 2026",
-  },
-  {
-    id: 3,
-    titulo: "Feira de Artesanato Local",
-    descricao:
-      "Artesãos expõem cerâmicas, bordados e trabalhos em madeira, garantindo renda e preservação cultural.",
-    imagemUrl: "/noticias/noticia03.jpg",
-    data: "18 Mar 2026",
-  },
-];
+function getCoverUrl(atrativo: AtracaoTuristicaLoadedData): string {
+  const capa = atrativo.fotos.find(f => f.capa);
+  return capa?.foto?.url ?? atrativo.fotos[0]?.foto?.url ?? "/atraction01.jpg";
+}
 
 export default function CulturaPage() {
+  const { data: atrativos, isLoading } = useGetAllAtrativos();
+
+  const atrativosCulturais = atrativos?.filter(atrativo =>
+    atrativo.categorias.some(cat =>
+      cat.nome.toLowerCase().includes("cultura") ||
+      cat.nome.toLowerCase().includes("turismo")
+    )
+  )?.slice(0, 3) ?? [];
+
   return (
     <LayoutPublic>
       <Hero
@@ -103,16 +93,28 @@ export default function CulturaPage() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-10">
-            {noticiasCultura.map((noticia) => (
-              <CardNoticia
-                key={noticia.id}
-                titulo={noticia.titulo}
-                descricao={noticia.descricao}
-                imagemUrl={noticia.imagemUrl}
-                data={noticia.data}
-                href={`/noticias/${noticia.id}`}
-              />
-            ))}
+            {isLoading
+              ? [...Array(3)].map((_, i) => (
+                  <div key={i} className="bg-white rounded-2xl overflow-hidden shadow-md">
+                    <div className="w-full h-[240px] md:h-[260px] bg-gray-200 animate-pulse" />
+                    <div className="p-6 space-y-4">
+                      <div className="h-4 bg-gray-200 rounded animate-pulse w-1/3" />
+                      <div className="h-6 bg-gray-200 rounded animate-pulse w-3/4" />
+                      <div className="h-4 bg-gray-200 rounded animate-pulse" />
+                      <div className="h-4 bg-gray-200 rounded animate-pulse w-2/3" />
+                    </div>
+                  </div>
+                ))
+              : atrativosCulturais.map((atrativo) => (
+                  <CardNoticia
+                    key={atrativo.id}
+                    titulo={atrativo.nome}
+                    descricao={atrativo.descricao ?? ""}
+                    imagemUrl={getCoverUrl(atrativo)}
+                    data={atrativo.municipio?.nome ?? ""}
+                    href={`/atrativos/${atrativo.id}`}
+                  />
+                ))}
           </div>
         </div>
       </section>
