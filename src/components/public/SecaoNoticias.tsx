@@ -2,35 +2,56 @@ import { CardNoticia } from "./CardNoticia";
 import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
 import Link from "next/link";
+import { NoticiaFull } from "@/repositories/interfaces/INoticiaRepository";
 
-const noticias = [
-  {
-    id: 1,
-    titulo: "Caparaó é Destaque Nacional em Observação de Aves",
-    descricao:
-      "A região se consolida como um dos melhores destinos para observadores de aves, com mais de 400 espécies catalogadas[...]",
-    imagemUrl: "/noticias/noticia01.jpg",
-    data: "15 Dez 2025",
-  },
-  {
-    id: 2,
-    titulo: "Festival de Café das Montanhas Atrai Milhares",
-    descricao:
-      "Evento celebra a tradição cafeeira da região com degustações, workshops e apresentações culturais[...]",
-    imagemUrl: "/noticias/noticia02.jpg",
-    data: "27 Dez 2025",
-  },
-  {
-    id: 3,
-    titulo: "Nova Trilha Ecológica Inaugurada no Parque",
-    descricao:
-      "Percurso de 8km oferece vistas panorâmicas e acesso a cachoeiras preservadas para os mais[...]",
-    imagemUrl: "/noticias/noticia03.jpg",
-    data: "01 Jan 2026",
-  },
-];
+interface SecaoNoticiasProps {
+  noticias: NoticiaFull[];
+  isLoading: boolean;
+}
 
-export function SecaoNoticias() {
+function formatNoticiaDate(date: string | Date): string {
+  return new Date(date).toLocaleDateString("pt-BR", {
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+  });
+}
+
+export function SecaoNoticias({ noticias, isLoading }: SecaoNoticiasProps) {
+  const noticiasExibidas = noticias.slice(0, 3);
+
+  if (isLoading) {
+    return (
+      <section className="bg-gray-50 py-12 md:py-20 px-4 md:px-16">
+        <div className="max-w-7xl mx-auto">
+          <div className="text-left mb-12 space-y-3">
+            <p className="text-tourism-azul text-xs md:text-sm font-semibold tracking-wider uppercase">
+              📰 NOTÍCIAS
+            </p>
+            <h2 className="text-tourism-marinho text-4xl md:text-5xl lg:text-6xl font-bold">
+              O Que Acontece no Caparaó
+            </h2>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-10">
+            {[...Array(3)].map((_, i) => (
+              <div key={i} className="bg-white rounded-2xl overflow-hidden shadow-md">
+                <div className="w-full h-[240px] md:h-[260px] bg-gray-200 animate-pulse" />
+                <div className="p-6 space-y-4">
+                  <div className="h-4 bg-gray-200 rounded animate-pulse w-1/3" />
+                  <div className="h-6 bg-gray-200 rounded animate-pulse w-3/4" />
+                  <div className="h-4 bg-gray-200 rounded animate-pulse" />
+                  <div className="h-4 bg-gray-200 rounded animate-pulse w-2/3" />
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  if (noticiasExibidas.length === 0) return null;
+
   return (
     <section className="bg-gray-50 py-12 md:py-20 px-4 md:px-16">
       <div className="max-w-7xl mx-auto">
@@ -47,16 +68,21 @@ export function SecaoNoticias() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-10">
-          {noticias.map((noticia) => (
-            <CardNoticia
-              key={noticia.id}
-              titulo={noticia.titulo}
-              descricao={noticia.descricao}
-              imagemUrl={noticia.imagemUrl}
-              data={noticia.data}
-              href={`/noticias/${noticia.id}`}
-            />
-          ))}
+          {noticiasExibidas.map((noticia) => {
+            const capa = noticia.fotos.find(f => f.capa);
+            const imagemUrl = capa?.foto?.url ?? noticia.fotos[0]?.foto?.url ?? "/noticias/noticia01.jpg";
+
+            return (
+              <CardNoticia
+                key={noticia.id}
+                titulo={noticia.titulo}
+                descricao={noticia.texto}
+                imagemUrl={imagemUrl}
+                data={formatNoticiaDate(noticia.data)}
+                href={`/noticias/${noticia.id}`}
+              />
+            );
+          })}
         </div>
 
         <div className="text-center">

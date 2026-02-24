@@ -1,3 +1,5 @@
+"use client";
+
 import { LayoutPublic } from "@/components/public/Layout";
 import { Atrativos } from "@/components/public/Atrativos";
 import { Hero } from "@/components/public/Hero";
@@ -9,8 +11,17 @@ import { SecaoMomentos } from "@/components/public/SecaoMomentos";
 import { SecaoNoticias } from "@/components/public/SecaoNoticias";
 import { SecaoApoio } from "@/components/public/SecaoApoio";
 import { BotaoVoltarAoTopo } from "@/components/public/BotaoVoltarAoTopo";
+import { useGetAllAtrativos } from "@/hooks/http/useAtrativos";
+import { useEvento } from "@/hooks/http/useEvento";
+import { useGetAllMunicipios } from "@/hooks/http/useMunicipio";
+import { useGetNoticias } from "@/hooks/http/useNoticia";
 
 export default function Home() {
+  const { data: atrativos, isLoading: isLoadingAtrativos } = useGetAllAtrativos();
+  const { data: eventos, isLoading: isLoadingEventos } = useEvento();
+  const { data: municipios, isLoading: isLoadingMunicipios } = useGetAllMunicipios();
+  const { data: noticias, isLoading: isLoadingNoticias } = useGetNoticias();
+
   return (
     <LayoutPublic>
       <Hero
@@ -26,15 +37,27 @@ export default function Home() {
         <Atrativos />
       </SecaoExperiencias>
 
-      <GaleriaAtrativos />
+      <GaleriaAtrativos
+        atrativos={atrativos ?? []}
+        isLoading={isLoadingAtrativos}
+      />
 
-      <SecaoEventos />
+      <SecaoEventos
+        eventos={eventos ?? []}
+        isLoading={isLoadingEventos}
+      />
 
-      <SecaoMunicipios />
+      <SecaoMunicipios
+        municipios={municipios ?? []}
+        isLoading={isLoadingMunicipios}
+      />
 
       <SecaoMomentos />
 
-      <SecaoNoticias />
+      <SecaoNoticias
+        noticias={noticias ?? []}
+        isLoading={isLoadingNoticias}
+      />
 
       <SecaoApoio />
 
