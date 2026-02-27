@@ -1,37 +1,51 @@
 "use client";
 
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
 
 type FilterProps = {
-  title: string
+  title: string;
   items: {
-    label: string
-    value: string
-  }[]
-  selectedValues?: string[]
-  onChange?: (selectedValues: string[]) => void
-  className?: string
-}
+    label: string;
+    value: string;
+  }[];
+  selectedValues?: string[];
+  onChange?: (selectedValues: string[]) => void;
+  className?: string;
+};
 
-export function Filter({ title, items, selectedValues = [], onChange, className }: FilterProps) {
+export function Filter({
+  title,
+  items,
+  selectedValues = [],
+  onChange,
+  className,
+}: FilterProps) {
   const handleCheckboxChange = (value: string) => {
     if (selectedValues.includes(value)) {
       // Remove o valor se já está selecionado
-      onChange?.(selectedValues.filter(v => v !== value))
+      onChange?.(selectedValues.filter((v) => v !== value));
     } else {
       // Adiciona o valor se não está selecionado
-      onChange?.([...selectedValues, value])
+      onChange?.([...selectedValues, value]);
     }
-  }
+  };
 
   return (
-    <div className={`space-y-4 ${className}`} >
+    <div className={`space-y-4 ${className}`}>
       <Accordion type="single" collapsible>
-        <AccordionItem value="item-1" className="bg-tourism-verde text-white rounded-lg border-b-0">
+        <AccordionItem
+          value="item-1"
+          className="bg-tourism-marinho text-white rounded-lg border-b-0"
+        >
           <AccordionTrigger className="p-4">
             <h3 className="font-bold text-start">{title}</h3>
           </AccordionTrigger>
-          <AccordionContent className="bg-[#BFBFB8] text-black rounded-b-lg">
+          <AccordionContent className="bg-tourism-branco text-tourism-cinza rounded-b-lg shadow-lg">
             <ul className="p-4 space-y-2">
               {items?.map((item) => (
                 <li key={item.value} className="flex items-center space-x-2">
@@ -41,9 +55,11 @@ export function Filter({ title, items, selectedValues = [], onChange, className 
                     value={item.value}
                     checked={selectedValues.includes(item.value)}
                     onChange={() => handleCheckboxChange(item.value)}
-                    className="h-4 w-4"
+                    className="h-4 w-4 border-2 border-tourism-marinho accent-tourism-marinho rounded-sm focus:ring-2transition-colors"
                   />
-                  <label htmlFor={item.value} className="cursor-pointer">{item.label}</label>
+                  <label htmlFor={item.value} className="cursor-pointer">
+                    {item.label}
+                  </label>
                 </li>
               ))}
             </ul>
@@ -51,5 +67,5 @@ export function Filter({ title, items, selectedValues = [], onChange, className 
         </AccordionItem>
       </Accordion>
     </div>
-  )
+  );
 }
