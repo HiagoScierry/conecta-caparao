@@ -3,31 +3,40 @@ import { verify } from "jsonwebtoken";
 
 const JWT_SECRET = process.env.JWT_SECRET || "your-secret-key";
 
-// Rotas que requerem autenticação de admin
+// Rotas que requerem autenticação de admin (qualquer método)
 const ADMIN_ROUTES = [
   '/api/usuarios',
 ];
 
-// Rotas que requerem apenas autenticação
+// Rotas que requerem apenas autenticação (qualquer método)
 const PROTECTED_ROUTES = [
   '/painel',
 ];
 
-/**
- * Middleware de autenticação e autorização
- * - Verifica se o usuário está autenticado através do JWT token
- * - Protege rotas que requerem login
- * - Protege rotas que requerem privilégios de administrador
- * - Adiciona informações do usuário nos headers das requisições
- */
+// Rotas de dados onde apenas métodos de mutação requerem autenticação
+const MUTATION_ROUTES = [
+  '/api/atrativos',
+  '/api/eventos',
+  '/api/noticia',
+  '/api/municipio',
+  '/api/servicos',
+  '/api/principais-atrativos',
+  '/api/upload',
+];
+
+const MUTATION_METHODS = ['POST', 'PUT', 'DELETE', 'PATCH'];
+
 export function authMiddleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
+  const requestMethod = request.method;
 
-  // Verificar se é uma rota que precisa de proteção
   const isAdminRoute = ADMIN_ROUTES.some(route => pathname.startsWith(route));
   const isProtectedRoute = PROTECTED_ROUTES.some(route => pathname.startsWith(route));
+  const isMutationRoute =
+    MUTATION_ROUTES.some(route => pathname.startsWith(route)) &&
+    MUTATION_METHODS.includes(requestMethod);
 
-  if (!isAdminRoute && !isProtectedRoute) {
+  if (!isAdminRoute && !isProtectedRoute && !isMutationRoute) {
     return NextResponse.next();
   }
 
@@ -47,7 +56,6 @@ export function authMiddleware(request: NextRequest) {
       admin: boolean;
     };
 
-    // Para rotas admin, verificar se o usuário é admin
     if (isAdminRoute && !decoded.admin) {
       return NextResponse.json(
         { message: "Acesso negado. Apenas administradores podem acessar esta rota." },
@@ -55,7 +63,6 @@ export function authMiddleware(request: NextRequest) {
       );
     }
 
-    // Adicionar informações do usuário no header para as rotas protegidas
     const response = NextResponse.next();
     response.headers.set("x-user-id", decoded.userId.toString());
     response.headers.set("x-user-email", decoded.email);
@@ -74,6 +81,13 @@ export function authMiddleware(request: NextRequest) {
 export const authConfig = {
   matcher: [
     '/api/usuarios/:path*',
+    '/api/atrativos/:path*',
+    '/api/eventos/:path*',
+    '/api/noticia/:path*',
+    '/api/municipio/:path*',
+    '/api/servicos/:path*',
+    '/api/principais-atrativos/:path*',
+    '/api/upload/:path*',
     '/painel/:path*',
   ],
 };
