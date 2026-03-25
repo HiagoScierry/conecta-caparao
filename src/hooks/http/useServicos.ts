@@ -1,4 +1,4 @@
-import { ServicoForm } from "@/forms/servicoForm";
+import { ServicoForm } from "@/schemas/forms/servicoForm";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { QUERY_KEYS, useQueryInvalidation } from "./useQueryInvalidation";
 

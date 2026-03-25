@@ -1,5 +1,5 @@
 import { AtracaoTuristica, Categoria, Contato, Endereco, HorarioDeFuncionamento, PerfilCliente, Subcategoria } from "@prisma/client";
-import { AtracaoForm } from "@/forms/atracaoForm";
+import { AtracaoForm } from "@/schemas/forms/atracaoForm";
 
 export type AtracaoTuristicaFull = AtracaoTuristica & {
   horarioFuncionamento: HorarioDeFuncionamento[];

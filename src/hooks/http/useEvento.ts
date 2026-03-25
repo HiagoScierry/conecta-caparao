@@ -1,4 +1,4 @@
-import { EventoForm } from "@/forms/eventoForm";
+import { EventoForm } from "@/schemas/forms/eventoForm";
 import { EventoFull } from "@/repositories/interfaces/IEventoRepository";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { QUERY_KEYS, useQueryInvalidation } from "./useQueryInvalidation";

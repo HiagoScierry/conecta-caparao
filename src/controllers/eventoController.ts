@@ -1,7 +1,7 @@
 import { enderecoServiceFactory } from "@/factories/enderecoServiceFactory";
 import { eventoServiceFactory } from "@/factories/eventoServiceFactory";
 import { municipioServiceFactory } from "@/factories/municipioServiceFactory";
-import { EventoForm } from "@/forms/eventoForm";
+import { EventoForm } from "@/schemas/forms/eventoForm";
 
 export async function getAllEventos() {
   return eventoServiceFactory().findAll();

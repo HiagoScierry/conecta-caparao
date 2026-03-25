@@ -19,7 +19,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { ImageUpload } from "@/components/ImageUpload";
 import { useGetAllMunicipios } from "@/hooks/http/useMunicipio";
-import { ServicoForm, servicoFormSchema } from "@/forms/servicoForm";
+import { ServicoForm, servicoFormSchema } from "@/schemas/forms/servicoForm";
 import { ServicoTuristicoFull } from "@/repositories/interfaces/IServicoTuristicoRepository";
 import { useDeleteUpload } from "@/hooks/http/useUpload";
 

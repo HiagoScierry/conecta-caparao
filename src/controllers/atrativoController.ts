@@ -7,7 +7,7 @@ import { horarioFuncionamentoServiceFactory } from "@/factories/horarioFuncionam
 import { municipioServiceFactory } from "@/factories/municipioServiceFactory";
 import { perfilClienteServiceFactory } from "@/factories/perfilClienteServiceFactory";
 import { SubCategoriaServiceFactory } from "@/factories/subCategoriaServiceFactory";
-import { AtracaoForm } from "@/forms/atracaoForm";
+import { AtracaoForm } from "@/schemas/forms/atracaoForm";
 import { PerfilCliente } from "@prisma/client";
 import { sub } from "date-fns";
 

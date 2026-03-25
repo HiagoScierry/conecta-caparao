@@ -9,7 +9,7 @@ import { Badge } from "@/components/ui/badge";
 import { PlusCircle, Eye, Edit, Trash2, Search } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useGetAllUsuarios, useCreateUsuario, useUpdateUsuario, useDeleteUsuario } from "@/hooks/http/useUsuarios";
-import { UsuarioForm, UsuarioUpdateForm } from "@/forms/usuarioForm";
+import { UsuarioForm, UsuarioUpdateForm } from "@/schemas/forms/usuarioForm";
 import { UsuarioResponseDTO } from "@/dto/usuarioDTO";
 import { DeleteConfirmModal } from "@/components/modals/DeleteConfirmModal";
 import { UserModal } from "@/components/modals/UserModal";

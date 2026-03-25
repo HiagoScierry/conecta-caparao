@@ -1,5 +1,5 @@
 import { createServico, getAll } from "@/controllers/servicoController";
-import { ServicoForm } from "@/forms/servicoForm";
+import { ServicoForm } from "@/schemas/forms/servicoForm";
 import { contatoSchema } from "@/schemas/contatoSchema";
 import { enderecoSchema } from "@/schemas/enderecoSchema";
 import { horarioFuncionamentoSchema } from "@/schemas/horarioFuncionamentoSchema";

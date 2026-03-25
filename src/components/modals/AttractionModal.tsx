@@ -36,7 +36,7 @@ import {
 } from "@/components/ui/select";
 import { ImageUpload } from "@/components/ImageUpload";
 
-import { AtracaoForm, atracaoTuristicaForm } from "@/forms/atracaoForm";
+import { AtracaoForm, atracaoTuristicaForm } from "@/schemas/forms/atracaoForm";
 import { useGetAllMunicipios } from "@/hooks/http/useMunicipio";
 import { usePerfis } from "@/hooks/http/usePerfis";
 import { useCategorias } from "@/hooks/http/useCategoria";

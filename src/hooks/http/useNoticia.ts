@@ -1,4 +1,4 @@
-import { NoticiasForm } from "@/forms/noticiasForm";
+import { NoticiasForm } from "@/schemas/forms/noticiasForm";
 import { NoticiaFull } from "@/repositories/interfaces/INoticiaRepository";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { QUERY_KEYS, useQueryInvalidation } from "./useQueryInvalidation";

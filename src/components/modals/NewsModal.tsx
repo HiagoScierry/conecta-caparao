@@ -13,7 +13,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { RichTextEditor } from "@/components/ui/rich-text-editor";
 import { ImageUpload } from "@/components/ImageUpload";
-import { NoticiasForm, noticiasForm } from "@/forms/noticiasForm";
+import { NoticiasForm, noticiasForm } from "@/schemas/forms/noticiasForm";
 import { useEffect, useState } from "react";
 import { NoticiaFull } from "@/repositories/interfaces/INoticiaRepository";
 import { useDeleteUpload } from "@/hooks/http/useUpload";

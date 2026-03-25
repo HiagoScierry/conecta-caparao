@@ -1,4 +1,4 @@
-import { AtracaoForm } from "@/forms/atracaoForm";
+import { AtracaoForm } from "@/schemas/forms/atracaoForm";
 import { AtracaoTuristica, Categoria, Contato, Endereco, Foto, GaleriaFoto, HorarioDeFuncionamento, Municipio, PerfilCliente, Subcategoria } from "@prisma/client";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { QUERY_KEYS, useQueryInvalidation } from "./useQueryInvalidation";

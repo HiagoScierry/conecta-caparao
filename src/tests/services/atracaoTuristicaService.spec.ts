@@ -1,7 +1,7 @@
 import { AtracaoTuristicaService } from "@/services/atracaoTuristicaService";
 import { IAtracaoTuristicaRepository } from "@/repositories/interfaces/IAtracaoTuristicaRepository";
 import { mockAtracaoTuristica } from "@/tests/helpers/mockData";
-import { AtracaoForm } from "@/forms/atracaoForm";
+import { AtracaoForm } from "@/schemas/forms/atracaoForm";
 
 describe("AtracaoTuristicaService", () => {
   let atracaoTuristicaService: AtracaoTuristicaService;

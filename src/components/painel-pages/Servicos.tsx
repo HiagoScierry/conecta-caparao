@@ -21,7 +21,7 @@ import {
   useDeleteServico,
 } from "@/hooks/http/useServicos";
 import { ServicoTuristicoFull } from "@/repositories/interfaces/IServicoTuristicoRepository";
-import { ServicoForm } from "@/forms/servicoForm";
+import { ServicoForm } from "@/schemas/forms/servicoForm";
 import { useUpload } from "@/hooks/http/useUpload";
 
 export default function Servicos() {

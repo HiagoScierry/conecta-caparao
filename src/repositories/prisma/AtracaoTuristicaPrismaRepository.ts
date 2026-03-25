@@ -1,7 +1,7 @@
 import { AtracaoTuristica, Prisma } from "@prisma/client";
 import { connection } from "@/config/database/connection";
 import { IAtracaoTuristicaRepository } from "../interfaces/IAtracaoTuristicaRepository";
-import { AtracaoForm } from "@/forms/atracaoForm";
+import { AtracaoForm } from "@/schemas/forms/atracaoForm";
 
 export class AtracaoTuristicaPrismaRepository implements IAtracaoTuristicaRepository {
   async findAll(): Promise<AtracaoTuristica[]> {

@@ -23,7 +23,7 @@ import {
   useGetAllAtrativos,
   useUpdateAtrativo,
 } from "@/hooks/http/useAtrativos";
-import { AtracaoForm } from "@/forms/atracaoForm";
+import { AtracaoForm } from "@/schemas/forms/atracaoForm";
 import { useUpload } from "@/hooks/http/useUpload";
 import PrincipaisAtrativos from "./PrincipaisAtrativos"
 

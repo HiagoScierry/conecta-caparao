@@ -4,7 +4,7 @@ import { enderecoServiceFactory } from "@/factories/enderecoServiceFactory";
 import { horarioFuncionamentoServiceFactory } from "@/factories/horarioFuncionamentoServiceFactory";
 import { municipioServiceFactory } from "@/factories/municipioServiceFactory";
 import { servicoTuristicoServiceFactory } from "@/factories/servicoTuristicoServiceFactory";
-import { ServicoForm } from "@/forms/servicoForm";
+import { ServicoForm } from "@/schemas/forms/servicoForm";
 
 export async function getServicoById(id: number) {
   return servicoTuristicoServiceFactory().findById(id);
