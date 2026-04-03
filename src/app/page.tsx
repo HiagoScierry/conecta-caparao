@@ -7,17 +7,19 @@ import { SecaoEventos } from "@/components/public/SecaoEventos";
 import { SecaoMunicipios } from "@/components/public/SecaoMunicipios";
 import { SecaoMomentos } from "@/components/public/SecaoMomentos";
 import { SecaoNoticias } from "@/components/public/SecaoNoticias";
+import { SecaoApoio } from "@/components/public/SecaoApoio";
+import { BotaoVoltarAoTopo } from "@/components/public/BotaoVoltarAoTopo";
 
 export default function Home() {
   return (
     <LayoutPublic>
-      <Hero 
+      <Hero
         titulo="As Raízes do Caparaó"
         subtitulo="Uma história tecida nas montanhas, preservada pelo coração do povo"
         imagemUrl="/Hero.jpg"
       />
 
-      <SecaoExperiencias 
+      <SecaoExperiencias
         tituloDestaque="O QUE TE ESPERA"
         tituloPrincipal="Experiências Autênticas"
       >
@@ -32,9 +34,11 @@ export default function Home() {
 
       <SecaoMomentos />
 
-
       <SecaoNoticias />
-      
+
+      <SecaoApoio />
+
+      <BotaoVoltarAoTopo />
     </LayoutPublic>
   );
 }

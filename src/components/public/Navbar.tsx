@@ -17,10 +17,12 @@ export function Navbar() {
   const navItems = [
     { label: "Municípios", href: "/municipios" },
     { label: "Atrativos", href: "/atrativos" },
-    { label: "Notícias", href: "/noticias" },
-    { label: "Eventos", href: "/eventos" },
     { label: "Cultura", href: "/cultura" },
+    { label: "Eventos", href: "/eventos" },
+    { label: "Notícias", href: "/noticias" },
+    { label: "Quem Somos", href: "/quem-somos" },
     { label: "Contato", href: "/contato" },
+    { label: "Início", href: "/" },
   ];
 
   return (
@@ -42,7 +44,9 @@ export function Navbar() {
           <NavigationMenu>
             <NavigationMenuList className="flex gap-8">
               {navItems.map((item) => {
-                const isActive = pathname === item.href || pathname.startsWith(item.href + '/');
+                const isActive =
+                  pathname === item.href ||
+                  pathname.startsWith(item.href + "/");
                 return (
                   <NavigationMenuItem key={item.href}>
                     <Link
@@ -80,7 +84,8 @@ export function Navbar() {
             `}
           >
             {navItems.map((item) => {
-              const isActive = pathname === item.href || pathname.startsWith(item.href + '/');
+              const isActive =
+                pathname === item.href || pathname.startsWith(item.href + "/");
               return (
                 <Link
                   key={item.href}
@@ -102,4 +107,3 @@ export function Navbar() {
     </nav>
   );
 }
-
