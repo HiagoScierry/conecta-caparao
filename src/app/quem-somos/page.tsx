@@ -73,6 +73,7 @@ export default function QuemSomosPage() {
               src="/Hero.jpg"
               alt="Imagem da região do Caparaó"
               fill
+              sizes="(min-width: 768px) 50vw, 100vw"
               className="object-cover"
               priority
             />
