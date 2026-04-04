@@ -12,10 +12,12 @@ export function BotaoVoltarAoTopo() {
         setIsVisible(false);
       }
     };
+    const scrollListenerOptions = { passive: true };
 
-    window.addEventListener("scroll", toggleVisibility);
+    window.addEventListener("scroll", toggleVisibility, scrollListenerOptions);
 
-    return () => window.removeEventListener("scroll", toggleVisibility);
+    return () =>
+      window.removeEventListener("scroll", toggleVisibility, scrollListenerOptions);
   }, []);
 
   // Função para subir a página suavemente
