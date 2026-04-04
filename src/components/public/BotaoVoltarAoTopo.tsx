@@ -14,6 +14,7 @@ export function BotaoVoltarAoTopo() {
     };
     const scrollListenerOptions = { passive: true };
 
+    toggleVisibility();
     window.addEventListener("scroll", toggleVisibility, scrollListenerOptions);
 
     return () =>
