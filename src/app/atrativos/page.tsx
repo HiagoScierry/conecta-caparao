@@ -6,7 +6,6 @@ import { Filter } from "@/components/public/Filter";
 import { AtracoesCard } from "@/components/public/AtracoesCard";
 import { useGetAllMunicipios } from "@/hooks/http/useMunicipio";
 import { useCategorias } from "@/hooks/http/useCategoria";
-import { useSubcategorias } from "@/hooks/http/useSubCategoria";
 import { usePerfis } from "@/hooks/http/usePerfis";
 import { useGetAllAtrativos } from "@/hooks/http/useAtrativos";
 import { useGetAllServicos } from "@/hooks/http/useServicos";
@@ -15,52 +14,108 @@ import { ServicoTuristicoFull } from "@/repositories/interfaces/IServicoTuristic
 import { useState, useMemo } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
+function getNomeExibicao(nome: string): string {
+  const lower = nome.toLowerCase();
+  if (lower === "restaurantes") return "Gastronomia";
+  if (lower === "lazer") return "Turismo";
+  return nome;
+}
+
 export default function PaginaAtrativos() {
-  const {data: municipios} = useGetAllMunicipios();
-  const {data: categorias } = useCategorias();
-  const {data: subcategorias } = useSubcategorias();
-  const {data: perfils} = usePerfis();
-  const {data: atracoes} = useGetAllAtrativos();
-  const {data: servicos} = useGetAllServicos();
+  const { data: municipios } = useGetAllMunicipios();
+  const { data: categorias } = useCategorias();
+  const { data: perfils } = usePerfis();
+  const { data: atracoes } = useGetAllAtrativos();
+  const { data: servicos } = useGetAllServicos();
 
   // Estados para os filtros
   const [selectedMunicipios, setSelectedMunicipios] = useState<string[]>([]);
   const [selectedCategorias, setSelectedCategorias] = useState<string[]>([]);
-  const [selectedSubcategorias, setSelectedSubcategorias] = useState<string[]>([]);
   const [selectedPerfis, setSelectedPerfis] = useState<string[]>([]);
+
+  // Maps each visual label to all original category IDs in that group.
+  // The first ID encountered per group is the representative used as filter value.
+  const categoryGroupMap = useMemo(() => {
+    if (!categorias) return new Map<string, string[]>();
+
+    const groupToIds = new Map<string, string[]>();
+    const groupToRepId = new Map<string, string>();
+
+    categorias.forEach((cat) => {
+      const nomeExibicao = getNomeExibicao(cat.nome);
+
+      if (!groupToIds.has(nomeExibicao)) {
+        groupToIds.set(nomeExibicao, []);
+        groupToRepId.set(nomeExibicao, cat.id.toString());
+      }
+      groupToIds.get(nomeExibicao)!.push(cat.id.toString());
+    });
+
+    const map = new Map<string, string[]>();
+    groupToRepId.forEach((repId, label) => {
+      map.set(repId, groupToIds.get(label)!);
+    });
+
+    return map;
+  }, [categorias]);
+
+  const categoriasFormatadas = useMemo(() => {
+    if (!categorias) return [];
+
+    const seen = new Set<string>();
+    return categorias
+      .map((cat) => ({
+        ...cat,
+        label: getNomeExibicao(cat.nome),
+        value: cat.id.toString(),
+      }))
+      .filter((item) => {
+        if (seen.has(item.label)) return false;
+        seen.add(item.label);
+        return true;
+      });
+  }, [categorias]);
 
   // Função para filtrar atrativos
   const filteredAtracoes = useMemo(() => {
     if (!atracoes) return [];
-    
+
     return atracoes.filter((atracao: AtracaoTuristicaLoadedData) => {
       // Filtro por município
-      const matchMunicipio = selectedMunicipios.length === 0 || 
+      const matchMunicipio =
+        selectedMunicipios.length === 0 ||
         selectedMunicipios.includes(atracao.municipio.id.toString());
 
-      // Filtro por categoria
-      const matchCategoria = selectedCategorias.length === 0 || 
-        atracao.categorias.some(cat => selectedCategorias.includes(cat.id.toString()));
-
-      // Filtro por subcategoria
-      const matchSubcategoria = selectedSubcategorias.length === 0 || 
-        atracao.subcategorias.some(subcat => selectedSubcategorias.includes(subcat.id.toString()));
+      // Filtro por categoria — expande o valor selecionado para todos os IDs do grupo visual
+      const matchCategoria =
+        selectedCategorias.length === 0 ||
+        atracao.categorias.some((cat) => {
+          const catIdStr = cat.id.toString();
+          return selectedCategorias.some((selectedRepId) => {
+            const allIds = categoryGroupMap.get(selectedRepId) ?? [selectedRepId];
+            return allIds.includes(catIdStr);
+          });
+        });
 
       // Filtro por perfil
-      const matchPerfil = selectedPerfis.length === 0 || 
-        atracao.perfis.some(perfil => selectedPerfis.includes(perfil.id.toString()));
+      const matchPerfil =
+        selectedPerfis.length === 0 ||
+        atracao.perfis.some((perfil) =>
+          selectedPerfis.includes(perfil.id.toString()),
+        );
 
-      return matchMunicipio && matchCategoria && matchSubcategoria && matchPerfil;
+      return matchMunicipio && matchCategoria && matchPerfil;
     });
-  }, [atracoes, selectedMunicipios, selectedCategorias, selectedSubcategorias, selectedPerfis]);
+  }, [atracoes, selectedMunicipios, selectedCategorias, selectedPerfis, categoryGroupMap]);
 
   // Função para filtrar serviços
   const filteredServicos = useMemo(() => {
     if (!servicos) return [];
-    
+
     return servicos.filter((servico: ServicoTuristicoFull) => {
       // Filtro por município
-      const matchMunicipio = selectedMunicipios.length === 0 || 
+      const matchMunicipio =
+        selectedMunicipios.length === 0 ||
         selectedMunicipios.includes(servico.municipio.id.toString());
 
       return matchMunicipio;
@@ -70,14 +125,17 @@ export default function PaginaAtrativos() {
   return (
     <LayoutPublic>
       <div className="container mx-auto py-8 px-4 md:px-16">
-        <Banner titulo="A EXPERIÊNCIA VOCÊ QUEM ESCOLHE!" cor="bg-tourism-azul" />
-        
+        <Banner
+          titulo="A EXPERIÊNCIA VOCÊ QUEM ESCOLHE!"
+          cor="bg-tourism-azul"
+        />
+
         <Tabs defaultValue="atrativos" className="w-full">
           <TabsList className="grid w-full grid-cols-2">
             <TabsTrigger value="atrativos">Atrativos Turísticos</TabsTrigger>
             <TabsTrigger value="servicos">Serviços Turísticos</TabsTrigger>
           </TabsList>
-          
+
           <TabsContent value="atrativos">
             {/* Barra de controles */}
             <div className="w-full mb-6 mt-6 flex justify-between items-center">
@@ -88,7 +146,6 @@ export default function PaginaAtrativos() {
                 onClick={() => {
                   setSelectedMunicipios([]);
                   setSelectedCategorias([]);
-                  setSelectedSubcategorias([]);
                   setSelectedPerfis([]);
                 }}
                 className="px-4 py-2 bg-tourism-verde text-white rounded-lg hover:bg-tourism-verde/80 transition-colors"
@@ -101,10 +158,12 @@ export default function PaginaAtrativos() {
               <div className="w-full md:w-1/4 md:flex-shrink-0">
                 <Filter
                   title="Municípios"
-                  items={municipios?.map((municipio) => ({
-                    label: municipio.nome,
-                    value: municipio.id.toString(),
-                  })) ?? []}
+                  items={
+                    municipios?.map((municipio) => ({
+                      label: municipio.nome,
+                      value: municipio.id.toString(),
+                    })) ?? []
+                  }
                   selectedValues={selectedMunicipios}
                   onChange={setSelectedMunicipios}
                   className="mb-6"
@@ -112,32 +171,20 @@ export default function PaginaAtrativos() {
 
                 <Filter
                   title="Categorias"
-                  items={categorias?.map((categoria) => ({
-                    label: categoria.nome,
-                    value: categoria.id.toString(),
-                  })) ?? []}
+                  items={categoriasFormatadas} // Usando a lógica de Gastronomia/Turismo
                   selectedValues={selectedCategorias}
                   onChange={setSelectedCategorias}
                   className="mb-6"
                 />
 
                 <Filter
-                  title="Subcategorias"
-                  items={subcategorias?.map((subcategoria) => ({
-                    label: subcategoria.nome,
-                    value: subcategoria.id.toString(),
-                  })) ?? []}
-                  selectedValues={selectedSubcategorias}
-                  onChange={setSelectedSubcategorias}
-                  className="mb-6"
-                />
-
-                <Filter
                   title="Perfil"
-                  items={perfils?.map((perfil) => ({
-                    label: perfil.nome,
-                    value: perfil.id.toString(),
-                  })) ?? []}
+                  items={
+                    perfils?.map((perfil) => ({
+                      label: perfil.nome,
+                      value: perfil.id.toString(),
+                    })) ?? []
+                  }
                   selectedValues={selectedPerfis}
                   onChange={setSelectedPerfis}
                   className="mb-6"
@@ -156,22 +203,30 @@ export default function PaginaAtrativos() {
                   </div>
                 ) : (
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
-                    {filteredAtracoes?.map((atracao: AtracaoTuristicaLoadedData) => (
-                      <Link key={`atracao-${atracao.id}`} href={`/atrativos/${atracao.id}`} passHref>
-                        <AtracoesCard
-                          nome={atracao.nome}
-                          cidade={atracao.municipio.nome}
-                          imagemUrls={atracao.fotos.map(foto => foto.foto.url) || []}
-                          id={atracao.id}
-                        />
-                      </Link>
-                    ))}
+                    {filteredAtracoes?.map(
+                      (atracao: AtracaoTuristicaLoadedData) => (
+                        <Link
+                          key={`atracao-${atracao.id}`}
+                          href={`/atrativos/${atracao.id}`}
+                          passHref
+                        >
+                          <AtracoesCard
+                            nome={atracao.nome}
+                            cidade={atracao.municipio.nome}
+                            imagemUrls={
+                              atracao.fotos.map((foto) => foto.foto.url) || []
+                            }
+                            id={atracao.id}
+                          />
+                        </Link>
+                      ),
+                    )}
                   </div>
                 )}
               </div>
             </div>
           </TabsContent>
-          
+
           <TabsContent value="servicos">
             {/* Barra de controles para serviços */}
             <div className="w-full mb-6 mt-6 flex justify-between items-center">
@@ -192,10 +247,12 @@ export default function PaginaAtrativos() {
               <div className="w-full md:w-1/4 md:flex-shrink-0">
                 <Filter
                   title="Municípios"
-                  items={municipios?.map((municipio) => ({
-                    label: municipio.nome,
-                    value: municipio.id.toString(),
-                  })) ?? []}
+                  items={
+                    municipios?.map((municipio) => ({
+                      label: municipio.nome,
+                      value: municipio.id.toString(),
+                    })) ?? []
+                  }
                   selectedValues={selectedMunicipios}
                   onChange={setSelectedMunicipios}
                   className="mb-6"
@@ -215,11 +272,17 @@ export default function PaginaAtrativos() {
                 ) : (
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
                     {filteredServicos?.map((servico: ServicoTuristicoFull) => (
-                      <Link key={`servico-${servico.id}`} href={`/servicos/${servico.id}`} passHref>
+                      <Link
+                        key={`servico-${servico.id}`}
+                        href={`/servicos/${servico.id}`}
+                        passHref
+                      >
                         <AtracoesCard
                           nome={servico.nome}
                           cidade={servico.municipio.nome}
-                          imagemUrls={servico.fotos.map(foto => foto.foto.url) || []}
+                          imagemUrls={
+                            servico.fotos.map((foto) => foto.foto.url) || []
+                          }
                           id={servico.id}
                         />
                       </Link>
