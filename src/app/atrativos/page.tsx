@@ -26,9 +26,37 @@ export default function PaginaAtrativos() {
   const [selectedCategorias, setSelectedCategorias] = useState<string[]>([]);
   const [selectedPerfis, setSelectedPerfis] = useState<string[]>([]);
 
+  // Maps each visual label to all original category IDs in that group
+  const categoryGroupMap = useMemo(() => {
+    if (!categorias) return new Map<string, string[]>();
+
+    const groupToIds = new Map<string, string[]>();
+    const groupToRepId = new Map<string, string>();
+
+    categorias.forEach((cat) => {
+      let nomeExibicao = cat.nome;
+      if (cat.nome.toLowerCase() === "restaurantes") nomeExibicao = "Gastronomia";
+      if (cat.nome.toLowerCase() === "lazer") nomeExibicao = "Turismo";
+
+      if (!groupToIds.has(nomeExibicao)) {
+        groupToIds.set(nomeExibicao, []);
+        groupToRepId.set(nomeExibicao, cat.id.toString());
+      }
+      groupToIds.get(nomeExibicao)!.push(cat.id.toString());
+    });
+
+    const map = new Map<string, string[]>();
+    groupToRepId.forEach((repId, label) => {
+      map.set(repId, groupToIds.get(label)!);
+    });
+
+    return map;
+  }, [categorias]);
+
   const categoriasFormatadas = useMemo(() => {
     if (!categorias) return [];
 
+    const seen = new Set<string>();
     return categorias
       .map((cat) => {
         let nomeExibicao = cat.nome;
@@ -47,10 +75,11 @@ export default function PaginaAtrativos() {
           value: cat.id.toString(),
         };
       })
-      .filter(
-        (value, index, self) =>
-          index === self.findIndex((t) => t.label === value.label),
-      );
+      .filter((item) => {
+        if (seen.has(item.label)) return false;
+        seen.add(item.label);
+        return true;
+      });
   }, [categorias]);
 
   // Função para filtrar atrativos
@@ -63,12 +92,16 @@ export default function PaginaAtrativos() {
         selectedMunicipios.length === 0 ||
         selectedMunicipios.includes(atracao.municipio.id.toString());
 
-      // Filtro por categoria
+      // Filtro por categoria — expande o valor selecionado para todos os IDs do grupo visual
       const matchCategoria =
         selectedCategorias.length === 0 ||
-        atracao.categorias.some((cat) =>
-          selectedCategorias.includes(cat.id.toString()),
-        );
+        atracao.categorias.some((cat) => {
+          const catIdStr = cat.id.toString();
+          return selectedCategorias.some((selectedRepId) => {
+            const allIds = categoryGroupMap.get(selectedRepId) ?? [selectedRepId];
+            return allIds.includes(catIdStr);
+          });
+        });
 
       // Filtro por perfil
       const matchPerfil =
@@ -79,7 +112,7 @@ export default function PaginaAtrativos() {
 
       return matchMunicipio && matchCategoria && matchPerfil;
     });
-  }, [atracoes, selectedMunicipios, selectedCategorias, selectedPerfis]);
+  }, [atracoes, selectedMunicipios, selectedCategorias, selectedPerfis, categoryGroupMap]);
 
   // Função para filtrar serviços
   const filteredServicos = useMemo(() => {

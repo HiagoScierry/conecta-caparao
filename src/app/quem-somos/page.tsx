@@ -174,6 +174,7 @@ export default function QuemSomosPage() {
             <a
               href="https://docs.google.com/forms/d/1hSwgmhzCfEK-zRB1h2Z0JosTFgK6hAvErIiQ6giNYA0/preview"
               target="_blank"
+              rel="noopener noreferrer"
               className="bg-tourism-verde text-white px-8 py-3 rounded-full font-bold hover:brightness-90 transition-all"
             >
               FORMULÁRIO DE ADESÃO
@@ -191,6 +192,7 @@ export default function QuemSomosPage() {
             <a
               href="https://drive.google.com/drive/folders/1GL0cBMLU6P4Qceu13JMARbBTlh9wRi25?usp=drive_link"
               target="_blank"
+              rel="noopener noreferrer"
               className="bg-tourism-azul text-white px-8 py-3 rounded-full font-bold hover:brightness-90 transition-all"
             >
               ACESSAR DRIVE PÚBLICO
