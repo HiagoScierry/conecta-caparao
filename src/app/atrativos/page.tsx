@@ -14,6 +14,13 @@ import { ServicoTuristicoFull } from "@/repositories/interfaces/IServicoTuristic
 import { useState, useMemo } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
+function getNomeExibicao(nome: string): string {
+  const lower = nome.toLowerCase();
+  if (lower === "restaurantes") return "Gastronomia";
+  if (lower === "lazer") return "Turismo";
+  return nome;
+}
+
 export default function PaginaAtrativos() {
   const { data: municipios } = useGetAllMunicipios();
   const { data: categorias } = useCategorias();
@@ -26,7 +33,8 @@ export default function PaginaAtrativos() {
   const [selectedCategorias, setSelectedCategorias] = useState<string[]>([]);
   const [selectedPerfis, setSelectedPerfis] = useState<string[]>([]);
 
-  // Maps each visual label to all original category IDs in that group
+  // Maps each visual label to all original category IDs in that group.
+  // The first ID encountered per group is the representative used as filter value.
   const categoryGroupMap = useMemo(() => {
     if (!categorias) return new Map<string, string[]>();
 
@@ -34,9 +42,7 @@ export default function PaginaAtrativos() {
     const groupToRepId = new Map<string, string>();
 
     categorias.forEach((cat) => {
-      let nomeExibicao = cat.nome;
-      if (cat.nome.toLowerCase() === "restaurantes") nomeExibicao = "Gastronomia";
-      if (cat.nome.toLowerCase() === "lazer") nomeExibicao = "Turismo";
+      const nomeExibicao = getNomeExibicao(cat.nome);
 
       if (!groupToIds.has(nomeExibicao)) {
         groupToIds.set(nomeExibicao, []);
@@ -58,23 +64,11 @@ export default function PaginaAtrativos() {
 
     const seen = new Set<string>();
     return categorias
-      .map((cat) => {
-        let nomeExibicao = cat.nome;
-
-        if (cat.nome.toLowerCase() === "restaurantes") {
-          nomeExibicao = "Gastronomia";
-        }
-
-        if (cat.nome.toLowerCase() === "lazer") {
-          nomeExibicao = "Turismo";
-        }
-
-        return {
-          ...cat,
-          label: nomeExibicao,
-          value: cat.id.toString(),
-        };
-      })
+      .map((cat) => ({
+        ...cat,
+        label: getNomeExibicao(cat.nome),
+        value: cat.id.toString(),
+      }))
       .filter((item) => {
         if (seen.has(item.label)) return false;
         seen.add(item.label);

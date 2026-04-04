@@ -1,6 +1,9 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import { ArrowUp } from "lucide-react";
+
+const scrollListenerOptions: AddEventListenerOptions = { passive: true };
+
 export function BotaoVoltarAoTopo() {
   const [isVisible, setIsVisible] = useState(false);
 
@@ -12,7 +15,6 @@ export function BotaoVoltarAoTopo() {
         setIsVisible(false);
       }
     };
-    const scrollListenerOptions: AddEventListenerOptions = { passive: true };
 
     toggleVisibility();
     window.addEventListener("scroll", toggleVisibility, scrollListenerOptions);
