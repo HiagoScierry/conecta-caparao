@@ -27,11 +27,11 @@ export function Filter({ title, items, selectedValues = [], onChange, className 
   return (
     <div className={`space-y-4 ${className}`} >
       <Accordion type="single" collapsible>
-        <AccordionItem value="item-1" className="bg-tourism-verde text-white rounded-lg border-b-0">
-          <AccordionTrigger className="p-4">
+        <AccordionItem value="item-1" className="bg-tourism-marinho text-white rounded-lg border-b-0">
+          <AccordionTrigger className="p-4 hover:no-underline">
             <h3 className="font-bold text-start">{title}</h3>
           </AccordionTrigger>
-          <AccordionContent className="bg-[#BFBFB8] text-black rounded-b-lg">
+          <AccordionContent className="bg-white text-black rounded-b-lg border border-t-0 border-gray-200 rounded-b-lg">
             <ul className="p-4 space-y-2">
               {items?.map((item) => (
                 <li key={item.value} className="flex items-center space-x-2">
@@ -41,7 +41,7 @@ export function Filter({ title, items, selectedValues = [], onChange, className 
                     value={item.value}
                     checked={selectedValues.includes(item.value)}
                     onChange={() => handleCheckboxChange(item.value)}
-                    className="h-4 w-4"
+                    className="h-4 w-4 accent-tourism-marinho"
                   />
                   <label htmlFor={item.value} className="cursor-pointer">{item.label}</label>
                 </li>

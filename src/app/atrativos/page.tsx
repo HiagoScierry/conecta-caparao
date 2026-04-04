@@ -12,7 +12,6 @@ import { useGetAllServicos } from "@/hooks/http/useServicos";
 import { AtracaoTuristicaLoadedData } from "@/hooks/http/useAtrativos";
 import { ServicoTuristicoFull } from "@/repositories/interfaces/IServicoTuristicoRepository";
 import { useState, useMemo } from "react";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 function getNomeExibicao(nome: string): string {
   const lower = nome.toLowerCase();
@@ -21,6 +20,10 @@ function getNomeExibicao(nome: string): string {
   return nome;
 }
 
+type ItemUnificado =
+  | { tipo: "atrativo"; data: AtracaoTuristicaLoadedData }
+  | { tipo: "servico"; data: ServicoTuristicoFull };
+
 export default function PaginaAtrativos() {
   const { data: municipios } = useGetAllMunicipios();
   const { data: categorias } = useCategorias();
@@ -28,13 +31,11 @@ export default function PaginaAtrativos() {
   const { data: atracoes } = useGetAllAtrativos();
   const { data: servicos } = useGetAllServicos();
 
-  // Estados para os filtros
   const [selectedMunicipios, setSelectedMunicipios] = useState<string[]>([]);
   const [selectedCategorias, setSelectedCategorias] = useState<string[]>([]);
   const [selectedPerfis, setSelectedPerfis] = useState<string[]>([]);
+  const [incluirServicos, setIncluirServicos] = useState(true);
 
-  // Maps each visual label to all original category IDs in that group.
-  // The first ID encountered per group is the representative used as filter value.
   const categoryGroupMap = useMemo(() => {
     if (!categorias) return new Map<string, string[]>();
 
@@ -43,7 +44,6 @@ export default function PaginaAtrativos() {
 
     categorias.forEach((cat) => {
       const nomeExibicao = getNomeExibicao(cat.nome);
-
       if (!groupToIds.has(nomeExibicao)) {
         groupToIds.set(nomeExibicao, []);
         groupToRepId.set(nomeExibicao, cat.id.toString());
@@ -55,7 +55,6 @@ export default function PaginaAtrativos() {
     groupToRepId.forEach((repId, label) => {
       map.set(repId, groupToIds.get(label)!);
     });
-
     return map;
   }, [categorias]);
 
@@ -76,17 +75,13 @@ export default function PaginaAtrativos() {
       });
   }, [categorias]);
 
-  // Função para filtrar atrativos
   const filteredAtracoes = useMemo(() => {
     if (!atracoes) return [];
-
     return atracoes.filter((atracao: AtracaoTuristicaLoadedData) => {
-      // Filtro por município
       const matchMunicipio =
         selectedMunicipios.length === 0 ||
         selectedMunicipios.includes(atracao.municipio.id.toString());
 
-      // Filtro por categoria — expande o valor selecionado para todos os IDs do grupo visual
       const matchCategoria =
         selectedCategorias.length === 0 ||
         atracao.categorias.some((cat) => {
@@ -97,7 +92,6 @@ export default function PaginaAtrativos() {
           });
         });
 
-      // Filtro por perfil
       const matchPerfil =
         selectedPerfis.length === 0 ||
         atracao.perfis.some((perfil) =>
@@ -108,191 +102,154 @@ export default function PaginaAtrativos() {
     });
   }, [atracoes, selectedMunicipios, selectedCategorias, selectedPerfis, categoryGroupMap]);
 
-  // Função para filtrar serviços
   const filteredServicos = useMemo(() => {
-    if (!servicos) return [];
-
-    return servicos.filter((servico: ServicoTuristicoFull) => {
-      // Filtro por município
-      const matchMunicipio =
+    if (!servicos || !incluirServicos) return [];
+    return (servicos as ServicoTuristicoFull[]).filter((servico) => {
+      return (
         selectedMunicipios.length === 0 ||
-        selectedMunicipios.includes(servico.municipio.id.toString());
-
-      return matchMunicipio;
+        selectedMunicipios.includes(servico.municipio.id.toString())
+      );
     });
-  }, [servicos, selectedMunicipios]);
+  }, [servicos, selectedMunicipios, incluirServicos]);
+
+  const itensUnificados = useMemo((): ItemUnificado[] => {
+    const atrativos: ItemUnificado[] = filteredAtracoes.map((a) => ({
+      tipo: "atrativo",
+      data: a,
+    }));
+    const servs: ItemUnificado[] = filteredServicos.map((s) => ({
+      tipo: "servico",
+      data: s,
+    }));
+    return [...atrativos, ...servs];
+  }, [filteredAtracoes, filteredServicos]);
+
+  const hasActiveFilters =
+    selectedMunicipios.length > 0 ||
+    selectedCategorias.length > 0 ||
+    selectedPerfis.length > 0;
+
+  function clearFilters() {
+    setSelectedMunicipios([]);
+    setSelectedCategorias([]);
+    setSelectedPerfis([]);
+  }
 
   return (
     <LayoutPublic>
       <div className="container mx-auto py-8 px-4 md:px-16">
         <Banner
           titulo="A EXPERIÊNCIA VOCÊ QUEM ESCOLHE!"
-          cor="bg-tourism-azul"
+          cor="bg-tourism-marinho"
         />
 
-        <Tabs defaultValue="atrativos" className="w-full">
-          <TabsList className="grid w-full grid-cols-2">
-            <TabsTrigger value="atrativos">Atrativos Turísticos</TabsTrigger>
-            <TabsTrigger value="servicos">Serviços Turísticos</TabsTrigger>
-          </TabsList>
+        <div className="flex flex-col items-start md:flex-row gap-6 mt-8">
+          {/* Sidebar de filtros */}
+          <div className="w-full md:w-1/4 md:flex-shrink-0">
+            <Filter
+              title="Municípios"
+              items={
+                municipios?.map((municipio) => ({
+                  label: municipio.nome,
+                  value: municipio.id.toString(),
+                })) ?? []
+              }
+              selectedValues={selectedMunicipios}
+              onChange={setSelectedMunicipios}
+              className="mb-4"
+            />
 
-          <TabsContent value="atrativos">
-            {/* Barra de controles */}
-            <div className="w-full mb-6 mt-6 flex justify-between items-center">
-              <div className="text-gray-600">
-                {filteredAtracoes.length} atrativo(s) encontrado(s)
-              </div>
+            <Filter
+              title="Atrativos"
+              items={categoriasFormatadas}
+              selectedValues={selectedCategorias}
+              onChange={setSelectedCategorias}
+              className="mb-4"
+            />
+
+            <Filter
+              title="Perfil"
+              items={
+                perfils?.map((perfil) => ({
+                  label: perfil.nome,
+                  value: perfil.id.toString(),
+                })) ?? []
+              }
+              selectedValues={selectedPerfis}
+              onChange={setSelectedPerfis}
+              className="mb-4"
+            />
+
+            {/* Toggle Apoio Turístico */}
+            <label className="flex items-center justify-between bg-tourism-marinho text-white rounded-lg px-4 py-3 cursor-pointer hover:bg-tourism-marinho/90 transition-colors">
+              <span className="font-bold text-sm">Apoio Turístico</span>
+              <input
+                type="checkbox"
+                checked={incluirServicos}
+                onChange={(e) => setIncluirServicos(e.target.checked)}
+                className="w-4 h-4 accent-white cursor-pointer"
+              />
+            </label>
+
+            {hasActiveFilters && (
               <button
-                onClick={() => {
-                  setSelectedMunicipios([]);
-                  setSelectedCategorias([]);
-                  setSelectedPerfis([]);
-                }}
-                className="px-4 py-2 bg-tourism-verde text-white rounded-lg hover:bg-tourism-verde/80 transition-colors"
+                onClick={clearFilters}
+                className="mt-4 w-full px-4 py-2 border border-tourism-marinho text-tourism-marinho rounded-lg hover:bg-tourism-marinho hover:text-white transition-colors text-sm font-medium"
               >
                 Limpar Filtros
               </button>
+            )}
+          </div>
+
+          {/* Grid unificado */}
+          <div className="w-full md:flex-1">
+            <div className="mb-4 text-gray-500 text-sm">
+              {itensUnificados.length} resultado{itensUnificados.length !== 1 ? "s" : ""} encontrado{itensUnificados.length !== 1 ? "s" : ""}
             </div>
 
-            <div className="flex flex-col items-center md:flex-row md:items-start gap-6">
-              <div className="w-full md:w-1/4 md:flex-shrink-0">
-                <Filter
-                  title="Municípios"
-                  items={
-                    municipios?.map((municipio) => ({
-                      label: municipio.nome,
-                      value: municipio.id.toString(),
-                    })) ?? []
-                  }
-                  selectedValues={selectedMunicipios}
-                  onChange={setSelectedMunicipios}
-                  className="mb-6"
-                />
-
-                <Filter
-                  title="Categorias"
-                  items={categoriasFormatadas} // Usando a lógica de Gastronomia/Turismo
-                  selectedValues={selectedCategorias}
-                  onChange={setSelectedCategorias}
-                  className="mb-6"
-                />
-
-                <Filter
-                  title="Perfil"
-                  items={
-                    perfils?.map((perfil) => ({
-                      label: perfil.nome,
-                      value: perfil.id.toString(),
-                    })) ?? []
-                  }
-                  selectedValues={selectedPerfis}
-                  onChange={setSelectedPerfis}
-                  className="mb-6"
-                />
-              </div>
-
-              <div className="w-full md:flex-1">
-                {filteredAtracoes.length === 0 ? (
-                  <div className="text-center py-12">
-                    <div className="text-gray-500 text-lg mb-4">
-                      Nenhum atrativo encontrado
-                    </div>
-                    <p className="text-gray-400">
-                      Tente ajustar os filtros para encontrar mais opções
-                    </p>
-                  </div>
-                ) : (
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
-                    {filteredAtracoes?.map(
-                      (atracao: AtracaoTuristicaLoadedData) => (
-                        <Link
-                          key={`atracao-${atracao.id}`}
-                          href={`/atrativos/${atracao.id}`}
-                          passHref
-                        >
-                          <AtracoesCard
-                            nome={atracao.nome}
-                            cidade={atracao.municipio.nome}
-                            imagemUrls={
-                              atracao.fotos.map((foto) => foto.foto.url) || []
-                            }
-                            id={atracao.id}
-                          />
-                        </Link>
-                      ),
-                    )}
-                  </div>
-                )}
-              </div>
-            </div>
-          </TabsContent>
-
-          <TabsContent value="servicos">
-            {/* Barra de controles para serviços */}
-            <div className="w-full mb-6 mt-6 flex justify-between items-center">
-              <div className="text-gray-600">
-                {filteredServicos.length} serviço(s) encontrado(s)
-              </div>
-              <button
-                onClick={() => {
-                  setSelectedMunicipios([]);
-                }}
-                className="px-4 py-2 bg-tourism-verde text-white rounded-lg hover:bg-tourism-verde/80 transition-colors"
-              >
-                Limpar Filtros
-              </button>
-            </div>
-
-            <div className="flex flex-col items-center md:flex-row md:items-start gap-6">
-              <div className="w-full md:w-1/4 md:flex-shrink-0">
-                <Filter
-                  title="Municípios"
-                  items={
-                    municipios?.map((municipio) => ({
-                      label: municipio.nome,
-                      value: municipio.id.toString(),
-                    })) ?? []
-                  }
-                  selectedValues={selectedMunicipios}
-                  onChange={setSelectedMunicipios}
-                  className="mb-6"
-                />
-              </div>
-
-              <div className="w-full md:flex-1">
-                {filteredServicos.length === 0 ? (
-                  <div className="text-center py-12">
-                    <div className="text-gray-500 text-lg mb-4">
-                      Nenhum serviço encontrado
-                    </div>
-                    <p className="text-gray-400">
-                      Tente ajustar os filtros para encontrar mais opções
-                    </p>
-                  </div>
-                ) : (
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
-                    {filteredServicos?.map((servico: ServicoTuristicoFull) => (
+            {itensUnificados.length > 0 && (
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                {itensUnificados.map((item) => {
+                  if (item.tipo === "atrativo") {
+                    const atracao = item.data as AtracaoTuristicaLoadedData;
+                    return (
                       <Link
-                        key={`servico-${servico.id}`}
-                        href={`/servicos/${servico.id}`}
+                        key={`atracao-${atracao.id}`}
+                        href={`/atrativos/${atracao.id}`}
                         passHref
                       >
                         <AtracoesCard
-                          nome={servico.nome}
-                          cidade={servico.municipio.nome}
-                          imagemUrls={
-                            servico.fotos.map((foto) => foto.foto.url) || []
-                          }
-                          id={servico.id}
+                          nome={atracao.nome}
+                          cidade={atracao.municipio.nome}
+                          imagemUrls={atracao.fotos.map((foto) => foto.foto.url)}
+                          id={atracao.id}
+                          tipo="atrativo"
                         />
                       </Link>
-                    ))}
-                  </div>
-                )}
+                    );
+                  }
+
+                  const servico = item.data as ServicoTuristicoFull;
+                  return (
+                    <Link
+                      key={`servico-${servico.id}`}
+                      href={`/servicos/${servico.id}`}
+                      passHref
+                    >
+                      <AtracoesCard
+                        nome={servico.nome}
+                        cidade={servico.municipio.nome}
+                        imagemUrls={servico.fotos.map((foto) => foto.foto.url)}
+                        id={servico.id}
+                        tipo="servico"
+                      />
+                    </Link>
+                  );
+                })}
               </div>
-            </div>
-          </TabsContent>
-        </Tabs>
+            )}
+          </div>
+        </div>
       </div>
     </LayoutPublic>
   );
