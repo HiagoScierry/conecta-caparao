@@ -143,6 +143,7 @@ export default function QuemSomosPage() {
                     src={membro.foto}
                     alt={`Foto do membro ${membro.nome}`}
                     fill
+                    sizes="160px"
                     className="object-cover"
                   />
                 </div>
