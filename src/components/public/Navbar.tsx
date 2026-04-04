@@ -15,6 +15,7 @@ export function Navbar() {
   const pathname = usePathname();
 
   const navItems = [
+    { label: "Início", href: "/" },
     { label: "Municípios", href: "/municipios" },
     { label: "Atrativos", href: "/atrativos" },
     { label: "Cultura", href: "/cultura" },
@@ -22,7 +23,6 @@ export function Navbar() {
     { label: "Notícias", href: "/noticias" },
     { label: "Quem Somos", href: "/quem-somos" },
     { label: "Contato", href: "/contato" },
-    { label: "Início", href: "/" },
   ];
 
   return (
