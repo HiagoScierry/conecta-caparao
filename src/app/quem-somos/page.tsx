@@ -106,7 +106,7 @@ export default function QuemSomosPage() {
         </section>
 
         <section className="space-y-8">
-          <h2 className="text-2xl font-bold text-center text-tourism-marinho">
+          <h2 className="text-3xl font-bold text-center text-tourism-marinho">
             Nossos Valores
           </h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -115,12 +115,10 @@ export default function QuemSomosPage() {
                 key={idx}
                 className="p-6 border rounded-xl hover:shadow-md transition-shadow bg-white"
               >
-                <h4 className="font-bold text-tourism-verde mb-2">
+                <h4 className="text-2xl font-bold text-tourism-verde mb-2">
                   {v.titulo}
                 </h4>
-                <p className="text-sm text-gray-600 leading-relaxed">
-                  {v.desc}
-                </p>
+                <p className="text-gray-600 leading-relaxed">{v.desc}</p>
               </div>
             ))}
           </div>
