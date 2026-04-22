@@ -63,9 +63,9 @@ export default function QuemSomosPage() {
               A AD CAPARAÓ - Associação Caparaó Turismo & Eventos - Agência de
               Desenvolvimento Caparaó – é uma entidade fundada em abril de 2022,
               sem fins lucrativos, sediada no município de Ibitirama. É fruto da
-              união entre a iniciativa privada e o poder público, com o intuito
-              de promover o desenvolvimento sustentável do turismo na região do
-              Caparaó do Espírito Santo.
+              união entre iniciativa privada, terceiro setor e poder público,
+              com o intuito de promover o desenvolvimento sustentável do turismo
+              na região do Caparaó do Espírito Santo.
             </p>
           </div>
           <div className="md:w-1/2 bg-gray-100 rounded-2xl h-80 flex items-center justify-center relative overflow-hidden shadow-inner">
