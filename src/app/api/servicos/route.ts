@@ -7,8 +7,9 @@ import { servicoTuristicoSchema } from "@/schemas/servicoTuristicoSchema";
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 
-export async function GET() {
-  const servicos = await getAll();
+export async function GET(request: NextRequest) {
+  const isAdmin = request.headers.get("x-user-admin") === "true";
+  const servicos = await getAll(!isAdmin);
   return NextResponse.json(servicos);
 }
 

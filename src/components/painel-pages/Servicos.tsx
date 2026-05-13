@@ -10,7 +10,8 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { PlusCircle, Eye, Edit, Trash2 } from "lucide-react";
+import { PlusCircle, Eye, Edit, Trash2, EyeOff } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
 import { ServiceModal } from "@/components/modals/ServiceModal";
 import { DeleteConfirmModal } from "@/components/modals/DeleteConfirmModal";
 import { useToast } from "@/hooks/use-toast";
@@ -19,6 +20,7 @@ import {
   useGetAllServicos,
   useUpdateServico,
   useDeleteServico,
+  useToggleAtivoServico,
 } from "@/hooks/http/useServicos";
 import { ServicoTuristicoFull } from "@/repositories/interfaces/IServicoTuristicoRepository";
 import { ServicoForm } from "@/schemas/forms/servicoForm";
@@ -43,6 +45,7 @@ export default function Servicos() {
   const { mutateAsync: createServico } = useCreateServico();
   const { mutateAsync: updateServico } = useUpdateServico();
   const { mutateAsync: deleteServico } = useDeleteServico();
+  const { mutateAsync: toggleAtivo } = useToggleAtivoServico();
 
   const handleOpenModal = (
     mode: "create" | "edit" | "view",
@@ -150,17 +153,21 @@ export default function Servicos() {
                 <TableHead>ID</TableHead>
                 <TableHead>Nome</TableHead>
                 <TableHead>Descrição</TableHead>
-                {/* <TableHead>Contato</TableHead> */}
+                <TableHead>Status</TableHead>
                 <TableHead className="text-right">Ações</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {servicos?.map((servico: ServicoTuristicoFull) => (
-                <TableRow key={servico.id}>
+                <TableRow key={servico.id} className={!servico.ativo ? "opacity-50" : ""}>
                   <TableCell className="font-medium">{servico.id}</TableCell>
                   <TableCell>{servico.nome}</TableCell>
                   <TableCell>{servico.descricao}</TableCell>
-                  {/* <TableCell>{servico.contato}</TableCell> */}
+                  <TableCell>
+                    <Badge variant={servico.ativo ? "default" : "secondary"}>
+                      {servico.ativo ? "Visível" : "Oculto"}
+                    </Badge>
+                  </TableCell>
                   <TableCell className="text-right space-x-2">
                     <Button
                       variant="ghost"
@@ -175,6 +182,14 @@ export default function Servicos() {
                       onClick={() => handleOpenModal("edit", servico)}
                     >
                       <Edit className="h-4 w-4" />
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      title={servico.ativo ? "Ocultar" : "Exibir"}
+                      onClick={() => toggleAtivo({ id: servico.id, ativo: !servico.ativo })}
+                    >
+                      {servico.ativo ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4 text-green-600" />}
                     </Button>
                     <Button
                       variant="ghost"

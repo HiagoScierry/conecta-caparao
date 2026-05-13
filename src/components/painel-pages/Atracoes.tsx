@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { PlusCircle, Eye, Edit, Trash2, Star } from "lucide-react";
+import { PlusCircle, Eye, Edit, Trash2, Star, EyeOff } from "lucide-react";
 import { AtracaoTuristicaFull, AttractionModal } from "@/components/modals/AttractionModal";
 import { DeleteConfirmModal } from "@/components/modals/DeleteConfirmModal";
 import { useToast } from "@/hooks/use-toast";
@@ -21,6 +21,7 @@ import {
   useCreateAtrativo,
   useDeleteAtrativo,
   useGetAllAtrativos,
+  useToggleAtivoAtrativo,
   useUpdateAtrativo,
 } from "@/hooks/http/useAtrativos";
 import { AtracaoForm } from "@/schemas/forms/atracaoForm";
@@ -47,6 +48,7 @@ export default function Atracoes() {
   const { mutateAsync: createAtrativo } = useCreateAtrativo();
   const { mutateAsync: updateAtrativo } = useUpdateAtrativo();
   const { mutateAsync: deleteAtrativo } = useDeleteAtrativo();
+  const { mutateAsync: toggleAtivo } = useToggleAtivoAtrativo();
 
   const handleOpenModal = (
     mode: "create" | "edit" | "view",
@@ -66,6 +68,7 @@ export default function Atracoes() {
           idContato: attraction.contato?.id ?? 0,
           idEndereco: attraction.endereco?.id ?? 0,
           idMunicipio: attraction.municipio?.id ?? 0,
+          ativo: attraction.ativo,
           createdAt: attraction.createdAt,
           updatedAt: attraction.updatedAt,
           endereco: attraction.endereco,
@@ -190,12 +193,13 @@ export default function Atracoes() {
                     <TableHead>Nome</TableHead>
                     <TableHead>Município</TableHead>
                     <TableHead>Categoria</TableHead>
+                    <TableHead>Status</TableHead>
                     <TableHead className="text-right">Ações</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {atracoes?.map((atracao: AtracaoTuristicaLoadedData) => (
-                    <TableRow key={atracao.id}>
+                    <TableRow key={atracao.id} className={!atracao.ativo ? "opacity-50" : ""}>
                       <TableCell className="font-medium">{atracao.id}</TableCell>
                       <TableCell>{atracao.nome}</TableCell>
                       <TableCell>{atracao.municipio.nome}</TableCell>
@@ -205,6 +209,11 @@ export default function Atracoes() {
                           className="bg-tourism-light text-tourism-primary"
                         >
                           {atracao.categorias?.map(categoria => categoria.nome).join(", ") ?? "N/A"}
+                        </Badge>
+                      </TableCell>
+                      <TableCell>
+                        <Badge variant={atracao.ativo ? "default" : "secondary"}>
+                          {atracao.ativo ? "Visível" : "Oculto"}
                         </Badge>
                       </TableCell>
                       <TableCell className="text-right space-x-2">
@@ -221,6 +230,14 @@ export default function Atracoes() {
                           onClick={() => handleOpenModal("edit", atracao)}
                         >
                           <Edit className="h-4 w-4" />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          title={atracao.ativo ? "Ocultar" : "Exibir"}
+                          onClick={() => toggleAtivo({ id: atracao.id, ativo: !atracao.ativo })}
+                        >
+                          {atracao.ativo ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4 text-green-600" />}
                         </Button>
                         <Button
                           variant="ghost"

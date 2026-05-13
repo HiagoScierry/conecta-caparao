@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import {
-  createAtrativo,
   deleteAtrativo,
   getAtrativoById,
+  toggleAtrativoAtivo,
   updateAtrativo,
 } from "@/controllers/atrativoController";
 import { AtracaoForm } from "@/schemas/forms/atracaoForm";
@@ -90,6 +90,23 @@ export async function PUT(
     }
 
     console.error("PUT error:", error);
+    return new NextResponse("Internal Server Error", { status: 500 });
+  }
+}
+
+// ✅ Toggle ativo/oculto
+export async function PATCH(
+  request: NextRequest,
+  context: { params: Promise<{ id: string }> }
+) {
+  try {
+    const { id } = await context.params;
+    const { ativo }: { ativo: boolean } = await request.json();
+
+    await toggleAtrativoAtivo(Number(id), ativo);
+    return new NextResponse("Visibilidade atualizada", { status: 200 });
+  } catch (error) {
+    console.error("PATCH error:", error);
     return new NextResponse("Internal Server Error", { status: 500 });
   }
 }

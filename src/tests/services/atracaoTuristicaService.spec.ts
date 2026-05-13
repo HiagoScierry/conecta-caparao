@@ -14,6 +14,8 @@ describe("AtracaoTuristicaService", () => {
       create: jest.fn(),
       update: jest.fn(),
       delete: jest.fn(),
+      toggleAtivo: jest.fn(),
+      findAllWithFilters: jest.fn(),
     };
     atracaoTuristicaService = new AtracaoTuristicaService(atracaoTuristicaRepositoryMock);
   });

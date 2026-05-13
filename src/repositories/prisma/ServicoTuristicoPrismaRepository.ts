@@ -26,8 +26,9 @@ export class ServicoTuristicoPrismaRepository implements IServicoTuristicoReposi
     return servicoTuristico;
   }
 
-  async findAll(): Promise<ServicoTuristico[]> {
+  async findAll(onlyAtivo?: boolean): Promise<ServicoTuristico[]> {
     return connection.servicoTuristico.findMany({
+      where: onlyAtivo ? { ativo: true } : undefined,
       include: {
         contato: true,
         endereco: true,
@@ -39,6 +40,13 @@ export class ServicoTuristicoPrismaRepository implements IServicoTuristicoReposi
         },
         horarios: true,
       }
+    });
+  }
+
+  async toggleAtivo(id: number, ativo: boolean): Promise<ServicoTuristico> {
+    return connection.servicoTuristico.update({
+      where: { id },
+      data: { ativo },
     });
   }
 

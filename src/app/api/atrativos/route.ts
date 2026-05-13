@@ -4,15 +4,16 @@ import { atracaoTuristicaSchema } from "@/schemas/atracaoTuristicaSchema";
 import { contatoSchema } from "@/schemas/contatoSchema";
 import { enderecoSchema } from "@/schemas/enderecoSchema";
 import { horarioFuncionamentoSchema } from "@/schemas/horarioFuncionamentoSchema";
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 
-export async function GET() {
-  const atrativos = await getAll();
+export async function GET(request: NextRequest) {
+  const isAdmin = request.headers.get("x-user-admin") === "true";
+  const atrativos = await getAll(!isAdmin);
   return NextResponse.json(atrativos);
 }
 
-export async function POST(request: Request) {
+export async function POST(request: NextRequest) {
   try {
     const {
       atracaoTuristica,

@@ -8,8 +8,12 @@ export class AtracaoTuristicaService {
     this.atracaoTuristicaRepository = atracaoTuristicaRepository;
   }
 
-  async findAll() {
-    return this.atracaoTuristicaRepository.findAll();
+  async findAll(onlyAtivo?: boolean) {
+    return this.atracaoTuristicaRepository.findAll(onlyAtivo);
+  }
+
+  async toggleAtivo(id: number, ativo: boolean) {
+    return this.atracaoTuristicaRepository.toggleAtivo(id, ativo);
   }
 
   async findById(id: number) {
@@ -34,8 +38,8 @@ export class AtracaoTuristicaService {
     subcategoriaId?: number;
     perfilClienteId?: number;
     excludeIds?: number[];
-  }) {
-    return this.atracaoTuristicaRepository.findAllWithFilters(filters);
+  }, onlyAtivo?: boolean) {
+    return this.atracaoTuristicaRepository.findAllWithFilters(filters, onlyAtivo);
   }
 
 }

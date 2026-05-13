@@ -4,8 +4,9 @@ import { IAtracaoTuristicaRepository } from "../interfaces/IAtracaoTuristicaRepo
 import { AtracaoForm } from "@/schemas/forms/atracaoForm";
 
 export class AtracaoTuristicaPrismaRepository implements IAtracaoTuristicaRepository {
-  async findAll(): Promise<AtracaoTuristica[]> {
+  async findAll(onlyAtivo?: boolean): Promise<AtracaoTuristica[]> {
     return connection.atracaoTuristica.findMany({
+      where: onlyAtivo ? { ativo: true } : undefined,
       include: {
         contato: true,
         endereco: true,
@@ -20,6 +21,13 @@ export class AtracaoTuristicaPrismaRepository implements IAtracaoTuristicaReposi
         categorias: true,
         subcategorias: true,
       }
+    });
+  }
+
+  async toggleAtivo(id: number, ativo: boolean): Promise<AtracaoTuristica> {
+    return connection.atracaoTuristica.update({
+      where: { id },
+      data: { ativo },
     });
   }
 
@@ -145,8 +153,8 @@ export class AtracaoTuristicaPrismaRepository implements IAtracaoTuristicaReposi
     subcategoriaId?: number;
     perfilClienteId?: number;
     excludeIds?: number[];
-  }): Promise<AtracaoTuristica[]> {
-    const where: Prisma.AtracaoTuristicaWhereInput = {};
+  }, onlyAtivo?: boolean): Promise<AtracaoTuristica[]> {
+    const where: Prisma.AtracaoTuristicaWhereInput = onlyAtivo ? { ativo: true } : {};
 
     if (filters?.municipioId) {
       where.idMunicipio = filters.municipioId;

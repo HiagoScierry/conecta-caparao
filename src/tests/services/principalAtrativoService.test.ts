@@ -64,7 +64,7 @@ describe("PrincipalAtrativoService", () => {
     });
 
     it("throws when atracao turistica is already principal", async () => {
-      mockedConnection.atracaoTuristica.findUnique.mockResolvedValueOnce({ id: 10 });
+      mockedConnection.atracaoTuristica.findUnique.mockResolvedValueOnce({ id: 10, ativo: true, nome: "", descricao: null, mapaUrl: null, site: null, idContato: 0, idEndereco: 0, idMunicipio: 0, createdAt: new Date(), updatedAt: new Date() });
       repo.findByAtracaoId.mockResolvedValueOnce({ ...basePrincipal });
       const service = new PrincipalAtrativoService(repo);
 
@@ -74,7 +74,7 @@ describe("PrincipalAtrativoService", () => {
     });
 
     it("deletes existing principal at same position before creating", async () => {
-      mockedConnection.atracaoTuristica.findUnique.mockResolvedValueOnce({ id: 10 });
+      mockedConnection.atracaoTuristica.findUnique.mockResolvedValueOnce({ id: 10, ativo: true, nome: "", descricao: null, mapaUrl: null, site: null, idContato: 0, idEndereco: 0, idMunicipio: 0, createdAt: new Date(), updatedAt: new Date() });
       repo.findByAtracaoId.mockResolvedValueOnce(null);
       mockedConnection.principalAtrativo.findUnique.mockResolvedValueOnce({
         id: 99,
@@ -91,7 +91,7 @@ describe("PrincipalAtrativoService", () => {
     });
 
     it("creates principal when validations pass", async () => {
-      mockedConnection.atracaoTuristica.findUnique.mockResolvedValueOnce({ id: 10 });
+      mockedConnection.atracaoTuristica.findUnique.mockResolvedValueOnce({ id: 10, ativo: true, nome: "", descricao: null, mapaUrl: null, site: null, idContato: 0, idEndereco: 0, idMunicipio: 0, createdAt: new Date(), updatedAt: new Date() });
       repo.findByAtracaoId.mockResolvedValueOnce(null);
       mockedConnection.principalAtrativo.findUnique.mockResolvedValueOnce(null);
       repo.create.mockResolvedValueOnce({ ...basePrincipal });
@@ -151,7 +151,7 @@ describe("PrincipalAtrativoService", () => {
 
     it("throws when new atracao turistica is already principal", async () => {
       repo.findById.mockResolvedValueOnce({ ...basePrincipal });
-      mockedConnection.atracaoTuristica.findUnique.mockResolvedValueOnce({ id: 11 });
+      mockedConnection.atracaoTuristica.findUnique.mockResolvedValueOnce({ id: 11, ativo: true, nome: "", descricao: null, mapaUrl: null, site: null, idContato: 0, idEndereco: 0, idMunicipio: 0, createdAt: new Date(), updatedAt: new Date() });
       repo.findByAtracaoId.mockResolvedValueOnce({ ...basePrincipal, id: 2 });
       const service = new PrincipalAtrativoService(repo);
 
@@ -163,7 +163,7 @@ describe("PrincipalAtrativoService", () => {
     it("updates principal when validations pass", async () => {
       repo.findById.mockResolvedValueOnce({ ...basePrincipal });
       mockedConnection.principalAtrativo.findUnique.mockResolvedValueOnce(null);
-      mockedConnection.atracaoTuristica.findUnique.mockResolvedValueOnce({ id: 11 });
+      mockedConnection.atracaoTuristica.findUnique.mockResolvedValueOnce({ id: 11, ativo: true, nome: "", descricao: null, mapaUrl: null, site: null, idContato: 0, idEndereco: 0, idMunicipio: 0, createdAt: new Date(), updatedAt: new Date() });
       repo.findByAtracaoId.mockResolvedValueOnce(null);
       repo.update.mockResolvedValueOnce({ ...basePrincipal, posicao: 2, idAtracaoTuristica: 11 });
       const service = new PrincipalAtrativoService(repo);

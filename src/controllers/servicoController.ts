@@ -10,8 +10,12 @@ export async function getServicoById(id: number) {
   return servicoTuristicoServiceFactory().findById(id);
 }
 
-export async function getAll() {
-  return servicoTuristicoServiceFactory().findAll();
+export async function getAll(onlyAtivo?: boolean) {
+  return servicoTuristicoServiceFactory().findAll(onlyAtivo);
+}
+
+export async function toggleServicoAtivo(id: number, ativo: boolean) {
+  return servicoTuristicoServiceFactory().toggleAtivo(id, ativo);
 }
 
 export async function createServico(servicoData: ServicoForm & { fotoUrl?: string }) {

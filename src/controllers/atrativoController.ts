@@ -15,8 +15,12 @@ export async function getAtrativoById(id: number) {
   return atracaoTuristicaServiceFactory().findById(id);
 }
 
-export async function getAll() {
-  return atracaoTuristicaServiceFactory().findAll();
+export async function getAll(onlyAtivo?: boolean) {
+  return atracaoTuristicaServiceFactory().findAll(onlyAtivo);
+}
+
+export async function toggleAtrativoAtivo(id: number, ativo: boolean) {
+  return atracaoTuristicaServiceFactory().toggleAtivo(id, ativo);
 }
 
 export async function createAtrativo(atrativo: AtracaoForm & { fotosURL: string[] }) {

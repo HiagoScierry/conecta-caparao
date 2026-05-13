@@ -738,55 +738,55 @@ export function AttractionModal({
                       </FormLabel>
                       <FormControl>
                         <div className="flex flex-wrap gap-4">
-                          {(
-                            [
-                              "SEGUNDA",
-                              "TERCA",
-                              "QUARTA",
-                              "QUINTA",
-                              "SEXTA",
-                              "SABADO",
-                              "DOMINGO",
-                            ] as const
-                          ).map((dia) => (
-                            <div
-                              key={dia}
-                              className="flex items-center space-x-2"
-                            >
-                              <Checkbox
-                                id={`dia-${dia}`}
-                                checked={
-                                  form
-                                    .watch("horarioFuncionamento.diaDaSemana")
-                                    ?.includes(dia) || false
-                                }
-                                onCheckedChange={(checked) => {
-                                  const currentDays =
-                                    form.getValues(
-                                      "horarioFuncionamento.diaDaSemana"
-                                    ) || [];
-                                  if (checked) {
-                                    form.setValue(
-                                      "horarioFuncionamento.diaDaSemana",
-                                      [...currentDays, dia]
-                                    );
-                                  } else {
-                                    form.setValue(
-                                      "horarioFuncionamento.diaDaSemana",
-                                      currentDays.filter((d) => d !== dia)
-                                    );
-                                  }
-                                }}
-                                disabled={isViewMode}
-                              />
-                              <label
-                                htmlFor={`dia-${dia}`}
-                                className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                              >
-                                {dia.charAt(0) + dia.slice(1).toLowerCase()}
-                              </label>
-                            </div>
-                          ))}
+                          {(() => {
+                            const allDays = ["SEGUNDA", "TERCA", "QUARTA", "QUINTA", "SEXTA", "SABADO", "DOMINGO"] as const;
+                            const selectedDays = form.watch("horarioFuncionamento.diaDaSemana") || [];
+                            const allSelected = allDays.every(d => selectedDays.includes(d));
+                            const someSelected = allDays.some(d => selectedDays.includes(d));
+                            return (
+                              <>
+                                <div className="flex items-center space-x-2 border-r pr-4 mr-2">
+                                  <Checkbox
+                                    id="dia-todos"
+                                    checked={allSelected ? true : someSelected ? "indeterminate" : false}
+                                    onCheckedChange={(checked) => {
+                                      form.setValue("horarioFuncionamento.diaDaSemana", checked ? [...allDays] : []);
+                                    }}
+                                    disabled={isViewMode}
+                                  />
+                                  <label
+                                    htmlFor="dia-todos"
+                                    className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                                  >
+                                    Todos
+                                  </label>
+                                </div>
+                                {allDays.map((dia) => (
+                                  <div key={dia} className="flex items-center space-x-2">
+                                    <Checkbox
+                                      id={`dia-${dia}`}
+                                      checked={selectedDays.includes(dia)}
+                                      onCheckedChange={(checked) => {
+                                        const currentDays = form.getValues("horarioFuncionamento.diaDaSemana") || [];
+                                        if (checked) {
+                                          form.setValue("horarioFuncionamento.diaDaSemana", [...currentDays, dia]);
+                                        } else {
+                                          form.setValue("horarioFuncionamento.diaDaSemana", currentDays.filter((d) => d !== dia));
+                                        }
+                                      }}
+                                      disabled={isViewMode}
+                                    />
+                                    <label
+                                      htmlFor={`dia-${dia}`}
+                                      className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                                    >
+                                      {dia.charAt(0) + dia.slice(1).toLowerCase()}
+                                    </label>
+                                  </div>
+                                ))}
+                              </>
+                            );
+                          })()}
                         </div>
                       </FormControl>
                       {form.formState.errors.horarioFuncionamento
