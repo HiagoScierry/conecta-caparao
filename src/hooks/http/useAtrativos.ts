@@ -1,4 +1,4 @@
-import { AtracaoForm } from "@/forms/atracaoForm";
+import { AtracaoForm } from "@/schemas/forms/atracaoForm";
 import { AtracaoTuristica, Categoria, Contato, Endereco, Foto, GaleriaFoto, HorarioDeFuncionamento, Municipio, PerfilCliente, Subcategoria } from "@prisma/client";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { QUERY_KEYS, useQueryInvalidation } from "./useQueryInvalidation";
@@ -140,6 +140,29 @@ export function useDeleteAtrativo(){
     },
     onError: (error) => {
       console.error('Error deleting atrativo:', error);
+    },
+  });
+}
+
+export function useToggleAtivoAtrativo() {
+  const { invalidateAtrativos } = useQueryInvalidation();
+
+  return useMutation({
+    mutationFn: async ({ id, ativo }: { id: number; ativo: boolean }) => {
+      const response = await fetch(`/api/atrativos/${id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ativo }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Erro ao alterar visibilidade da atração");
+      }
+
+      return response.text();
+    },
+    onSuccess: () => {
+      invalidateAtrativos();
     },
   });
 }

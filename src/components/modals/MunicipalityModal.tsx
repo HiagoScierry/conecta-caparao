@@ -16,7 +16,7 @@ import { useForm } from "react-hook-form";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { ImageUpload } from "@/components/ImageUpload";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { municipioForm, MunicipioForm } from "@/forms/municipioForm";
+import { municipioForm, MunicipioForm } from "@/schemas/forms/municipioForm";
 import { useState, useEffect } from "react";
 import { useDeleteUpload } from "@/hooks/http/useUpload";
 import { Contato, Foto, Municipio } from "@prisma/client";

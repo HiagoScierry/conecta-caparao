@@ -20,7 +20,7 @@ import {
   useGetNoticias,
   useUpdateNoticia,
 } from "@/hooks/http/useNoticia";
-import { NoticiasForm } from "@/forms/noticiasForm";
+import { NoticiasForm } from "@/schemas/forms/noticiasForm";
 import { useUpload } from "@/hooks/http/useUpload";
 import { NoticiaFull } from "@/repositories/interfaces/INoticiaRepository";
 

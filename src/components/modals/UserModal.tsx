@@ -7,7 +7,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage, FormDes
 import { Switch } from "@/components/ui/switch";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { UsuarioForm, UsuarioUpdateForm } from "@/forms/usuarioForm";
+import { UsuarioForm, UsuarioUpdateForm } from "@/schemas/forms/usuarioForm";
 import { usuarioCreateSchema, usuarioUpdateSchema } from "@/schemas/usuarioSchema";
 import { UsuarioResponseDTO } from "@/dto/usuarioDTO";
 import { Eye, Edit, Plus } from "lucide-react";

@@ -40,7 +40,7 @@ export function SecaoEventos() {
             PRÓXIMOS ACONTECIMENTOS
           </p>
           <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-tourism-marinho mb-3">
-            Eventos e Experiências
+            Eventos
           </h2>
           <p className="text-base md:text-lg text-tourism-cinza-escuro max-w-3xl">
             Participe dos melhores momentos da região do Caparaó

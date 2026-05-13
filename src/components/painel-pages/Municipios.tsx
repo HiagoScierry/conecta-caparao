@@ -8,7 +8,7 @@ import { MunicipalityModal } from "@/components/modals/MunicipalityModal";
 import { DeleteConfirmModal } from "@/components/modals/DeleteConfirmModal";
 import { useToast } from "@/hooks/use-toast";
 import { useCreateMunicipio, useDeleteMunicipio, useGetAllMunicipios, useUpdateMunicipio } from "@/hooks/http/useMunicipio";
-import { MunicipioForm } from "@/forms/municipioForm";
+import { MunicipioForm } from "@/schemas/forms/municipioForm";
 import { useUpload } from "@/hooks/http/useUpload";
 import { Contato, Foto, GaleriaFoto, Municipio } from "@prisma/client";
 

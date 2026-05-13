@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
-import { deleteServico, getServicoById, updateServico } from "@/controllers/servicoController";
-import { ServicoForm } from "@/forms/servicoForm";
+import { deleteServico, getServicoById, toggleServicoAtivo, updateServico } from "@/controllers/servicoController";
+import { ServicoForm } from "@/schemas/forms/servicoForm";
 import { contatoSchema } from "@/schemas/contatoSchema";
 import { enderecoSchema } from "@/schemas/enderecoSchema";
 import { servicoTuristicoSchema } from "@/schemas/servicoTuristicoSchema";
@@ -73,6 +73,22 @@ export async function PUT(
     }
 
     console.error("PUT error:", error);
+    return new NextResponse("Internal Server Error", { status: 500 });
+  }
+}
+
+export async function PATCH(
+  request: NextRequest,
+  context: { params: Promise<{ id: string }> }
+) {
+  try {
+    const { id } = await context.params;
+    const { ativo }: { ativo: boolean } = await request.json();
+
+    await toggleServicoAtivo(Number(id), ativo);
+    return new NextResponse("Visibilidade atualizada", { status: 200 });
+  } catch (error) {
+    console.error("PATCH error:", error);
     return new NextResponse("Internal Server Error", { status: 500 });
   }
 }

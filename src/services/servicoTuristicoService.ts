@@ -11,8 +11,12 @@ export class ServicoTuristicoService {
     return this.repository.findById(id);
   }
 
-  async findAll() {
-    return this.repository.findAll();
+  async findAll(onlyAtivo?: boolean) {
+    return this.repository.findAll(onlyAtivo);
+  }
+
+  async toggleAtivo(id: number, ativo: boolean) {
+    return this.repository.toggleAtivo(id, ativo);
   }
 
   async create(data: ServicoTuristicoWithRelations, fotoURL?: string) {

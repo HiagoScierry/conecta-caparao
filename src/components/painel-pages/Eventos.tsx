@@ -22,7 +22,7 @@ import {
 } from "@/hooks/http/useEvento";
 import { EventoFull } from "@/repositories/interfaces/IEventoRepository";
 import { useUpload } from "@/hooks/http/useUpload";
-import { EventoForm } from "@/forms/eventoForm";
+import { EventoForm } from "@/schemas/forms/eventoForm";
 
 export default function Eventos() {
   const { toast } = useToast();

@@ -36,7 +36,7 @@ export function SecaoNoticias() {
       <div className="max-w-7xl mx-auto">
         <div className="text-left mb-12 space-y-3">
           <p className="text-tourism-azul text-xs md:text-sm font-semibold tracking-wider uppercase">
-            📰 NOTÍCIAS
+            NOTÍCIAS
           </p>
           <h2 className="text-tourism-marinho text-4xl md:text-5xl lg:text-6xl font-bold">
             O Que Acontece no Caparaó

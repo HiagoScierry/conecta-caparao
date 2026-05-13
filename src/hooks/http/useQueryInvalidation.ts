@@ -11,6 +11,7 @@ export const QUERY_KEYS = {
   CATEGORIAS: ["categorias"] as const,
   SUBCATEGORIAS: ["subcategorias"] as const,
   PERFIS: ["perfis"] as const,
+  PRINCIPAIS_ATRATIVOS: ["principais-atrativos"] as const,
   
   // Itens específicos
   NOTICIA: (id: number) => ["noticia", id] as const,
@@ -88,6 +89,10 @@ export function useQueryInvalidation() {
 
     invalidatePerfis: () => {
       queryClient.invalidateQueries({ queryKey: QUERY_KEYS.PERFIS });
+    },
+
+    invalidatePrincipaisAtrativos: () => {
+      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.PRINCIPAIS_ATRATIVOS });
     },
 
     invalidateDashboard: () => {

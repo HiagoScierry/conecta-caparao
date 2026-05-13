@@ -1,4 +1,4 @@
-import { ServicoForm } from "@/forms/servicoForm";
+import { ServicoForm } from "@/schemas/forms/servicoForm";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { QUERY_KEYS, useQueryInvalidation } from "./useQueryInvalidation";
 
@@ -95,4 +95,25 @@ export function useDeleteServico() {
       invalidateDashboard();
     },
   })
+}
+
+export function useToggleAtivoServico() {
+  const { invalidateServicos } = useQueryInvalidation();
+
+  return useMutation({
+    mutationFn: async ({ id, ativo }: { id: number; ativo: boolean }) => {
+      const response = await fetch(`/api/servicos/${id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ativo }),
+      });
+      if (!response.ok) {
+        throw new Error('Erro ao alterar visibilidade do serviço');
+      }
+      return response.text();
+    },
+    onSuccess: () => {
+      invalidateServicos();
+    },
+  });
 }

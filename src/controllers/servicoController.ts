@@ -4,14 +4,18 @@ import { enderecoServiceFactory } from "@/factories/enderecoServiceFactory";
 import { horarioFuncionamentoServiceFactory } from "@/factories/horarioFuncionamentoServiceFactory";
 import { municipioServiceFactory } from "@/factories/municipioServiceFactory";
 import { servicoTuristicoServiceFactory } from "@/factories/servicoTuristicoServiceFactory";
-import { ServicoForm } from "@/forms/servicoForm";
+import { ServicoForm } from "@/schemas/forms/servicoForm";
 
 export async function getServicoById(id: number) {
   return servicoTuristicoServiceFactory().findById(id);
 }
 
-export async function getAll() {
-  return servicoTuristicoServiceFactory().findAll();
+export async function getAll(onlyAtivo?: boolean) {
+  return servicoTuristicoServiceFactory().findAll(onlyAtivo);
+}
+
+export async function toggleServicoAtivo(id: number, ativo: boolean) {
+  return servicoTuristicoServiceFactory().toggleAtivo(id, ativo);
 }
 
 export async function createServico(servicoData: ServicoForm & { fotoUrl?: string }) {

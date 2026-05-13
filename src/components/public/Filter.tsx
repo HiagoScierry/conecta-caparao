@@ -42,7 +42,7 @@ export function Filter({
           value="item-1"
           className="bg-tourism-marinho text-white rounded-lg border-b-0"
         >
-          <AccordionTrigger className="p-4">
+          <AccordionTrigger className="p-4 hover:no-underline">
             <h3 className="font-bold text-start">{title}</h3>
           </AccordionTrigger>
           <AccordionContent className="bg-tourism-branco text-tourism-cinza rounded-b-lg shadow-lg">

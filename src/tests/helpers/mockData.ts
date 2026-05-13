@@ -60,6 +60,7 @@ export const mockAtracaoTuristica: AtracaoTuristica = {
   idContato: 1,
   idEndereco: 1,
   idMunicipio: 1,
+  ativo: true,
   createdAt: createTestDate(0),
   updatedAt: createTestDate(0),
 };

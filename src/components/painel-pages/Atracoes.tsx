@@ -11,7 +11,8 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import { PlusCircle, Eye, Edit, Trash2 } from "lucide-react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { PlusCircle, Eye, Edit, Trash2, Star, EyeOff } from "lucide-react";
 import { AtracaoTuristicaFull, AttractionModal } from "@/components/modals/AttractionModal";
 import { DeleteConfirmModal } from "@/components/modals/DeleteConfirmModal";
 import { useToast } from "@/hooks/use-toast";
@@ -20,10 +21,12 @@ import {
   useCreateAtrativo,
   useDeleteAtrativo,
   useGetAllAtrativos,
+  useToggleAtivoAtrativo,
   useUpdateAtrativo,
 } from "@/hooks/http/useAtrativos";
-import { AtracaoForm } from "@/forms/atracaoForm";
-import { useUpload } from "@/hooks/http/useUpload"
+import { AtracaoForm } from "@/schemas/forms/atracaoForm";
+import { useUpload } from "@/hooks/http/useUpload";
+import PrincipaisAtrativos from "./PrincipaisAtrativos"
 
 export default function Atracoes() {
   const { toast } = useToast();
@@ -45,6 +48,7 @@ export default function Atracoes() {
   const { mutateAsync: createAtrativo } = useCreateAtrativo();
   const { mutateAsync: updateAtrativo } = useUpdateAtrativo();
   const { mutateAsync: deleteAtrativo } = useDeleteAtrativo();
+  const { mutateAsync: toggleAtivo } = useToggleAtivoAtrativo();
 
   const handleOpenModal = (
     mode: "create" | "edit" | "view",
@@ -64,6 +68,7 @@ export default function Atracoes() {
           idContato: attraction.contato?.id ?? 0,
           idEndereco: attraction.endereco?.id ?? 0,
           idMunicipio: attraction.municipio?.id ?? 0,
+          ativo: attraction.ativo,
           createdAt: attraction.createdAt,
           updatedAt: attraction.updatedAt,
           endereco: attraction.endereco,
@@ -166,65 +171,95 @@ export default function Atracoes() {
         </Button>
       </div>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Lista de Atrações</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>ID</TableHead>
-                <TableHead>Nome</TableHead>
-                <TableHead>Município</TableHead>
-                <TableHead>Categoria</TableHead>
-                <TableHead className="text-right">Ações</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {atracoes?.map((atracao: AtracaoTuristicaLoadedData) => (
-                <TableRow key={atracao.id}>
-                  <TableCell className="font-medium">{atracao.id}</TableCell>
-                  <TableCell>{atracao.nome}</TableCell>
-                  <TableCell>{atracao.municipio.nome}</TableCell>
-                  <TableCell>
-                    <Badge
-                      variant="outline"
-                      className="bg-tourism-light text-tourism-primary"
-                    >
-                      {atracao.categorias?.map(categoria => categoria.nome).join(", ") ?? "N/A"}
-                    </Badge>
-                  </TableCell>
-                  <TableCell className="text-right space-x-2">
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => handleOpenModal("view", atracao)}
-                    >
-                      <Eye className="h-4 w-4" />
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => handleOpenModal("edit", atracao)}
-                    >
-                      <Edit className="h-4 w-4" />
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="text-destructive"
-                      onClick={() => handleOpenDeleteModal(atracao)}
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </CardContent>
-      </Card>
+      <Tabs defaultValue="todas" className="w-full">
+        <TabsList className="grid w-full grid-cols-2">
+          <TabsTrigger value="todas">Todas as Atrações</TabsTrigger>
+          <TabsTrigger value="principais">
+            <Star className="w-4 h-4 mr-2" />
+            Principais
+          </TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="todas" className="space-y-4">
+          <Card>
+            <CardHeader>
+              <CardTitle>Lista de Atrações</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>ID</TableHead>
+                    <TableHead>Nome</TableHead>
+                    <TableHead>Município</TableHead>
+                    <TableHead>Categoria</TableHead>
+                    <TableHead>Status</TableHead>
+                    <TableHead className="text-right">Ações</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {atracoes?.map((atracao: AtracaoTuristicaLoadedData) => (
+                    <TableRow key={atracao.id} className={!atracao.ativo ? "opacity-50" : ""}>
+                      <TableCell className="font-medium">{atracao.id}</TableCell>
+                      <TableCell>{atracao.nome}</TableCell>
+                      <TableCell>{atracao.municipio.nome}</TableCell>
+                      <TableCell>
+                        <Badge
+                          variant="outline"
+                          className="bg-tourism-light text-tourism-primary"
+                        >
+                          {atracao.categorias?.map(categoria => categoria.nome).join(", ") ?? "N/A"}
+                        </Badge>
+                      </TableCell>
+                      <TableCell>
+                        <Badge variant={atracao.ativo ? "default" : "secondary"}>
+                          {atracao.ativo ? "Visível" : "Oculto"}
+                        </Badge>
+                      </TableCell>
+                      <TableCell className="text-right space-x-2">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => handleOpenModal("view", atracao)}
+                        >
+                          <Eye className="h-4 w-4" />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => handleOpenModal("edit", atracao)}
+                        >
+                          <Edit className="h-4 w-4" />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          title={atracao.ativo ? "Ocultar" : "Exibir"}
+                          onClick={() => toggleAtivo({ id: atracao.id, ativo: !atracao.ativo })}
+                        >
+                          {atracao.ativo ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4 text-green-600" />}
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="text-destructive"
+                          onClick={() => handleOpenDeleteModal(atracao)}
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="principais" className="space-y-4">
+          <PrincipaisAtrativos />
+        </TabsContent>
+      </Tabs>
 
       <AttractionModal
         isOpen={isModalOpen}

@@ -7,7 +7,7 @@ import { horarioFuncionamentoServiceFactory } from "@/factories/horarioFuncionam
 import { municipioServiceFactory } from "@/factories/municipioServiceFactory";
 import { perfilClienteServiceFactory } from "@/factories/perfilClienteServiceFactory";
 import { SubCategoriaServiceFactory } from "@/factories/subCategoriaServiceFactory";
-import { AtracaoForm } from "@/forms/atracaoForm";
+import { AtracaoForm } from "@/schemas/forms/atracaoForm";
 import { PerfilCliente } from "@prisma/client";
 import { sub } from "date-fns";
 
@@ -15,8 +15,12 @@ export async function getAtrativoById(id: number) {
   return atracaoTuristicaServiceFactory().findById(id);
 }
 
-export async function getAll() {
-  return atracaoTuristicaServiceFactory().findAll();
+export async function getAll(onlyAtivo?: boolean) {
+  return atracaoTuristicaServiceFactory().findAll(onlyAtivo);
+}
+
+export async function toggleAtrativoAtivo(id: number, ativo: boolean) {
+  return atracaoTuristicaServiceFactory().toggleAtivo(id, ativo);
 }
 
 export async function createAtrativo(atrativo: AtracaoForm & { fotosURL: string[] }) {

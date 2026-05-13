@@ -1,4 +1,4 @@
-import { UsuarioForm, UsuarioUpdateForm } from "@/forms/usuarioForm";
+import { UsuarioForm, UsuarioUpdateForm } from "@/schemas/forms/usuarioForm";
 import { UsuarioResponseDTO } from "@/dto/usuarioDTO";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 

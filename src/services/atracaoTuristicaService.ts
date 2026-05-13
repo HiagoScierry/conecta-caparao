@@ -1,5 +1,5 @@
 import { IAtracaoTuristicaRepository } from "@/repositories/interfaces/IAtracaoTuristicaRepository";
-import { AtracaoForm } from "@/forms/atracaoForm";
+import { AtracaoForm } from "@/schemas/forms/atracaoForm";
 
 export class AtracaoTuristicaService {
   private atracaoTuristicaRepository: IAtracaoTuristicaRepository;
@@ -8,8 +8,12 @@ export class AtracaoTuristicaService {
     this.atracaoTuristicaRepository = atracaoTuristicaRepository;
   }
 
-  async findAll() {
-    return this.atracaoTuristicaRepository.findAll();
+  async findAll(onlyAtivo?: boolean) {
+    return this.atracaoTuristicaRepository.findAll(onlyAtivo);
+  }
+
+  async toggleAtivo(id: number, ativo: boolean) {
+    return this.atracaoTuristicaRepository.toggleAtivo(id, ativo);
   }
 
   async findById(id: number) {
@@ -26,6 +30,16 @@ export class AtracaoTuristicaService {
 
   async delete(id: number) {
     return this.atracaoTuristicaRepository.delete(id);
+  }
+
+  async findAllWithFilters(filters?: {
+    municipioId?: number;
+    categoriaId?: number;
+    subcategoriaId?: number;
+    perfilClienteId?: number;
+    excludeIds?: number[];
+  }, onlyAtivo?: boolean) {
+    return this.atracaoTuristicaRepository.findAllWithFilters(filters, onlyAtivo);
   }
 
 }

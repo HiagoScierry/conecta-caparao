@@ -8,6 +8,7 @@ const mockRepository: jest.Mocked<IServicoTuristicoRepository> = {
   create: jest.fn(),
   update: jest.fn(),
   delete: jest.fn(),
+  toggleAtivo: jest.fn(),
 };
 
 describe("ServicoTuristicoService", () => {
@@ -36,6 +37,7 @@ describe("ServicoTuristicoService", () => {
     idEndereco: 10,
     idContato: 30,
     idMunicipio: 1,
+    ativo: true,
     createdAt: new Date(),
     updatedAt: new Date(),
   };

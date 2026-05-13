@@ -1,5 +1,5 @@
 import { noticiaServiceFactory } from "@/factories/noticiaServiceFactory";
-import { NoticiasForm } from "@/forms/noticiasForm";
+import { NoticiasForm } from "@/schemas/forms/noticiasForm";
 
 export async function getAllNoticias(){
   return noticiaServiceFactory().findAll();

@@ -14,7 +14,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { EventoForm, eventoForm } from "@/forms/eventoForm";
+import { EventoForm, eventoForm } from "@/schemas/forms/eventoForm";
 import { ImageUpload } from "@/components/ImageUpload";
 import { useGetAllMunicipios } from "@/hooks/http/useMunicipio";
 import { useDeleteUpload } from "@/hooks/http/useUpload";

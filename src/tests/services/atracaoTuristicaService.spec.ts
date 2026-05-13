@@ -1,7 +1,7 @@
 import { AtracaoTuristicaService } from "@/services/atracaoTuristicaService";
 import { IAtracaoTuristicaRepository } from "@/repositories/interfaces/IAtracaoTuristicaRepository";
 import { mockAtracaoTuristica } from "@/tests/helpers/mockData";
-import { AtracaoForm } from "@/forms/atracaoForm";
+import { AtracaoForm } from "@/schemas/forms/atracaoForm";
 
 describe("AtracaoTuristicaService", () => {
   let atracaoTuristicaService: AtracaoTuristicaService;
@@ -14,6 +14,8 @@ describe("AtracaoTuristicaService", () => {
       create: jest.fn(),
       update: jest.fn(),
       delete: jest.fn(),
+      toggleAtivo: jest.fn(),
+      findAllWithFilters: jest.fn(),
     };
     atracaoTuristicaService = new AtracaoTuristicaService(atracaoTuristicaRepositoryMock);
   });
