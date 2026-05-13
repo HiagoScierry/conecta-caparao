@@ -199,7 +199,7 @@ export default function Atracoes() {
                 </TableHeader>
                 <TableBody>
                   {atracoes?.map((atracao: AtracaoTuristicaLoadedData) => (
-                    <TableRow key={atracao.id} className={!atracao.ativo ? "opacity-50" : ""}>
+                    <TableRow key={atracao.id}>
                       <TableCell className="font-medium">{atracao.id}</TableCell>
                       <TableCell>{atracao.nome}</TableCell>
                       <TableCell>{atracao.municipio.nome}</TableCell>
@@ -234,10 +234,10 @@ export default function Atracoes() {
                         <Button
                           variant="ghost"
                           size="sm"
-                          title={atracao.ativo ? "Ocultar" : "Exibir"}
+                          title={atracao.ativo ? "Ocultar no site público" : "Exibir no site público"}
                           onClick={() => toggleAtivo({ id: atracao.id, ativo: !atracao.ativo })}
                         >
-                          {atracao.ativo ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4 text-green-600" />}
+                          {atracao.ativo ? <Eye className="h-4 w-4 text-green-600" /> : <EyeOff className="h-4 w-4 text-gray-400" />}
                         </Button>
                         <Button
                           variant="ghost"

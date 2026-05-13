@@ -159,7 +159,7 @@ export default function Servicos() {
             </TableHeader>
             <TableBody>
               {servicos?.map((servico: ServicoTuristicoFull) => (
-                <TableRow key={servico.id} className={!servico.ativo ? "opacity-50" : ""}>
+                <TableRow key={servico.id}>
                   <TableCell className="font-medium">{servico.id}</TableCell>
                   <TableCell>{servico.nome}</TableCell>
                   <TableCell>{servico.descricao}</TableCell>
@@ -186,10 +186,10 @@ export default function Servicos() {
                     <Button
                       variant="ghost"
                       size="sm"
-                      title={servico.ativo ? "Ocultar" : "Exibir"}
+                      title={servico.ativo ? "Ocultar no site público" : "Exibir no site público"}
                       onClick={() => toggleAtivo({ id: servico.id, ativo: !servico.ativo })}
                     >
-                      {servico.ativo ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4 text-green-600" />}
+                      {servico.ativo ? <Eye className="h-4 w-4 text-green-600" /> : <EyeOff className="h-4 w-4 text-gray-400" />}
                     </Button>
                     <Button
                       variant="ghost"

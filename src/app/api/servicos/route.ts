@@ -6,10 +6,23 @@ import { horarioFuncionamentoSchema } from "@/schemas/horarioFuncionamentoSchema
 import { servicoTuristicoSchema } from "@/schemas/servicoTuristicoSchema";
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
+import { verify } from "jsonwebtoken";
+
+const JWT_SECRET = process.env.JWT_SECRET || "your-secret-key";
+
+function isAdminRequest(request: NextRequest): boolean {
+  const token = request.cookies.get("auth-token")?.value;
+  if (!token) return false;
+  try {
+    const decoded = verify(token, JWT_SECRET) as { admin: boolean };
+    return decoded.admin === true;
+  } catch {
+    return false;
+  }
+}
 
 export async function GET(request: NextRequest) {
-  const isAdmin = request.headers.get("x-user-admin") === "true";
-  const servicos = await getAll(!isAdmin);
+  const servicos = await getAll(!isAdminRequest(request));
   return NextResponse.json(servicos);
 }
 
