@@ -86,7 +86,7 @@ export function Informacoes({
     <section className="w-full bg-white py-12">
       <div className="container mx-auto px-6 md:px-12 lg:px-20">
         <div
-          className={`grid grid-cols-1 gap-6 ${hasPerfisData ? "md:grid-cols-2" : "md:grid-cols-2"}`}
+          className={`grid grid-cols-1 gap-6 ${hasPerfisData ? "md:grid-cols-2" : "md:grid-cols-1"}`}
         >
           {/* Coluna Esquerda: Perfil + Informações */}
           <div className="flex flex-col gap-6">
@@ -191,7 +191,7 @@ export function Informacoes({
               <MapPin className="h-4 w-4" />
               Mapa
             </div>
-            <div className="h-full bg-tourism-menta/20">
+            <div className="min-h-64 bg-tourism-menta/20">
               {!safeMapUrl || mapError ? (
                 <div className="flex h-full flex-col items-center justify-center gap-3 text-center text-tourism-cinza-escuro px-6">
                   <AlertTriangle className="h-10 w-10 text-amber-500" />

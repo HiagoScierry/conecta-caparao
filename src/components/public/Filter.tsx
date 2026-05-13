@@ -55,7 +55,7 @@ export function Filter({
                     value={item.value}
                     checked={selectedValues.includes(item.value)}
                     onChange={() => handleCheckboxChange(item.value)}
-                    className="h-4 w-4 border-2 border-tourism-marinho accent-tourism-marinho rounded-sm focus:ring-2transition-colors"
+                    className="h-4 w-4 border-2 border-tourism-marinho accent-tourism-marinho rounded-sm focus:ring-2 transition-colors"
                   />
                   <label htmlFor={item.value} className="cursor-pointer">
                     {item.label}
