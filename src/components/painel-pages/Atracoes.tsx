@@ -49,7 +49,7 @@ export default function Atracoes() {
   const { mutateAsync: createAtrativo } = useCreateAtrativo();
   const { mutateAsync: updateAtrativo } = useUpdateAtrativo();
   const { mutateAsync: deleteAtrativo } = useDeleteAtrativo();
-  const { mutateAsync: toggleAtivo } = useToggleAtivoAtrativo();
+  const { mutateAsync: toggleAtivo, isPending: isTogglingAtivo } = useToggleAtivoAtrativo();
 
   const handleOpenModal = (
     mode: "create" | "edit" | "view",
@@ -233,9 +233,15 @@ export default function Atracoes() {
                           <Edit className="h-4 w-4" />
                         </Button>
                         <Switch
+                          size="sm"
                           checked={atracao.ativo}
+                          disabled={isTogglingAtivo}
                           title={atracao.ativo ? "Ocultar no site público" : "Exibir no site público"}
-                          onCheckedChange={(checked) => toggleAtivo({ id: atracao.id, ativo: checked })}
+                          onCheckedChange={(checked) =>
+                            toggleAtivo({ id: atracao.id, ativo: checked })
+                              .then(() => toast({ title: checked ? "Atrativo visível no site público" : "Atrativo ocultado do site público" }))
+                              .catch(() => toast({ title: "Erro ao alterar visibilidade", variant: "destructive" }))
+                          }
                         />
                         <Button
                           variant="ghost"

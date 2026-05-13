@@ -46,7 +46,7 @@ export default function Servicos() {
   const { mutateAsync: createServico } = useCreateServico();
   const { mutateAsync: updateServico } = useUpdateServico();
   const { mutateAsync: deleteServico } = useDeleteServico();
-  const { mutateAsync: toggleAtivo } = useToggleAtivoServico();
+  const { mutateAsync: toggleAtivo, isPending: isTogglingAtivo } = useToggleAtivoServico();
 
   const handleOpenModal = (
     mode: "create" | "edit" | "view",
@@ -185,9 +185,15 @@ export default function Servicos() {
                       <Edit className="h-4 w-4" />
                     </Button>
                     <Switch
+                      size="sm"
                       checked={servico.ativo}
+                      disabled={isTogglingAtivo}
                       title={servico.ativo ? "Ocultar no site público" : "Exibir no site público"}
-                      onCheckedChange={(checked) => toggleAtivo({ id: servico.id, ativo: checked })}
+                      onCheckedChange={(checked) =>
+                        toggleAtivo({ id: servico.id, ativo: checked })
+                          .then(() => toast({ title: checked ? "Serviço visível no site público" : "Serviço ocultado do site público" }))
+                          .catch(() => toast({ title: "Erro ao alterar visibilidade", variant: "destructive" }))
+                      }
                     />
                     <Button
                       variant="ghost"
