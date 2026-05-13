@@ -10,7 +10,8 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { PlusCircle, Eye, Edit, Trash2, EyeOff } from "lucide-react";
+import { PlusCircle, Eye, Edit, Trash2 } from "lucide-react";
+import { Switch } from "@/components/ui/switch";
 import { Badge } from "@/components/ui/badge";
 import { ServiceModal } from "@/components/modals/ServiceModal";
 import { DeleteConfirmModal } from "@/components/modals/DeleteConfirmModal";
@@ -183,14 +184,11 @@ export default function Servicos() {
                     >
                       <Edit className="h-4 w-4" />
                     </Button>
-                    <Button
-                      variant="ghost"
-                      size="sm"
+                    <Switch
+                      checked={servico.ativo}
                       title={servico.ativo ? "Ocultar no site público" : "Exibir no site público"}
-                      onClick={() => toggleAtivo({ id: servico.id, ativo: !servico.ativo })}
-                    >
-                      {servico.ativo ? <Eye className="h-4 w-4 text-green-600" /> : <EyeOff className="h-4 w-4 text-gray-400" />}
-                    </Button>
+                      onCheckedChange={(checked) => toggleAtivo({ id: servico.id, ativo: checked })}
+                    />
                     <Button
                       variant="ghost"
                       size="sm"

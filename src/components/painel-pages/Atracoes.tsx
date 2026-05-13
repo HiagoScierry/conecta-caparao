@@ -12,7 +12,8 @@ import {
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { PlusCircle, Eye, Edit, Trash2, Star, EyeOff } from "lucide-react";
+import { PlusCircle, Eye, Edit, Trash2, Star } from "lucide-react";
+import { Switch } from "@/components/ui/switch";
 import { AtracaoTuristicaFull, AttractionModal } from "@/components/modals/AttractionModal";
 import { DeleteConfirmModal } from "@/components/modals/DeleteConfirmModal";
 import { useToast } from "@/hooks/use-toast";
@@ -231,14 +232,11 @@ export default function Atracoes() {
                         >
                           <Edit className="h-4 w-4" />
                         </Button>
-                        <Button
-                          variant="ghost"
-                          size="sm"
+                        <Switch
+                          checked={atracao.ativo}
                           title={atracao.ativo ? "Ocultar no site público" : "Exibir no site público"}
-                          onClick={() => toggleAtivo({ id: atracao.id, ativo: !atracao.ativo })}
-                        >
-                          {atracao.ativo ? <Eye className="h-4 w-4 text-green-600" /> : <EyeOff className="h-4 w-4 text-gray-400" />}
-                        </Button>
+                          onCheckedChange={(checked) => toggleAtivo({ id: atracao.id, ativo: checked })}
+                        />
                         <Button
                           variant="ghost"
                           size="sm"
