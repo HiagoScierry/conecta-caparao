@@ -197,16 +197,18 @@ export default function Servicos() {
                     </Tooltip>
                     <Tooltip>
                       <TooltipTrigger asChild>
-                        <Switch
-                          size="sm"
-                          checked={servico.ativo}
-                          disabled={isTogglingAtivo}
-                          onCheckedChange={(checked) =>
-                            toggleAtivo({ id: servico.id, ativo: checked })
-                              .then(() => toast({ title: checked ? "Serviço visível no site público" : "Serviço ocultado do site público" }))
-                              .catch(() => toast({ title: "Erro ao alterar visibilidade", variant: "destructive" }))
-                          }
-                        />
+                        <span className="inline-flex items-center">
+                          <Switch
+                            size="sm"
+                            checked={servico.ativo}
+                            disabled={isTogglingAtivo}
+                            onCheckedChange={(checked) =>
+                              toggleAtivo({ id: servico.id, ativo: checked })
+                                .then(() => toast({ title: checked ? "Serviço visível no site público" : "Serviço ocultado do site público" }))
+                                .catch(() => toast({ title: "Erro ao alterar visibilidade", variant: "destructive" }))
+                            }
+                          />
+                        </span>
                       </TooltipTrigger>
                       <TooltipContent>{servico.ativo ? "Ocultar no site público" : "Exibir no site público"}</TooltipContent>
                     </Tooltip>

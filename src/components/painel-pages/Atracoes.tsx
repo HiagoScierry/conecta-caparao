@@ -245,16 +245,18 @@ export default function Atracoes() {
                         </Tooltip>
                         <Tooltip>
                           <TooltipTrigger asChild>
-                            <Switch
-                              size="sm"
-                              checked={atracao.ativo}
-                              disabled={isTogglingAtivo}
-                              onCheckedChange={(checked) =>
-                                toggleAtivo({ id: atracao.id, ativo: checked })
-                                  .then(() => toast({ title: checked ? "Atrativo visível no site público" : "Atrativo ocultado do site público" }))
-                                  .catch(() => toast({ title: "Erro ao alterar visibilidade", variant: "destructive" }))
-                              }
-                            />
+                            <span className="inline-flex items-center">
+                              <Switch
+                                size="sm"
+                                checked={atracao.ativo}
+                                disabled={isTogglingAtivo}
+                                onCheckedChange={(checked) =>
+                                  toggleAtivo({ id: atracao.id, ativo: checked })
+                                    .then(() => toast({ title: checked ? "Atrativo visível no site público" : "Atrativo ocultado do site público" }))
+                                    .catch(() => toast({ title: "Erro ao alterar visibilidade", variant: "destructive" }))
+                                }
+                              />
+                            </span>
                           </TooltipTrigger>
                           <TooltipContent>{atracao.ativo ? "Ocultar no site público" : "Exibir no site público"}</TooltipContent>
                         </Tooltip>
