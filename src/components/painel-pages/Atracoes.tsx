@@ -14,6 +14,7 @@ import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { PlusCircle, Eye, Edit, Trash2, Star } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
+import { Tooltip, TooltipTrigger, TooltipContent } from "@/components/ui/tooltip";
 import { AtracaoTuristicaFull, AttractionModal } from "@/components/modals/AttractionModal";
 import { DeleteConfirmModal } from "@/components/modals/DeleteConfirmModal";
 import { useToast } from "@/hooks/use-toast";
@@ -218,39 +219,58 @@ export default function Atracoes() {
                         </Badge>
                       </TableCell>
                       <TableCell className="text-right space-x-2">
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => handleOpenModal("view", atracao)}
-                        >
-                          <Eye className="h-4 w-4" />
-                        </Button>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => handleOpenModal("edit", atracao)}
-                        >
-                          <Edit className="h-4 w-4" />
-                        </Button>
-                        <Switch
-                          size="sm"
-                          checked={atracao.ativo}
-                          disabled={isTogglingAtivo}
-                          title={atracao.ativo ? "Ocultar no site público" : "Exibir no site público"}
-                          onCheckedChange={(checked) =>
-                            toggleAtivo({ id: atracao.id, ativo: checked })
-                              .then(() => toast({ title: checked ? "Atrativo visível no site público" : "Atrativo ocultado do site público" }))
-                              .catch(() => toast({ title: "Erro ao alterar visibilidade", variant: "destructive" }))
-                          }
-                        />
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          className="text-destructive"
-                          onClick={() => handleOpenDeleteModal(atracao)}
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => handleOpenModal("view", atracao)}
+                            >
+                              <Eye className="h-4 w-4" />
+                            </Button>
+                          </TooltipTrigger>
+                          <TooltipContent>Visualizar</TooltipContent>
+                        </Tooltip>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => handleOpenModal("edit", atracao)}
+                            >
+                              <Edit className="h-4 w-4" />
+                            </Button>
+                          </TooltipTrigger>
+                          <TooltipContent>Editar</TooltipContent>
+                        </Tooltip>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Switch
+                              size="sm"
+                              checked={atracao.ativo}
+                              disabled={isTogglingAtivo}
+                              onCheckedChange={(checked) =>
+                                toggleAtivo({ id: atracao.id, ativo: checked })
+                                  .then(() => toast({ title: checked ? "Atrativo visível no site público" : "Atrativo ocultado do site público" }))
+                                  .catch(() => toast({ title: "Erro ao alterar visibilidade", variant: "destructive" }))
+                              }
+                            />
+                          </TooltipTrigger>
+                          <TooltipContent>{atracao.ativo ? "Ocultar no site público" : "Exibir no site público"}</TooltipContent>
+                        </Tooltip>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              className="text-destructive"
+                              onClick={() => handleOpenDeleteModal(atracao)}
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
+                          </TooltipTrigger>
+                          <TooltipContent>Excluir</TooltipContent>
+                        </Tooltip>
                       </TableCell>
                     </TableRow>
                   ))}

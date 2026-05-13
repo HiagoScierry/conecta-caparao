@@ -12,6 +12,7 @@ import {
 } from "@/components/ui/table";
 import { PlusCircle, Eye, Edit, Trash2 } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
+import { Tooltip, TooltipTrigger, TooltipContent } from "@/components/ui/tooltip";
 import { Badge } from "@/components/ui/badge";
 import { ServiceModal } from "@/components/modals/ServiceModal";
 import { DeleteConfirmModal } from "@/components/modals/DeleteConfirmModal";
@@ -170,39 +171,58 @@ export default function Servicos() {
                     </Badge>
                   </TableCell>
                   <TableCell className="text-right space-x-2">
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => handleOpenModal("view", servico)}
-                    >
-                      <Eye className="h-4 w-4" />
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => handleOpenModal("edit", servico)}
-                    >
-                      <Edit className="h-4 w-4" />
-                    </Button>
-                    <Switch
-                      size="sm"
-                      checked={servico.ativo}
-                      disabled={isTogglingAtivo}
-                      title={servico.ativo ? "Ocultar no site público" : "Exibir no site público"}
-                      onCheckedChange={(checked) =>
-                        toggleAtivo({ id: servico.id, ativo: checked })
-                          .then(() => toast({ title: checked ? "Serviço visível no site público" : "Serviço ocultado do site público" }))
-                          .catch(() => toast({ title: "Erro ao alterar visibilidade", variant: "destructive" }))
-                      }
-                    />
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="text-destructive"
-                      onClick={() => handleOpenDeleteModal(servico)}
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => handleOpenModal("view", servico)}
+                        >
+                          <Eye className="h-4 w-4" />
+                        </Button>
+                      </TooltipTrigger>
+                      <TooltipContent>Visualizar</TooltipContent>
+                    </Tooltip>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => handleOpenModal("edit", servico)}
+                        >
+                          <Edit className="h-4 w-4" />
+                        </Button>
+                      </TooltipTrigger>
+                      <TooltipContent>Editar</TooltipContent>
+                    </Tooltip>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Switch
+                          size="sm"
+                          checked={servico.ativo}
+                          disabled={isTogglingAtivo}
+                          onCheckedChange={(checked) =>
+                            toggleAtivo({ id: servico.id, ativo: checked })
+                              .then(() => toast({ title: checked ? "Serviço visível no site público" : "Serviço ocultado do site público" }))
+                              .catch(() => toast({ title: "Erro ao alterar visibilidade", variant: "destructive" }))
+                          }
+                        />
+                      </TooltipTrigger>
+                      <TooltipContent>{servico.ativo ? "Ocultar no site público" : "Exibir no site público"}</TooltipContent>
+                    </Tooltip>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="text-destructive"
+                          onClick={() => handleOpenDeleteModal(servico)}
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </TooltipTrigger>
+                      <TooltipContent>Excluir</TooltipContent>
+                    </Tooltip>
                   </TableCell>
                 </TableRow>
               ))}

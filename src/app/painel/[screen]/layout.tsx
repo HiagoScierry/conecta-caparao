@@ -1,6 +1,7 @@
 "use client";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Sidebar } from "@/components/dashboard/Sidebar";
+import { TooltipProvider } from "@/components/ui/tooltip";
 
 export default function Layout({
   children,
@@ -10,9 +11,11 @@ export default function Layout({
       <Sidebar />
       <main className="flex-1 overflow-hidden">
         <ScrollArea className="h-full">
-          <div className="p-4 md:p-6 max-w-7xl mx-auto">
-            {children}
-          </div>
+          <TooltipProvider>
+            <div className="p-4 md:p-6 max-w-7xl mx-auto">
+              {children}
+            </div>
+          </TooltipProvider>
         </ScrollArea>
       </main>
     </div>
