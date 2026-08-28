@@ -29,6 +29,32 @@ To learn more about Next.js, take a look at the following resources:
 
 You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
 
+## Deploy na VPS (Docker Compose + Nginx)
+
+A aplicação sobe via `docker-compose.yaml` com um container `nginx` na frente,
+fazendo proxy reverso para o container `app` (porta 3000, interna). O nginx é
+o único serviço que expõe porta ao host (`HTTP_PORT`, padrão `80`).
+
+```bash
+cp .env.example .env
+# edite o .env com os valores reais (senhas, JWT_SECRET, etc.)
+
+docker compose up -d --build
+```
+
+Acesse `http://<ip-da-vps>`.
+
+### Habilitando HTTPS depois que o domínio estiver definido
+
+1. Aponte o(s) registro(s) DNS (A/AAAA) do domínio para o IP da VPS.
+2. Em `nginx/conf.d/default.conf`, troque `server_name _;` pelo domínio
+   (ex: `server_name conectacaparao.com.br www.conectacaparao.com.br;`).
+3. Instale o Certbot (plugin nginx) e emita o certificado, por exemplo rodando
+   `certbot --nginx` no host (ou via container `certbot/certbot` apontando
+   para o volume de `nginx/conf.d`) — o Certbot ajusta o `server` block para
+   redirecionar 80 → 443 e adiciona o bloco `listen 443 ssl`.
+4. Publique a porta 443 no serviço `nginx` do `docker-compose.yaml`.
+
 ## Deploy on Vercel
 
 The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
