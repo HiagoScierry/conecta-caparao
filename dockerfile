@@ -26,6 +26,11 @@ RUN npx prisma generate
 # Build the application
 RUN npm run build
 
+# Migration stage - runs `prisma migrate deploy` and exits
+FROM builder AS migrator
+WORKDIR /app
+CMD ["npx", "prisma", "migrate", "deploy"]
+
 # Production stage
 FROM base AS runner
 WORKDIR /app
