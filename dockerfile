@@ -5,8 +5,9 @@ FROM node:22.11-alpine AS base
 FROM base AS builder
 WORKDIR /app
 
-# Copy package files
+# Copy package files and Prisma schema (needed by the postinstall `prisma generate`)
 COPY package.json package-lock.json* ./
+COPY prisma ./prisma
 RUN npm ci
 
 # Copy source code
