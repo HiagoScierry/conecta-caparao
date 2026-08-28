@@ -1,14 +1,6 @@
 # Build stage
 FROM node:22.11-alpine AS base
 
-# Install dependencies only when needed
-FROM base AS deps
-WORKDIR /app
-
-# Copy package files
-COPY package.json package-lock.json* ./
-RUN npm ci --only=production && npm cache clean --force
-
 # Build stage
 FROM base AS builder
 WORKDIR /app
