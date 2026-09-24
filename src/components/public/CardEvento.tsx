@@ -3,6 +3,7 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Calendar, MapPin } from "lucide-react";
 import { DescriptionSection } from "@/components/public/DescriptionSection";
+import { truncatePlainText } from "@/lib/utils";
 
 interface CardEventoProps {
   titulo: string;
@@ -22,9 +23,7 @@ export function CardEvento({
   href,
 }: CardEventoProps) {
   const truncatedDescricao =
-    descricao?.length > 160
-      ? descricao.slice(0, 160) + " [...]"
-      : descricao || "";
+    truncatePlainText(descricao, 160);
 
   return (
     <div className="bg-white rounded-2xl shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden flex flex-col h-full border border-gray-100">

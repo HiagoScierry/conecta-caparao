@@ -5,9 +5,12 @@ const prisma = new PrismaClient();
 
 async function main() {
   // CATEGORIA SEED
+  // "Restaurantes" renomeada para "Gastronomia" a pedido da AD Caparaó (retorno de
+  // março/2026): a nova categoria engloba cafés, bares, pizzarias e restaurantes,
+  // que antes ficavam soltos como subcategorias sem uma categoria-guarda-chuva clara.
   await prisma.categoria.createMany({
     data: [
-      { nome: 'Restaurantes' },
+      { nome: 'Gastronomia' },
       { nome: 'Hospedagem' },
       { nome: 'Turismo' },
       { nome: 'Lazer' },
@@ -18,8 +21,11 @@ async function main() {
 
 
   // SUBCATEGORIA SEED
+  // Adicionada "Restaurantes" -- a AD Caparaó apontou que muitos estabelecimentos não
+  // se encaixavam nas subcategorias existentes por faltar essa opção genérica.
   await prisma.subcategoria.createMany({
     data: [
+      { nome: 'Restaurantes' },
       { nome: 'Cafés' },
       { nome: 'Bares' },
       { nome: 'Pizzarias' },

@@ -27,6 +27,7 @@ import {
 import { ServicoTuristicoFull } from "@/repositories/interfaces/IServicoTuristicoRepository";
 import { ServicoForm } from "@/schemas/forms/servicoForm";
 import { useUpload } from "@/hooks/http/useUpload";
+import { htmlToPlainText, truncatePlainText } from "@/lib/utils";
 
 export default function Servicos() {
   const { toast } = useToast();
@@ -164,7 +165,11 @@ export default function Servicos() {
                 <TableRow key={servico.id}>
                   <TableCell className="font-medium">{servico.id}</TableCell>
                   <TableCell>{servico.nome}</TableCell>
-                  <TableCell>{servico.descricao}</TableCell>
+                  <TableCell className="max-w-md">
+                    <span className="line-clamp-2" title={htmlToPlainText(servico.descricao)}>
+                      {truncatePlainText(servico.descricao, 140)}
+                    </span>
+                  </TableCell>
                   <TableCell>
                     <Badge variant={servico.ativo ? "default" : "secondary"}>
                       {servico.ativo ? "Visível" : "Oculto"}

@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { Calendar, ArrowRight } from "lucide-react";
 import { DescriptionSection } from "@/components/public/DescriptionSection";
+import { truncatePlainText } from "@/lib/utils";
 
 interface CardNoticiaProps {
   titulo: string;
@@ -19,9 +20,7 @@ export function CardNoticia({
   href,
 }: CardNoticiaProps) {
   const truncatedDescricao =
-    descricao?.length > 160
-      ? descricao.slice(0, 160) + " [...]"
-      : descricao || "";
+    truncatePlainText(descricao, 160);
 
   return (
     <article className="group bg-white rounded-2xl overflow-hidden shadow-md hover:shadow-2xl transition-all duration-300">
