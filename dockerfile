@@ -1,20 +1,13 @@
 # Build stage
 FROM node:22.11-alpine AS base
 
-# Install dependencies only when needed
-FROM base AS deps
-WORKDIR /app
-
-# Copy package files
-COPY package.json package-lock.json* ./
-RUN npm ci --only=production && npm cache clean --force
-
 # Build stage
 FROM base AS builder
 WORKDIR /app
 
-# Copy package files
+# Copy package files and Prisma schema (needed by the postinstall `prisma generate`)
 COPY package.json package-lock.json* ./
+COPY prisma ./prisma
 RUN npm ci
 
 # Copy source code
@@ -25,6 +18,11 @@ RUN npx prisma generate
 
 # Build the application
 RUN npm run build
+
+# Migration stage - runs `prisma migrate deploy` and exits
+FROM builder AS migrator
+WORKDIR /app
+CMD ["npx", "prisma", "migrate", "deploy"]
 
 # Production stage
 FROM base AS runner
